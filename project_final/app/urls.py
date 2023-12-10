@@ -14,10 +14,11 @@ urlpatterns = [
     path('updatefood/<int:id>/',updatefood,name='updatefood'),
     path('search/',search,name='search'),
     path('foodview/<int:id>/',foodview,name='foodview'),
-    path('review/',reviewfood,name='review'),
+    # path('review/',reviewfood,name='review'),
+    path('review/<int:id>/',reviewfood,name='review'),
     path('login/',login,name='custom_login'),
     path('line-login/', line_login, name='line'),
-    path('login/callback/',line_callback,name='line_ callback')
+    path('login/callback/',line_callback,name='line_ callback'),
 
 
 ] 

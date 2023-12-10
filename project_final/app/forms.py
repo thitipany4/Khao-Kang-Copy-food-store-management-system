@@ -25,3 +25,7 @@ class OptionForm(forms.ModelForm):
         model = Food
         fields =['options']
 
+class ReviewFood(forms.ModelForm):
+    class Meta:
+        model = Reviewfood
+        fields ="__all__"

@@ -3,10 +3,295 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Foodview</title>
+    <style>
+        .container {
+            display: flex;
+            border: 1px solid red;
+            justify-content: center;
+            align-items: start;
+            height: 600px;
+            margin: 10px;
+
+        }
+        .form-review {
+            border: 1px solid hotpink;
+            display: flex;
+            flex-direction: column;
+            margin-top: 10px;
+            width: 80%;
+            height: 100%;
+            justify-content: start;
+            align-items: center;
+
+        }
+        .box-top {
+            display: flex;
+            border: 1px solid green;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+        }
+        .boxlistfood {
+                border: 1px solid blue;
+                margin-top: 20px;
+                margin-right: 50px;
+                width: 200px;
+                height: 200px;
+                
+            }
+        .boxlistfood div {
+
+                text-align: center;
+                margin-bottom: 10px;
+                
+            }
+        .image-food img {
+                height: 120px; /* Set the height of the image container */
+                width: 90%; /* Set the width of the image container */
+                
+
+            }
+        .detail_food {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+            }
+        .image-food {
+                width: 100% ;
+                border: 1px solid blue;
+                height: auto;
+                margin-top: 0;
+
+            }
+        .image-food img {
+                height: 120px; /* Set the height of the image container */
+                width: 90%; /* Set the width of the image container */
+                
+
+            }
+        .detail_food {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+            }
+        .score-review {
+            margin-left: 20px;
+        }
+        .checked {
+                color: orange;
+
+            }
+        .fa-star {
+            font-size: 32px;
+            cursor: pointer;
+        }
+        .text-review {
+            width: 70%;
+            height: 150px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        .textarea {
+            position: relative;
+            border-radius: 0.5rem;
+            width: 100%;
+            height: 100%;
+            padding: 10px;
+        }
+        .count-text {
+            position: absolute;
+            top: 82%;
+            left: 75%;
+        }
+        .review-button {
+            align-items: center;
+            background-color:#21F9F9;
+            border-radius: 12px;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+            box-sizing: border-box;
+            color: #121212;
+            cursor: pointer;
+            display: inline-flex;
+            flex: 1 1 auto;
+            font-family: Inter,sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            justify-content: center;
+            line-height: 1;
+            margin: 0;
+            outline: none;
+            padding: 1rem 1.2rem;
+            text-align: center;
+            text-decoration: none;
+            transition: box-shadow .2s,-webkit-box-shadow .2s;
+            white-space: nowrap;
+            border: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .review-button:hover,.Clear-review:hover {
+        box-shadow: #121212 0 0 0 3px, transparent 0 0 0 0;
+        }
+        .Clear-review {
+            align-items: center;
+            background-color: #F95221;
+            border-radius: 12px;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+            box-sizing: border-box;
+            color: #121212;
+            cursor: pointer;
+            display: inline-flex;
+            flex: 1 1 auto;
+            font-family: Inter,sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            justify-content: center;
+            line-height: 1;
+            margin: 0;
+            outline: none;
+            padding: 1rem 1.2rem;
+            text-align: center;
+            text-decoration: none;
+            transition: box-shadow .2s,-webkit-box-shadow .2s;
+            white-space: nowrap;
+            border: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+    </style>
 </head>
 <body>
     {% include 'app/navbar.html' %}
-    
+    <div class="container">
+        <form class="form-review" action="/review/{{form.instance.id}}/" method="post" enctype="multipart/form-data">
+            {%csrf_token%}
+
+            <div class="box-top">
+
+                <div class="listitem">
+                    <input type="hidden" name="food" value="{{form.instance.id}}">
+                    <div class="boxlistfood">
+                        {%if food.image %}
+                        <div class="image-food">
+                            <img src="{{food.image.url}}" alt="food-image">
+                        </div>
+                        {%endif%}
+                        <div>{{food.name}}</div> 
+                        <div class="detail_food">
+                            <div>{{food.price}} {{food.unit}}</div>
+                            {%if food.score%}
+                            <div>{{food.score}}</div>
+                            {%endif%}
+            
+                            {%if food.quantity_review >= 10%}
+                            <div>({{food.quantity_review}})</div>
+                            {%endif%}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="score-review">
+                    <input type="hidden" name="rating" id="ratingInput" required value="{{ form.instance.rating }}">
+                    <span class="fa fa-star" onclick="toggleStars(1)"></span>
+                    <span class="fa fa-star" onclick="toggleStars(2)"></span>
+                    <span class="fa fa-star" onclick="toggleStars(3)"></span>
+                    <span class="fa fa-star" onclick="toggleStars(4)"></span>
+                    <span class="fa fa-star" onclick="toggleStars(5)"></span>
+                </div>
+
+            </div>
+
+            <div class="text-review">
+                <textarea class="textarea" id="review_id" name="review">{{ form.instance.review }}</textarea>
+                <div class="count-text" id="characterCount">0</div>
+            </div>
+
+            <div class="button-submit">
+                <a class="Clear-review" href="/review/{{food.id}}/">Clear</a>
+                <input class="review-button" type="submit" value="Review">
+            </div>
+            
+        </form>
+    </div>
+
+
+        
+    <script>
+        function toggleStars(score) {
+          const stars = document.querySelectorAll('.fa-star');
+          const ratingInput = document.getElementById('ratingInput');
+      
+          // Loop through the stars and apply the 'checked' class
+          for (let i = 0; i < score; i++) {
+            stars[i].classList.add('checked');
+          }
+      
+          // Remove the 'checked' class from the stars after the clicked star
+          for (let i = score; i < stars.length; i++) {
+            stars[i].classList.remove('checked');
+          }
+      
+          // อัพเดพ rating
+          ratingInput.value = score;
+        }
+      </script>
+<script>
+$(document).ready(function () {
+    // Initially hide character count
+    $('#characterCount').hide();
+
+    // First input field with jQuery
+    $('#review_id').on('input', function () {
+        var charCount = $(this).val().length;
+        var maxLength = 500;
+
+        if (charCount > maxLength) {
+            $(this).val($(this).val().substring(0, maxLength));
+            charCount = maxLength; // Update charCount after truncation
+        }
+
+        // Show or hide character count based on text presence
+        if (charCount > 0) {
+            $('#characterCount').show();
+        } else {
+            $('#characterCount').hide();
+        }
+
+        $('#characterCount').text(charCount + '/ 500');
+    });
+
+    // Second input field with pure JavaScript
+    document.getElementById('TextField').addEventListener('input', function () {
+        var maxLength = 500;
+        var currentLength = this.value.length;
+
+        if (currentLength > maxLength) {
+            this.value = this.value.substring(0, maxLength);
+            currentLength = maxLength; // Update currentLength after truncation
+        }
+
+        // Show or hide character count based on text presence
+        if (currentLength > 0) {
+            document.getElementById('characterCount').style.display = 'block';
+        } else {
+            document.getElementById('characterCount').style.display = 'none';
+        }
+
+        // Update character count for the second field
+        document.getElementById('characterCount').innerText = currentLength + '/ 500';
+    });
+});
+
+</script>
+
 </body>
 </html>

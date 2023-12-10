@@ -61,3 +61,18 @@ class Historysale(models.Model):
     def __str__(self) -> str:
         return f'{self.date_field} {self.food}'
     
+class Reviewfood(models.Model):
+    food = models.ForeignKey(Food,on_delete=models.CASCADE)
+    review = models.TextField(max_length=500,blank=True,null=True)
+    rating = models.CharField(max_length=20, choices=(
+        ('1', '1 ดาว'),
+        ('2', '2 ดาว'),
+        ('3', '3 ดาว'),
+        ('4', '4 ดาว'),
+        ('5', '5 ดาว'),
+
+    ), default='5',blank=False,null=False) 
+
+    def __str__(self) -> str:
+        return f'{self.food.name} rating : {self.rating}'
+

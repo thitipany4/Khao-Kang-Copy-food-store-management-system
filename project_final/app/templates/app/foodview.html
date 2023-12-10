@@ -8,22 +8,30 @@
 <style>
     .container {
         display: grid;
+        position: relative;
         grid-template-columns: repeat(1,1fr);
         padding: 0.5rem;
         border: 1px solid red;
         margin: 30px;
         height: 700px;
+        place-items: center;
     }
     .content-top {
         display: flex;
+        flex-direction: row;
+        justify-content: space-between;
         border: 1px solid blue;
-        height: 250px;
-        margin: 20px;
+        height: 230px;
+        width: 80%;
+        margin-top: 20px;
+        margin-bottom: 0;
 
     }
     .boxlistfood {
             border: 1px solid blue;
             margin-top: 20px;
+            margin-left: 30%;
+            margin-right: 10px;
             width: 200px;
             height: 200px;
             
@@ -65,15 +73,84 @@
             align-items: center;
 
         }
+    .review-button {
+        display: flex;
+        position: absolute;
+        top: 37%;
+        left: 10%;
+        flex-direction: column;
+        width: 120px;
+        height: 40px;
+        margin-top: 0;
+        justify-content: center;
+        align-items: center;
+        background-color: #2CCAE6;
+        border-radius: 0.5rem;
+    }
+    .text-reiview-button {
+        text-decoration: none;
+        color: black;
+    }
+    .filter-review {
+        display: flex;
+        position: absolute;
+        left: 80%;
+        width: 90px;
+        border: 1px solid purple;
+        height: 20px;
+    }
+    .option-filter {
+        width: 100%;
+        text-align: center;
+        background-color: azure;
+    }
     .content-down {
         display: flex;
         flex-direction: row;
         border: 1px solid green;
-        height: 400px;
+        height: 300px;
+        width: 80%;
         margin: 20px;
         padding: 10px;
 
 
+    }
+    .box_score_food {
+        display: flex;
+        padding: 10px;
+        width: 20%;
+        height: 180px;
+        border: 1px solid navajowhite;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+
+    }
+    .score_food {
+        display: flex;
+        padding: 10px;
+        width: 70%;
+        height: 50%;
+        border: 1px solid black;
+
+    }
+    .box_detail_score {
+        display: flex;
+        padding: 10px;
+        margin-top: 20px;
+        margin-right: 30px;
+        width: 30%;
+        height: 180px;
+        border: 1px solid purple;
+        justify-content: center;
+        align-items: center;
+    }
+    .detail_score {
+        display: flex;
+        padding: 10px;
+        width: 90%;
+        height: 70%;
+        border: 1px solid palegreen;
     }
 </style>
 <body>
@@ -101,6 +178,25 @@
                         </div>
                     </div>
             </div>
+            <div class="box_score_food">
+                <div class="score_food">reviewsum</div>
+            </div>
+            <div class="box_detail_score">
+                <div class="detail_score">detailscore</div>
+            </div>
+            
+        </div>
+
+        <div class="review-button">
+            <a class="text-reiview-button" href="/review/{{food.id}}/">Review me</a>
+        </div>
+
+        <div class="filter-review">
+            <label for="option_{{f.id}}"></label>
+            <select class="option-filter" name="options" id="option_{{f.id}}">
+                <option value="onsale">ล่าสุด</option>
+                <option value="notchoose">ดีที่สุด</option>
+            </select>
         </div>
 
         <div class="content-down">

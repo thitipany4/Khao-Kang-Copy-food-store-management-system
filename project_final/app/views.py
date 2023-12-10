@@ -4,7 +4,7 @@ import requests
 from .models import Member
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
-from app.forms import DateForm, FoodForm
+from app.forms import DateForm, FoodForm, ReviewFood
 #from linebot import LineBotApi
 #from linebot.models import TextSendMessage
 from app.models import Food, Historysale
@@ -191,8 +191,27 @@ def foodview(req,id=None):
         return render(req,'app/foodview.html',{'food':food})
     return render(req,'app/foodview.html',{})
 
-def reviewfood(req):
-    return render(req,'app/foodview.html',{})
+def reviewfood(req,id):
+    food = Food.objects.get(pk=id)
+    print(food)
+    if req.method =='GET':
+        form = ReviewFood(instance=food)
+        print(food.id)
+        print(form.instance.id)
+    else:
+        form = ReviewFood(req.POST,req.FILES)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.food = food
+            review.save()
+            return redirect('home')
+        
+    context = {
+        'form':form,
+        'food':food,
+    }
+    return render(req,'app/review.html',context)
+
 
 def managefood(req,date=None):
 
@@ -271,6 +290,8 @@ def managefood(req,date=None):
             'form':form_date,
         }
         return render(req,'app/managefood.html',context)
+
+
 
 def login(req):
      if req.user.is_authenticated:
