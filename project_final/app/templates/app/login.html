@@ -1,0 +1,15 @@
+
+<html>
+  <head>
+    <title>Login page</title>
+  </head>
+  <body>
+    {% if user.is_authenticated %}
+        <h1>Welcome,  {{ member.user_name }} !</h1>       
+    {% else %}
+        <h1>Login Page</h1>
+        <a href="{% url 'line' %}">Login with Line</a>
+    {% endif %}
+
+  </body>
+</html>

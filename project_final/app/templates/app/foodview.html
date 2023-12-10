@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Foodview</title>
+</head>
+<style>
+    .container {
+        display: grid;
+        grid-template-columns: repeat(1,1fr);
+        padding: 0.5rem;
+        border: 1px solid red;
+        margin: 30px;
+        height: 700px;
+    }
+    .content-top {
+        display: flex;
+        border: 1px solid blue;
+        height: 250px;
+        margin: 20px;
+
+    }
+    .boxlistfood {
+            border: 1px solid blue;
+            margin-top: 20px;
+            width: 200px;
+            height: 200px;
+            
+        }
+    .boxlistfood div {
+
+            text-align: center;
+            margin-bottom: 10px;
+            
+        }
+    .image-food img {
+            height: 120px; /* Set the height of the image container */
+            width: 90%; /* Set the width of the image container */
+            
+
+        }
+    .detail_food {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+    .image-food {
+            width: 100% ;
+            border: 1px solid blue;
+            height: auto;
+            margin-top: 0;
+
+        }
+    .image-food img {
+            height: 120px; /* Set the height of the image container */
+            width: 90%; /* Set the width of the image container */
+            
+
+        }
+    .detail_food {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+    .content-down {
+        display: flex;
+        flex-direction: row;
+        border: 1px solid green;
+        height: 400px;
+        margin: 20px;
+        padding: 10px;
+
+
+    }
+</style>
+<body>
+    {% include 'app/navbar.html' %}
+    <div class="container">
+
+        <div class="content-top">
+            <div class="listitem">
+                    <div class="boxlistfood">
+                        {%if food.image %}
+                        <div class="image-food">
+                            <img src="{{food.image.url}}" alt="food-image">
+                        </div>
+                        {%endif%}
+                        <div>{{food.name}}</div> 
+                        <div class="detail_food">
+                            <div>{{food.price}} {{food.unit}}</div>
+                            {%if food.score%}
+                            <div>{{food.score}}</div>
+                            {%endif%}
+
+                            {%if food.quantity_review >= 10%}
+                            <div>({{food.quantity_review}})</div>
+                            {%endif%}
+                        </div>
+                    </div>
+            </div>
+        </div>
+
+        <div class="content-down">
+          
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>home</title>
+    <style>
+        body {
+            background-color: #E3E3E3;
+        }
+
+        .container-area {
+            display: grid;
+            padding: 0.5rem;
+            margin: 0.5rem;
+            grid-template-columns: repeat(4,1fr);
+            grid-gap: 10px;
+            width: 1140px;
+            border: 1px solid red;
+            margin: 0 auto;
+            margin-top: 20px;
+
+        }
+        .boxlistfood {
+            /* border: 1px solid blue; */
+            margin-top: 20px;
+            width: 220px;
+            height: 200px;
+            
+        }
+        .boxlistfood div {
+
+            text-align: center;
+            margin-bottom: 10px;
+            
+        }
+        .listitem a {
+            text-decoration: none;
+            color: black;
+        }
+        .image-food {
+            width: 100% ;
+            border-radius: 1rem;
+            height: 110px;
+            margin-bottom: 20px;
+
+
+        }
+        .image-food img {
+            height: 120px; /* Set the height of the image container */
+            width: 99.5%; /* Set the width of the image container */
+
+            
+
+        }
+        .detail_food {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-left: 10px;
+            margin-bottom: 0;
+        }
+        .name {
+            margin-top: 5px;
+            margin-bottom: 0;
+        }
+
+        .box-detail {
+            display: flex;
+            flex-direction: column;
+            height: 60px;
+            position: relative;
+            border: 1px solid red;
+            background-color: #FDFDFD;
+
+        }
+
+        .overlay {
+            position: absolute;
+            top: 30px;
+            left: 205px;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+            border-radius: 5px; 
+            width: 30px;
+}
+        .status-sale-green {
+            background-color: greenyellow; /* Change the background color and opacity as needed */
+            display: inline-block;
+            padding: 6px;
+            width: 10px;
+            height: 5px;
+            border-radius: 0.5rem;
+        }
+        .status-sale-red {
+            background-color: #E84F2F; /* Change the background color and opacity as needed */
+            display: inline-block;
+            padding: 6px;
+            width: 10px;
+            height: 5px;
+            border-radius: 0.5rem;
+        }
+
+
+    </style>
+</head>
+<body>
+        {% include 'app/navbar.html' %}
+        <div class="container-area">
+            {%for f in food %}
+                {%if f.options != 'notchoose'%}
+                <div class="listitem">
+                    <a href="/foodview/{{f.id}}/">
+
+                        <div class="boxlistfood">
+                            {%if f.image %}
+                            <div class="image-food">
+                                <img src="{{f.image.url}}" alt="food-image">
+                            </div>
+                            {%endif%}
+
+                            <div class="box-detail">
+                                <div class="overlay">
+                                    {%if f.options == 'onsale' %}
+                                    <div class="status-sale-green"></div>
+                                    {%endif%}
+                                    {%if f.options == 'soldout'%}
+                                    <div class="status-sale-red"></div>
+                                    {%endif%}
+                                </div>
+                                
+                                <div class="name">{{f.name}}</div> 
+                                <div class="detail_food">
+                                    <div class="food-price">{{f.price}} {{f.unit}}</div>
+                                    {%if f.score%}
+                                        <div class="score">{{f.score}}</div>
+                                    {%endif%}
+
+                                    {%if f.quantity_review >= 10%}
+                                        <div class="quantity_review">({{f.quantity_review}})</div>
+                                    {%endif%}
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                    </a>
+
+                </div>
+                {%endif%}
+                
+            {%endfor%}
+            </div>
+
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search</title>
+    <style>
+    h1 {
+        text-align: center;
+    }
+    .container-area {
+        display: flex;
+        padding: 0.5rem;
+        margin: 0.5rem auto;
+        border: 1px solid red;
+        margin-top: 20px;
+        justify-content: center;
+        align-items: center;
+
+    }
+    .boxlistfood {
+        border: 1px solid green;
+        margin-top: 20px;
+        width: 250px;
+        height: 200px;
+        
+    }
+    .boxlistfood div {
+
+        text-align: center;
+        margin-bottom: 10px;
+        
+    }
+    .listitem a {
+        text-decoration: none;
+        color: black;
+
+    }
+    .image-food {
+        width: 100% ;
+        border: 1px solid blue;
+        height: auto;
+        margin-top: 0;
+
+    }
+    .image-food img {
+        height: 120px; /* Set the height of the image container */
+        width: 90%; /* Set the width of the image container */
+        
+
+    }
+    .detail_food {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+    }
+</style>
+</head>
+<body>
+    {% include 'app/navbar.html' %}
+    <div class="container">
+        <div class="areatext">
+            {%if text%}
+                <h1>{{text}}</h1>
+            {%endif%}
+            <div class="container-area">
+                {%if food%}
+                {%for f in food %}
+                    <div class="listitem">
+                        <a href="#">
+    
+                        <div class="boxlistfood">
+                            {%if f.image %}
+                            <div class="image-food">
+                                <img src="{{f.image.url}}" alt="food-image">
+                            </div>
+                            {%endif%}
+                            <div>{{f.name}}</div> 
+                            <div class="detail_food">
+                                <div>{{f.price}} {{f.unit}}</div>
+                                {%if f.score%}
+                                    <div>{{f.score}}</div>
+                                {%endif%}
+    
+                                {%if f.quantity_review >= 10%}
+                                    <div>({{f.quantity_review}})</div>
+                                {%endif%}
+                            </div>
+                        </div>
+    
+                        </a>
+                    </div>
+                    
+                {%endfor%}
+                {%endif%}
+                </div>
+        </div>
+    </div>
+</body>
+</html>

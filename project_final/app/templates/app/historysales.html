@@ -1,0 +1,174 @@
+
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ManageFood</title>
+    <style>
+        /* ส่วน bar จัดการเมนูอาหาร */
+        .containerbody {
+            display: flex;
+            justify-content: start;
+            border: 1px solid red;
+            padding: 20px;
+            margin-top: 50px;
+
+        }
+        .container {
+            width: 700px;
+            border: 1px solid #333;
+            padding: 10px;
+            margin-left: 20px;
+            box-shadow: 5px 5px seashell;
+        }
+        .managebar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+        }
+
+        a {
+            list-style: none;
+            text-decoration: none;
+            color: black;
+        }
+        .choosedate {
+            border: 1px solid #333;
+            padding: 10px;
+
+        }
+        .addfood {
+            border: 1px solid #333;
+            padding: 10px;
+            margin-right: 20px;
+        }
+        .clearfood {
+
+            border: 1px solid #333;
+            padding: 10px;
+
+        }
+        /* block ส่วน แสดงเมนูอาหาร */
+        
+        .container-area {
+            display: grid;
+            padding: 0.5rem;
+            margin: 0.5rem;
+            grid-template-columns: repeat(4,1fr);
+            grid-gap: 10px;
+            width: 1140px;
+            border: 1px solid red;
+            margin: 0 auto;
+            margin-top: 20px;
+
+        }
+        .boxlistfood {
+            border: 1px solid blue;
+            height: auto;
+            margin: 10px;
+
+    
+            
+        }
+        .boxlistfood div {
+            margin-top: 5px;
+            text-align: center;
+  
+            
+        }
+
+        .listitem a {
+            text-decoration: none;
+            color: black;
+
+
+        }
+        .image-food {
+            width: 100% ;
+            border: 1px solid blue;
+            height: auto;
+            margin-top: 0;
+
+        }
+        .image-food img {
+            height: 120px; /* Set the height of the image container */
+            width: 90%; /* Set the width of the image container */
+            
+        }
+        .detail_food {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px;
+
+        }
+
+        .foodname {
+            text-align: center;
+        }
+        .options_sale {
+            display: flex;
+            justify-content: flex-end;
+            border: 1px solid #333;
+        
+        }
+
+
+    </style>
+</head>
+<body>
+    {% include 'app/navbar.html' %}
+
+    <div class="containerbody">
+        <div class="container">
+            <div class="managebar">
+                <!-- <a href="#" class="choosedate">เลือกวันที่</a> -->
+                <form action="/select_date/" method="post">
+                    {% csrf_token %}
+                    <!-- Render DateField -->
+                    <label for="id_my_date_field">เลือกวันที่</label>
+                    {{ form.date_field }}
+                    <button type="submit">Submit</button>
+                </form>
+                <div class="showdate">{{thai_date}}</div>
+                <div class="rightbar">
+                    <a href="/create/" class="addfood">เพิ่มเมนูอาหาร</a>
+                    <a href="#" class="clearfood">จบวัน</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form class="submit_sales" method="post" action="/managefood/{{date}}/">
+        {%csrf_token%}
+        <div class="container-area">
+            {%for f in food %}
+                        <div class="boxlistfood">
+                            {%if f.image %}
+                            <div class="image-food">
+                                <img src="{{f.image.url}}" alt="food-image">
+                            </div>
+                            {%endif%}
+                            <div class="foodname">{{f.name}}</div> 
+
+                            <div class="detail_food">
+                                <div>{{f.price}} {{f.unit}}</div>
+                                {%if f.score%}
+                                    <div>{{f.score}}</div>
+                                {%endif%}
+
+                                {%if f.quantity_review >= 10%}
+                                    <div>({{f.quantity_review}})</div>
+                                {%endif%}
+                            </div>
+                        </div>   
+            {%endfor%}
+        </div>
+        <button type="submit">OK</button>
+        <button type="submit">cancel</button>
+    </form>
+
+</body>
+</html>
