@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import date, datetime
 from django.db import models
 from PIL import Image
 from django.contrib.auth.models import User
+from django.utils import timezone
 # Create your models here.
 #class Member(models.Model):
 class Member(models.Model):
@@ -63,15 +64,17 @@ class Historysale(models.Model):
     
 class Reviewfood(models.Model):
     food = models.ForeignKey(Food,on_delete=models.CASCADE)
+    owner = models.ForeignKey(Member,on_delete=models.CASCADE,null=True)
     review = models.TextField(max_length=500,blank=True,null=True)
-    rating = models.CharField(max_length=20, choices=(
-        ('1', '1 ดาว'),
-        ('2', '2 ดาว'),
-        ('3', '3 ดาว'),
-        ('4', '4 ดาว'),
-        ('5', '5 ดาว'),
+    created = models.DateTimeField(default=timezone.now)
+    rating = models.IntegerField(choices=(
+        (1, '1 ดาว'),
+        (2, '2 ดาว'),
+        (3, '3 ดาว'),
+        (4, '4 ดาว'),
+        (5, '5 ดาว'),
 
-    ), default='5',blank=False,null=False) 
+    ), default=5) 
 
     def __str__(self) -> str:
         return f'{self.food.name} rating : {self.rating}'

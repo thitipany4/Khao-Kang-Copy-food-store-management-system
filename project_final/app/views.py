@@ -1,13 +1,12 @@
 from datetime import datetime,timedelta
-
+from django.db.models import Case, IntegerField, Value, When
 import requests
-from .models import Member
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from app.forms import DateForm, FoodForm, ReviewFood
 #from linebot import LineBotApi
 #from linebot.models import TextSendMessage
-from app.models import Food, Historysale
+from app.models import *
 from django.contrib.auth.models import User
 
 
@@ -22,6 +21,8 @@ def getdate(x=None,th=None):
         current_date = x
         print(current_date,'xxxxxxxxxx')
         return f'{current_date.year}-{current_date.month}-{current_date.day}'
+    
+
     
     #เพื่อ เอาวันที่แบบตัวหนังสือ แบบไทย 4 ธันวาคม 2023
     else:
@@ -185,11 +186,45 @@ def updatefood(req,id):
         'form':form,
     }
     return render(req,'app/updatefood.html',context)
-def foodview(req,id=None):
+def foodview(req, id=None, target=None):
     if id:
+        orderby = 'not order'
         food = Food.objects.get(pk=id)
-        return render(req,'app/foodview.html',{'food':food})
-    return render(req,'app/foodview.html',{})
+        review = Reviewfood.objects.filter(food=food)
+        star_range = [1,2,3,4,5]
+        # print(review)
+        print('...........................................................................................')
+        
+        if req.method == "GET" and target:
+            if target == 'lastest':
+                orderby = review.order_by('-created')
+                print('date')
+                print(orderby)
+
+            else:
+                orderby = review.order_by('-rating')
+                print('best')
+
+
+
+            context = {
+                'food': food,
+                'review': orderby,
+                'star_range': star_range,
+            }
+            
+            return render(req, 'app/foodview.html', context)
+
+        context = {
+            'food': food,
+            'review': review,
+            'orderby': orderby,
+            'star_range': star_range,
+        }
+        
+        return render(req, 'app/foodview.html', context)
+    
+    return render(req, 'app/foodview.html', {})
 
 def reviewfood(req,id):
     food = Food.objects.get(pk=id)
