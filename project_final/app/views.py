@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime,timedelta
 from django.db.models import Case, IntegerField, Value, When
 import requests
@@ -191,35 +192,47 @@ def foodview(req, id=None, target=None):
         orderby = 'not order'
         food = Food.objects.get(pk=id)
         review = Reviewfood.objects.filter(food=food)
+        orderby =review.order_by('-created')
         star_range = [1,2,3,4,5]
         # print(review)
         print('...........................................................................................')
+        star_count = defaultdict(int)
+
+        for rating in review:
+            star_count[rating.rating] += 1
+
+        count_score = len(review)
+        average_score = sum(rating.rating for rating in review) / count_score
+        average_score = round(average_score,2)
+
+
+        # Now, organize the data for stars and their counts
+        ratings = []
+        for i in range(1, 6):
+            rating_count = star_count[i]
+            width = (rating_count / count_score) * 100 if count_score > 0 else 0
+            ratings.append({'rating': i, 'count': rating_count, 'width': width})
+
+        for i in ratings:
+            print('rating :',i)
         
         if req.method == "GET" and target:
             if target == 'lastest':
                 orderby = review.order_by('-created')
                 print('date')
                 print(orderby)
-
+                
             else:
                 orderby = review.order_by('-rating')
                 print('best')
 
-
-
-            context = {
-                'food': food,
-                'review': orderby,
-                'star_range': star_range,
-            }
-            
-            return render(req, 'app/foodview.html', context)
-
         context = {
             'food': food,
-            'review': review,
-            'orderby': orderby,
+            'review': orderby,
             'star_range': star_range,
+            'count_score':count_score,
+            'ratings':ratings,
+            'average_score':average_score,
         }
         
         return render(req, 'app/foodview.html', context)
