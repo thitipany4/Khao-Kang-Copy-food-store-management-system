@@ -10,11 +10,18 @@
 <style>
     body {
             background-color: #E3E3E3;
+            
         }
+    .body_container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        height: 1000px;
+    }
     .container {
         display: flex;
         justify-content: center;
-        
+        align-items: start;
     }
     .box-map-btn {
         display: flex;
@@ -49,13 +56,14 @@
         margin-top: 20px;
         display: flex;
         justify-content: center;
+        align-items: start;
     }
     .box-detail {
         display: flex;
         flex-direction: column;
         border: 1px solid #4E4C4C;
         padding: 30px;
-        width: 40%;
+        width: 80%;
         margin-right: 120px;
         background-color: #FFFCFC;
     }
@@ -84,39 +92,42 @@
     }
 </style>
 <body>
-    <div class="container">
-        <div class="box-map-btn">
-            <div class="map">
-                {{map|safe}}
-            </div>
-            <div class="btn-link-map">
-                <a href="https://www.google.com/maps/place/%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99+%E0%B9%80%E0%B8%8A%E0%B8%A9%E0%B8%90%E0%B9%8C%E0%B8%81%E0%B9%8A%E0%B8%AD%E0%B8%9B%E0%B8%9B%E0%B8%B5%E0%B9%89%E0%B9%80%E0%B8%8B%E0%B8%99%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B9%8C/@15.2793693,104.8312291,19z/data=!3m1!4b1!4m12!1m5!3m4!2zMTXCsDE2JzQ1LjkiTiAxMDTCsDQ5JzU0LjgiRQ!8m2!3d15.2794167!4d104.8318889!3m5!1s0x3116881d11429d67:0xe1ee4f7df9ac3131!8m2!3d15.279368!4d104.8318728!16s%2Fg%2F11h5ktrc38?entry=ttu">google map</a>
-            </div>
-        </div>
-    </div>
-    <div class="container-detail">
-        <div class="box-detail">
-            <div class="address">
-                <div>ที่อยู่ร้าน : ตำบล ขามใหญ่ อำเภอเมืองอุบลราชธานี อุบลราชธานี 34000</div>
-            </div>
-            <div class="phone-num">
-                <div>เบอร์โทร : 098-619-xxxx</div>
-            </div>
-            <div class="time">
-                <div>เวลาเปิดทำการ : 09:00 - 14:00 น.</div>
-            </div>
-            <div class="follow-us">
-                <div>ติดตามพวกเรา</div><br>
-                <div class="icon">
-                    <a class="fb-icon" href="https://www.facebook.com/"><img src="{%static '/images/social-facebook-icon.png'%}" alt="not found image"></a>
-                    <a class="line-icon" href="https://line.me/th/"><img src="{%static '/images/line.png'%}" alt="not found image"></a>
+    {% include 'app/navbar.html' %}
+    <div class="body_container">
+        <div class="container">
+            <div class="box-map-btn">
+                <div class="map">
+                    {{map|safe}}
+                </div>
+
+                <div class="btn-link-map">
+                    <a href="https://www.google.com/maps/place/%E0%B8%A3%E0%B9%89%E0%B8%B2%E0%B8%99+%E0%B9%80%E0%B8%8A%E0%B8%A9%E0%B8%90%E0%B9%8C%E0%B8%81%E0%B9%8A%E0%B8%AD%E0%B8%9B%E0%B8%9B%E0%B8%B5%E0%B9%89%E0%B9%80%E0%B8%8B%E0%B8%99%E0%B9%80%E0%B8%95%E0%B8%AD%E0%B8%A3%E0%B9%8C/@15.2793693,104.8312291,19z/data=!3m1!4b1!4m12!1m5!3m4!2zMTXCsDE2JzQ1LjkiTiAxMDTCsDQ5JzU0LjgiRQ!8m2!3d15.2794167!4d104.8318889!3m5!1s0x3116881d11429d67:0xe1ee4f7df9ac3131!8m2!3d15.279368!4d104.8318728!16s%2Fg%2F11h5ktrc38?entry=ttu">google map</a>
                 </div>
             </div>
         </div>
+        <div class="container-detail">
+            <div class="box-detail">
+                <div class="address">
+                    <div>ที่อยู่ร้าน : ตำบล ขามใหญ่ อำเภอเมืองอุบลราชธานี อุบลราชธานี 34000</div>
+                </div>
+                <div class="phone-num">
+                    <div>เบอร์โทร : 098-619-xxxx</div>
+                </div>
+                <div class="time">
+                    <div>เวลาเปิดทำการ : 09:00 - 14:00 น.</div>
+                </div>
+                <div class="follow-us">
+                    <div>ติดตามพวกเรา</div><br>
+                    <div class="icon">
+                        <a class="fb-icon" href="https://www.facebook.com/"><img src="{%static '/images/social-facebook-icon.png'%}" alt="not found image"></a>
+                        <a class="line-icon" href="https://line.me/th/"><img src="{%static '/images/line.png'%}" alt="not found image"></a>
+                    </div>
+                </div>
+            </div>
 
 
+        </div>
     </div>
-
     
 </body>
 </html>

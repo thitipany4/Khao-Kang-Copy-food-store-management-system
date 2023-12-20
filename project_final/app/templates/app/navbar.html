@@ -92,10 +92,10 @@
 <header>
     <nav class="navbar">
         <div class="logoitem">
-            <h1 class="res_name"><a href="#">ร้านข้าวแกงก็อปปี้</a></h1>
+            <h1 class="res_name"><a href="{%url 'home'%}">ร้านข้าวแกงก็อปปี้</a></h1>
         </div>
         <div class="leftitem">
-            <li class="about-us"><a href="#">about us</a></li>
+            <li class="about-us"><a href="/about_us/">about us</a></li>
             <form class="search" method="post" action="/search/">
                 {%csrf_token%}
                 <div class="searchbar">

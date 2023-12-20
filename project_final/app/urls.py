@@ -20,7 +20,7 @@ urlpatterns = [
     path('login/',login,name='custom_login'),
     path('line-login/', line_login, name='line'),
     path('login/callback/',line_callback,name='line_ callback'),
-    path('about_us',about_us,name='about-us')
+    path('about_us/',about_us,name='about-us')
 
 
 ] 
