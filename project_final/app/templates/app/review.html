@@ -7,9 +7,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Foodview</title>
     <style>
+        body {
+            background-color: #E3E3E3;
+        }
         .container {
             display: flex;
-            border: 1px solid red;
+            /* border: 1px solid red; */
             justify-content: center;
             align-items: start;
             height: 600px;
@@ -17,7 +20,8 @@
 
         }
         .form-review {
-            border: 1px solid hotpink;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+            background-color: #FDFDFD;
             display: flex;
             flex-direction: column;
             margin-top: 10px;
@@ -29,13 +33,15 @@
         }
         .box-top {
             display: flex;
-            border: 1px solid green;
+            /* border: 1px solid green; */
             width: 100%;
             justify-content: center;
             align-items: center;
         }
         .boxlistfood {
-                border: 1px solid blue;
+                box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+                background-color: #FDFDFD;
+                border-radius: 0.5rem;
                 margin-top: 20px;
                 margin-right: 50px;
                 width: 200px;
@@ -50,7 +56,7 @@
             }
         .image-food img {
                 height: 120px; /* Set the height of the image container */
-                width: 90%; /* Set the width of the image container */
+                width: 50%; /* Set the width of the image container */
                 
 
             }
@@ -62,14 +68,15 @@
             }
         .image-food {
                 width: 100% ;
-                border: 1px solid blue;
+                /* border: 1px solid blue */
                 height: auto;
                 margin-top: 0;
 
             }
         .image-food img {
+                margin-top: 2px;
                 height: 120px; /* Set the height of the image container */
-                width: 90%; /* Set the width of the image container */
+                width: 95%; /* Set the width of the image container */
                 
 
             }
@@ -77,6 +84,7 @@
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
+                margin-left: 10px;
 
             }
         .score-review {
@@ -217,7 +225,8 @@
 
             <div class="button-submit">
                 <a class="Clear-review" href="/review/{{food.id}}/">Clear</a>
-                <input class="review-button" type="submit" value="Review">
+                <button class="review-button" type="submit">Review</button>
+                <!-- <input class="review-button" type="submit" value="Review"> -->
             </div>
             
         </form>
@@ -225,25 +234,29 @@
 
 
         
-    <script>
-        function toggleStars(score) {
-          const stars = document.querySelectorAll('.fa-star');
-          const ratingInput = document.getElementById('ratingInput');
-      
-          // Loop through the stars and apply the 'checked' class
-          for (let i = 0; i < score; i++) {
+<script>
+function toggleStars(score) {
+    const stars = document.querySelectorAll('.fa-star');
+    const ratingInput = document.getElementById('ratingInput');
+
+    // Loop through the stars and apply the 'checked' class
+    for (let i = 0; i < stars.length; i++) {
+        if (i < score) {
             stars[i].classList.add('checked');
-          }
-      
-          // Remove the 'checked' class from the stars after the clicked star
-          for (let i = score; i < stars.length; i++) {
+        } else {
             stars[i].classList.remove('checked');
-          }
-      
-          // อัพเดพ rating
-          ratingInput.value = score;
         }
-      </script>
+    }
+
+    // Update the rating value
+    ratingInput.value = score;
+
+    // Display the score value
+    document.getElementById('scoreValue').innerText = `Score: ${score}`;
+}
+
+
+</script>
 <script>
 $(document).ready(function () {
     // Initially hide character count

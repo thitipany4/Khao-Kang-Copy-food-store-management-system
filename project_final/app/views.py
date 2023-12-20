@@ -9,7 +9,7 @@ from app.forms import DateForm, FoodForm, ReviewFood
 #from linebot.models import TextSendMessage
 from app.models import *
 from django.contrib.auth.models import User
-
+import folium
 
 def getdate(x=None,th=None):
     '''
@@ -63,13 +63,21 @@ def home(req):
         'food':food,
     }
     return render(req,'app/home.html',context)
+def about_us(req):
+    map = folium.Map(location=[15.268875,104.8260654],zoom_start=12)
+    us =(15.279417,104.831893)
+    folium.Marker(us).add_to(map)
+    context = {
+        'map':map._repr_html_()
+    }
+    return render(req,'app/aboutus.html',context)
 def create(req):
     form = FoodForm()
     if req.method =='POST':
         form = FoodForm(req.POST,req.FILES)
         if form.is_valid():
             form.save()
-            return redirect('home')
+            return redirect('managefood')
     context = {
         'form':form
     }
@@ -167,7 +175,7 @@ def clearfood(req):
             if f.options != 'notchoose':
                 print('setsetset')
                 print(f)
-                f.options = 'notchoose'
+                f.options = 'soldout'
                 f.save()
         return redirect('managefood')
     else:
@@ -187,6 +195,12 @@ def updatefood(req,id):
         'form':form,
     }
     return render(req,'app/updatefood.html',context)
+def delete(req,id):
+    #return render(request, 'kawai/delete.html')
+    f = Food.objects.get(pk=id)
+    f.delete()
+    return redirect('managefood')
+
 def foodview(req, id=None, target=None):
     if id:
         orderby = 'not order'
@@ -200,10 +214,17 @@ def foodview(req, id=None, target=None):
 
         for rating in review:
             star_count[rating.rating] += 1
-
-        count_score = len(review)
-        average_score = sum(rating.rating for rating in review) / count_score
-        average_score = round(average_score,2)
+        if review.exists():
+            count_score = len(review)
+            average_score = sum(rating.rating for rating in review) / count_score
+            average_score = round(average_score,2)
+        else:
+            context = {
+            'food': food,
+            'review': orderby,
+        }
+        
+            return render(req, 'app/foodview.html', context) 
 
 
         # Now, organize the data for stars and their counts
@@ -247,11 +268,15 @@ def reviewfood(req,id):
         print(food.id)
         print(form.instance.id)
     else:
+        print('suscess')
         form = ReviewFood(req.POST,req.FILES)
+        form.instance.food = food
+        form.instance.created = timezone.now()
+        form.owner = req.user
         if form.is_valid():
             review = form.save(commit=False)
-            review.food = food
             review.save()
+            print('save')
             return redirect('home')
         
     context = {

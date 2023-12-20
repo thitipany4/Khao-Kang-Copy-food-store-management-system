@@ -7,11 +7,15 @@
     <!-- ไว้แสดงผลดาว -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 <style>
+    body {
+            background-color: #E3E3E3;
+        }
     .container {
         display: grid;
         grid-template-columns: repeat(1,1fr);
         padding: 0.5rem;
-        border: 1px solid red;
+        box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+        background-color: #FFFFFF;
         margin: 30px;
         height: auto;
         place-items: center;
@@ -22,7 +26,7 @@
         flex-direction: row;
         justify-content: space-between;
         align-items: end;
-        border: 1px solid blue;
+        /* border: 1px solid blue; */
         height: 230px;
         width: 80%;
         margin-top: 20px;
@@ -47,7 +51,7 @@
         justify-content: center;
         width: 25%;
         height: 160px;
-        border: 1px solid navajowhite;
+        /* border: 1px solid navajowhite; */
         margin-bottom: 60px;
         padding: 10px;
 }
@@ -77,7 +81,7 @@
         margin-right: 30px;
         width: 34%;
         height: 210px;
-        border: 1px solid purple;
+        /* border: 1px solid purple; */
         justify-content: start;
         align-items: start;
     }
@@ -159,7 +163,7 @@
     }
 
     .boxlistfood {
-            border: 1px solid blue;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
             margin-top: 20px;
             margin-left: 127px;
             margin-bottom: 30px;
@@ -188,7 +192,6 @@
         }
     .image-food {
             width: 100% ;
-            border: 1px solid blue;
             height: auto;
             margin-top: 0;
 
@@ -203,6 +206,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-left: 20px;
 
         }
 
@@ -216,7 +220,7 @@
         position: relative;
         flex-direction: column;
         align-items: center;
-        border: 1px solid green;
+        border: 1px solid #8C8C8C;
         width: 80%;
         margin: 20px;
         margin-top: 40px;
@@ -408,7 +412,12 @@
             </div>
             <div class="box_score_food">
                 <div class="score_food">
+                    {%if average_score %}
                     <div class='score-average'>{{average_score}}</div><br>
+                    {%endif%}
+                    {%if not average_score %}
+                    <div class='score-average'>ยังไม่มีคะแนนรีวิว</div>
+                    {%endif%}
                     <div class="score-star-average">
                         {%for i in star_range %}
                             {%if i <= average_score  %}
@@ -418,7 +427,13 @@
                             {%endif%}
                         {%endfor%}
                     </div>
+                    {%if count_score %}
                     <div class="count-score-average">{{count_score}} รีวิว</div>
+                    {%endif%}
+                    {%if not count_score %}
+                    <div class="count-score-average">0 รีวิว</div>
+                    {%endif%}
+
                 </div>
             </div>
             <div class="box_detail_score">

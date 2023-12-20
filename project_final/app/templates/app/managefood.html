@@ -7,21 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ManageFood</title>
     <style>
+        body {
+            background-color: #E3E3E3;
+        }
         /* ส่วน bar จัดการเมนูอาหาร */
         .containerbody {
             display: flex;
             justify-content: start;
-            border: 1px solid red;
+            /* border: 1px solid red; */
             padding: 20px;
-            margin-top: 50px;
+            margin-top: 20px;
 
         }
         .container {
-            width: 700px;
+            width: 800px;
             border: 1px solid #333;
-            padding: 10px;
+            border-radius: 0.5rem;
+            background-color: #fff;
+            padding: 15px;
             margin-left: 20px;
-            box-shadow: 5px 5px seashell;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+
         }
         .managebar {
             display: flex;
@@ -52,7 +58,7 @@
 
         }
         /* block ส่วน แสดงเมนูอาหาร */
-        
+
         .container-area {
             display: grid;
             padding: 0.5rem;
@@ -60,15 +66,18 @@
             grid-template-columns: repeat(4,1fr);
             grid-gap: 10px;
             width: 1140px;
-            border: 1px solid red;
+            /* border: 1px solid red; */
             margin: 0 auto;
-            margin-top: 20px;
+            margin-top: 5px;
 
         }
         .boxlistfood {
-            border: 1px solid blue;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+            border-radius: 0.4rem;
+            background-color: #FDFDFD;
             height: auto;
             margin: 10px;
+
 
     
             
@@ -88,7 +97,7 @@
         }
         .image-food {
             width: 100% ;
-            border: 1px solid blue;
+            /* border: 1px solid blue; */
             height: auto;
             margin-top: 0;
             position: relative;
@@ -123,7 +132,9 @@
             font-weight: bold;
             font-size: 12px; 
         }
-
+        .box-food {
+            margin-bottom: 10px;
+        }
         .detail_food {
             display: flex;
             justify-content: space-between;
@@ -134,11 +145,13 @@
 
         .foodname {
             text-align: center;
+            margin-top: 0px;
         }
         .options_sale {
             display: flex;
             justify-content: flex-end;
-            border: 1px solid #333;
+            margin-right: 10px;
+            /* border: 1px solid #333; */
         
         }
         .popup-content {
@@ -157,7 +170,7 @@
             align-items: center;
             justify-content: center;
             text-align: center;
-            border: 1px solid blue;
+            /* border: 1px solid blue; */
 
         }
         .popup {
@@ -173,6 +186,85 @@
             width: 150px;
             height: 150px;
 }
+        .box-button {
+            display: flex;
+            justify-content: center;
+
+        }
+        .button-submit {
+            display: flex;
+            width: 20%;
+            margin-top: 10px;
+            justify-content: center;
+
+        }
+        .btn-ok {
+
+            margin-right: 10px;
+            align-items: center;
+            background-color:#21F9F9;
+            border-radius: 12px;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+            box-sizing: border-box;
+            color: #121212;
+            cursor: pointer;
+            display: inline-flex;
+            flex: 1 1 auto;
+            font-family: Inter,sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            justify-content: center;
+            line-height: 1;
+            margin: 0;
+            outline: none;
+            padding: 1rem 1.2rem;
+            text-align: center;
+            text-decoration: none;
+            transition: box-shadow .2s,-webkit-box-shadow .2s;
+            white-space: nowrap;
+            border: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            height: auto;
+            width: auto;
+            margin-right: 5px;
+        }
+
+        .btn-ok:hover,.btn-cancel:hover {
+        box-shadow: #121212 0 0 0 3px, transparent 0 0 0 0;
+        }
+        .btn-cancel {
+            width: 10px;
+            align-items: center;
+            background-color: #F95221;
+            border-radius: 12px;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+            box-sizing: border-box;
+            color: #121212;
+            cursor: pointer;
+            display: inline-flex;
+            flex: 1 1 auto;
+            font-family: Inter,sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            justify-content: center;
+            line-height: 1;
+            margin: 0;
+            outline: none;
+            padding: 1rem 1.2rem;
+            text-align: center;
+            text-decoration: none;
+            transition: box-shadow .2s,-webkit-box-shadow .2s;
+            white-space: nowrap;
+            border: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            height: auto;
+            width: auto;
+            margin-left: 5px;
+        }
 
     </style>
 </head>
@@ -222,6 +314,7 @@
             </div>
         </div>
     </div>
+    
     <form class="submit_sales" method="post" action="/managefood/{{date}}/">
         {%csrf_token%}
         <div class="container-area">
@@ -262,25 +355,34 @@
                                 </select>
                                 {%endif%}
                             </div>
+
                             <div class="foodname">{{f.name}}</div> 
-
-
                             <div class="detail_food">
-                                <div>{{f.price}} {{f.unit}}</div>
-                                {%if f.score%}
-                                    <div>{{f.score}}</div>
-                                {%endif%}
+                            <div>{{f.price}} {{f.unit}}</div>
+                            {%if f.score%}
+                                <div>{{f.score}}</div>
+                            {%endif%}
 
-                                {%if f.quantity_review >= 10%}
-                                    <div>({{f.quantity_review}})</div>
-                                {%endif%}
+                            {%if f.quantity_review >= 10%}
+                                <div>({{f.quantity_review}})</div>
+                            {%endif%}
                             </div>
-                        </div>   
+
+                            
+                        </div>
+
             {%endfor%}
         </div>
-        <button type="submit">OK</button>
-        <button type="submit">cancel</button>
+        <div class="box-button">
+            <div class="button-submit">
+                <button class="btn-ok" type="submit">OK</button>
+                <a class="btn-cancel" href="/managefood/">cancel</a>
+            </div>
+        </div>
+
+
     </form>
+
 
 </body>
 </html>

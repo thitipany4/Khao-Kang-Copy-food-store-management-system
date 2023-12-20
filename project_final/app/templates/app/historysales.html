@@ -7,21 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ManageFood</title>
     <style>
+        body {
+            background-color: #E3E3E3;
+        }
         /* ส่วน bar จัดการเมนูอาหาร */
         .containerbody {
             display: flex;
             justify-content: start;
-            border: 1px solid red;
+            /* border: 1px solid red; */
             padding: 20px;
-            margin-top: 50px;
+            margin-top: 20px;
 
         }
         .container {
-            width: 700px;
+            width: 800px;
             border: 1px solid #333;
-            padding: 10px;
+            border-radius: 0.5rem;
+            background-color: #fff;
+            padding: 15px;
             margin-left: 20px;
-            box-shadow: 5px 5px seashell;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+
         }
         .managebar {
             display: flex;
@@ -52,7 +58,7 @@
 
         }
         /* block ส่วน แสดงเมนูอาหาร */
-        
+
         .container-area {
             display: grid;
             padding: 0.5rem;
@@ -60,15 +66,18 @@
             grid-template-columns: repeat(4,1fr);
             grid-gap: 10px;
             width: 1140px;
-            border: 1px solid red;
+            /* border: 1px solid red; */
             margin: 0 auto;
-            margin-top: 20px;
+            margin-top: 5px;
 
         }
         .boxlistfood {
-            border: 1px solid blue;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+            border-radius: 0.4rem;
+            background-color: #FDFDFD;
             height: auto;
             margin: 10px;
+
 
     
             
@@ -88,15 +97,43 @@
         }
         .image-food {
             width: 100% ;
-            border: 1px solid blue;
+            /* border: 1px solid blue; */
             height: auto;
             margin-top: 0;
+            position: relative;
+            display: inline-block;
 
         }
         .image-food img {
             height: 120px; /* Set the height of the image container */
             width: 90%; /* Set the width of the image container */
             
+        }
+        .overlay {
+            position: absolute;
+            top: 30%;
+            left: 80%;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+            border-radius: 5px; 
+            width: 30px;
+}
+        .change-data {
+            background-color: greenyellow; /* Change the background color and opacity as needed */
+            display: inline-block;
+            padding: 6px;
+            width: 80px;
+            text-align: center;
+            white-space: nowrap; /* Prevent text from wrapping */
+            overflow: hidden; /* Hide overflowed text */
+            text-overflow: ellipsis;
+            color: black; /* Change the text color as needed */
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 12px; 
+        }
+        .box-food {
+            margin-bottom: 10px;
         }
         .detail_food {
             display: flex;
@@ -108,15 +145,148 @@
 
         .foodname {
             text-align: center;
+            margin-top: 0px;
         }
         .options_sale {
             display: flex;
             justify-content: flex-end;
-            border: 1px solid #333;
+            margin-right: 10px;
+            /* border: 1px solid #333; */
         
         }
+        .popup-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .buttonpopup {
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
+        }
+        .message {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            /* border: 1px solid blue; */
 
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 1px solid #000;
+            background-color: #fff;
+            padding: 20px;
+            z-index: 9999;
+            width: 150px;
+            height: 150px;
+}
+        .box-button {
+            display: flex;
+            justify-content: center;
+
+        }
+        .button-submit {
+            display: flex;
+            width: 20%;
+            margin-top: 10px;
+            justify-content: center;
+
+        }
+        .btn-ok {
+
+            margin-right: 10px;
+            align-items: center;
+            background-color:#21F9F9;
+            border-radius: 12px;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+            box-sizing: border-box;
+            color: #121212;
+            cursor: pointer;
+            display: inline-flex;
+            flex: 1 1 auto;
+            font-family: Inter,sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            justify-content: center;
+            line-height: 1;
+            margin: 0;
+            outline: none;
+            padding: 1rem 1.2rem;
+            text-align: center;
+            text-decoration: none;
+            transition: box-shadow .2s,-webkit-box-shadow .2s;
+            white-space: nowrap;
+            border: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            height: auto;
+            width: auto;
+            margin-right: 5px;
+        }
+
+        .btn-ok:hover,.btn-cancel:hover {
+        box-shadow: #121212 0 0 0 3px, transparent 0 0 0 0;
+        }
+        .btn-cancel {
+            width: 10px;
+            align-items: center;
+            background-color: #F95221;
+            border-radius: 12px;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+            box-sizing: border-box;
+            color: #121212;
+            cursor: pointer;
+            display: inline-flex;
+            flex: 1 1 auto;
+            font-family: Inter,sans-serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            justify-content: center;
+            line-height: 1;
+            margin: 0;
+            outline: none;
+            padding: 1rem 1.2rem;
+            text-align: center;
+            text-decoration: none;
+            transition: box-shadow .2s,-webkit-box-shadow .2s;
+            white-space: nowrap;
+            border: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+            height: auto;
+            width: auto;
+            margin-left: 5px;
+        }
+        .box-dont-food {
+
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+        .box-display {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #FDFDFD;
+            border: 1px solid #252525;
+            border-radius: 0.5rem;
+            width: 80%;
+            height: 170px;
+
+            
+
+        }
+        .text-display {
+            font-size: 26px;
+        }
     </style>
 </head>
 <body>
@@ -136,39 +306,115 @@
                 <div class="showdate">{{thai_date}}</div>
                 <div class="rightbar">
                     <a href="/create/" class="addfood">เพิ่มเมนูอาหาร</a>
-                    <a href="#" class="clearfood">จบวัน</a>
+                    <a href="#" class="clearfood" onclick="openPopup()">จบวัน</a>
+                    <div id="popup" class="popup">
+                        <div class="popup-content">
+                          <form action="/clear_food/" method="post" class="form-popup">
+                                {%csrf_token%}
+                                <p class="message">คุณแน่ใจที่จะจบการขายของวันนี้หรือไม่</p>
+                                <div class="buttonpopup">
+                                    <button type="submit">ok</button>
+                                    <button type="button" onclick="closePopup()">cancel</button>
+                                </div>
+                          </form>
+                          
+                          <!-- You can add any content or form elements here -->
+                            <script>
+                                function openPopup() {
+                                    var popup = document.getElementById("popup");
+                                    popup.style.display = "block";
+                                }
+                                function closePopup() {
+                                    var popup = document.getElementById("popup");
+                                    popup.style.display = "none";
+                                }
+                            </script>
+                        </div>
+                      </div>
                 </div>
             </div>
         </div>
     </div>
+    
     <form class="submit_sales" method="post" action="/managefood/{{date}}/">
         {%csrf_token%}
+        {%if food%}
         <div class="container-area">
             {%for f in food %}
                         <div class="boxlistfood">
                             {%if f.image %}
                             <div class="image-food">
                                 <img src="{{f.image.url}}" alt="food-image">
+                                <div class="overlay">
+                                    <a href="/updatefood/{{f.id}}/" class="change-data">แก้ไข้ข้อมูล</a>
+                                </div>
                             </div>
                             {%endif%}
-                            <div class="foodname">{{f.name}}</div> 
-
-                            <div class="detail_food">
-                                <div>{{f.price}} {{f.unit}}</div>
-                                {%if f.score%}
-                                    <div>{{f.score}}</div>
+                            <input type="hidden" name="food_id" value="{{ f.id }}">
+                            <div class="options_sale">
+                                {%if f.options == 'onsale'%}
+                                    <label for="option_{{f.id}}"></label>
+                                    <select name="options" id="option_{{f.id}}">
+                                        <option value="onsale">วางขาย</option>
+                                        <option value="notchoose">ไม่ได้เลือก</option>
+                                        <option value="soldout">ขายหมดเเล้ว</option>
+                                    </select>
                                 {%endif%}
-
-                                {%if f.quantity_review >= 10%}
-                                    <div>({{f.quantity_review}})</div>
+                                {%if f.options == 'soldout'%}
+                                <label for="option_{{f.id}}"></label>
+                                <select name="options" id="option_{{f.id}}">
+                                    <option value="soldout">ขายหมดเเล้ว</option>
+                                    <option value="notchoose">ไม่ได้เลือก</option>
+                                    <option value="onsale">วางขาย</option>
+                                </select>
+                                {%endif%}
+                                {%if f.options == 'notchoose'%}
+                                <label for="option_{{f.id}}"></label>
+                                <select name="options" id="option_{{f.id}}">
+                                    <option value="notchoose">ไม่ได้เลือก</option>
+                                    <option value="onsale">วางขาย</option>
+                                    <option value="soldout">ขายหมดเเล้ว</option>
+                                </select>
                                 {%endif%}
                             </div>
-                        </div>   
+
+                            <div class="foodname">{{f.name}}</div> 
+                            <div class="detail_food">
+                            <div>{{f.price}} {{f.unit}}</div>
+                            {%if f.score%}
+                                <div>{{f.score}}</div>
+                            {%endif%}
+
+                            {%if f.quantity_review >= 10%}
+                                <div>({{f.quantity_review}})</div>
+                            {%endif%}
+                            </div>
+
+                            
+                        </div>
+
             {%endfor%}
+        {%else%}
+            <div class="box-dont-food">
+                <div class="box-display">
+                    <div class="text-display">
+                        ท่านไม้ได้ลงทะเบียนขายเมนูอาหารวันนี้
+                    </div>
+                </div>
+            </div>
+        {%endif%}
         </div>
-        <button type="submit">OK</button>
-        <button type="submit">cancel</button>
+        <div class="box-button">
+            <div class="button-submit">
+                <button class="btn-ok" type="submit">OK</button>
+                <a class="btn-cancel" href="/managefood/">cancel</a>
+            </div>
+        </div>
+
+
     </form>
+
+
 
 </body>
 </html>

@@ -16,7 +16,7 @@
             grid-template-columns: repeat(4,1fr);
             grid-gap: 10px;
             width: 1140px;
-            border: 1px solid red;
+       
             margin: 0 auto;
             margin-top: 20px;
 
@@ -26,6 +26,8 @@
             margin-top: 20px;
             width: 220px;
             height: 200px;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+
             
         }
         .boxlistfood div {
@@ -47,7 +49,7 @@
 
         }
         .image-food img {
-            height: 120px; /* Set the height of the image container */
+            height: 130px; /* Set the height of the image container */
             width: 99.5%; /* Set the width of the image container */
 
             
@@ -68,17 +70,19 @@
         .box-detail {
             display: flex;
             flex-direction: column;
-            height: 60px;
+            border-radius: 0.3rem;
+            height: 70px;
             position: relative;
-            border: 1px solid red;
+            margin-top: 20px;
+            /* border: 1px solid red; */
             background-color: #FDFDFD;
 
         }
 
         .overlay {
             position: absolute;
-            top: 30px;
-            left: 205px;
+            top: 40px;
+            left: 200px;
             transform: translate(-50%, -50%);
             padding: 10px;
             border-radius: 5px; 
