@@ -110,8 +110,12 @@
         <div class="rightitem">
             <ul>
                 {% if user.is_authenticated %}
-                   <li class="orderfood"><a href="#">{{member.user_name}}</a></li>
-                {%endif%}
+                <span class="px-2">{{ user.username }}</span>
+                <a class="bg-sky-800 text-white rounded-xl px-8" 
+                href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                <a href="{% url 'line' %}">Login</a>
+                {% endif %}
             </ul>
         </div>
     </nav>

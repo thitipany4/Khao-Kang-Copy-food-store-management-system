@@ -220,7 +220,6 @@
 
             <div class="text-review">
                 <textarea class="textarea" id="review_id" name="review">{{ form.instance.review }}</textarea>
-                <div class="count-text" id="characterCount">0</div>
             </div>
 
             <div class="button-submit">
@@ -254,55 +253,6 @@ function toggleStars(score) {
     // Display the score value
     document.getElementById('scoreValue').innerText = `Score: ${score}`;
 }
-
-
-</script>
-<script>
-$(document).ready(function () {
-    // Initially hide character count
-    $('#characterCount').hide();
-
-    // First input field with jQuery
-    $('#review_id').on('input', function () {
-        var charCount = $(this).val().length;
-        var maxLength = 500;
-
-        if (charCount > maxLength) {
-            $(this).val($(this).val().substring(0, maxLength));
-            charCount = maxLength; // Update charCount after truncation
-        }
-
-        // Show or hide character count based on text presence
-        if (charCount > 0) {
-            $('#characterCount').show();
-        } else {
-            $('#characterCount').hide();
-        }
-
-        $('#characterCount').text(charCount + '/ 500');
-    });
-
-    // Second input field with pure JavaScript
-    document.getElementById('TextField').addEventListener('input', function () {
-        var maxLength = 500;
-        var currentLength = this.value.length;
-
-        if (currentLength > maxLength) {
-            this.value = this.value.substring(0, maxLength);
-            currentLength = maxLength; // Update currentLength after truncation
-        }
-
-        // Show or hide character count based on text presence
-        if (currentLength > 0) {
-            document.getElementById('characterCount').style.display = 'block';
-        } else {
-            document.getElementById('characterCount').style.display = 'none';
-        }
-
-        // Update character count for the second field
-        document.getElementById('characterCount').innerText = currentLength + '/ 500';
-    });
-});
 
 </script>
 

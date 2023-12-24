@@ -1,8 +1,5 @@
 from collections import defaultdict
-from datetime import datetime,timedelta
-from django.db.models import Case, IntegerField, Value, When
 import requests
-from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from app.forms import DateForm, FoodForm, ReviewFood
 #from linebot import LineBotApi
@@ -10,6 +7,8 @@ from app.forms import DateForm, FoodForm, ReviewFood
 from app.models import *
 from django.contrib.auth.models import User
 import folium
+from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from .line_login import LineLogin
 
 def getdate(x=None,th=None):
     '''
@@ -206,6 +205,8 @@ def foodview(req, id=None, target=None):
         orderby = 'not order'
         food = Food.objects.get(pk=id)
         review = Reviewfood.objects.filter(food=food)
+        for i in review:
+            print(i.owner)
         orderby =review.order_by('-created')
         star_range = [1,2,3,4,5]
         # print(review)
@@ -262,23 +263,25 @@ def foodview(req, id=None, target=None):
 
 def reviewfood(req,id):
     food = Food.objects.get(pk=id)
-    print(food)
     if req.method =='GET':
         form = ReviewFood(instance=food)
-        print(food.id)
         print(form.instance.id)
     else:
         print('suscess')
         form = ReviewFood(req.POST,req.FILES)
         form.instance.food = food
-        form.instance.created = timezone.now()
-        form.owner = req.user
+
+
         if form.is_valid():
             review = form.save(commit=False)
+            member = Member.objects.get(user=req.user)
+            review.owner = member
+
             review.save()
-            print('save')
             return redirect('home')
-        
+        else:
+            print(form.errors)
+            print(form.non_field_errors)
     context = {
         'form':form,
         'food':food,
@@ -286,9 +289,9 @@ def reviewfood(req,id):
     return render(req,'app/review.html',context)
 
 
-def managefood(req,date=None):
-
-    if req.method =='POST':
+def managefood(req, date=None):
+    print(date)
+    if req.method == 'POST':
         food_ids = req.POST.getlist('food_id')
         print(food_ids)
         options = req.POST.getlist('options')
@@ -296,56 +299,32 @@ def managefood(req,date=None):
         if len(food_ids) == len(options):
             for id, option in zip(food_ids, options):
                 food_item = Food.objects.get(pk=id)
-                print(food_item,f'pass {option}')
+                print(food_item, f'pass {option}')
 
-
-                #ถ้า option is notchoose if notchoose delete out database
                 if option == 'notchoose':
-                    found = Historysale.objects.filter(food_id=food_item.id , date_field = date )
+                    found = Historysale.objects.filter(food_id=food_item.id, date_field=date)
                     print(found)
                     if found.exists():
                         food_item.options = option
                         food_item.save()
                         found.delete()
-                        print('ลบสำเร็จ')
+                        print('ลบสำเร็จ (Deletion successful)')
                     else:
-                        print('111111111')
+                        print('ไม่พบข้อมูลในฐานข้อมูล (Data not found in the database)')
 
-                #if option is onsale if onsale save to database
-                if option == 'onsale':
-                    if Historysale.objects.filter(id=food_item.id , date_field = date ).exists():
+                elif option in ['onsale', 'soldout']:
+                    if Historysale.objects.filter(food_id=food_item.id, date_field=date).exists():
                         if food_item.options != option:
                             food_item.options = option
                             food_item.save()
-                            print('เปลี่ยนแปลงข้อมูลสำเร็จ')
+                            print('เปลี่ยนแปลงข้อมูลสำเร็จ (Data changed successfully)')
                         else:
-                            pass
+                            print('ไม่มีการเปลี่ยนแปลง (No changes made)')
                     else:
                         food_item.options = option
                         food_item.save()
-                        history_sale= Historysale.objects.create(
-                        food=food_item,
-                        date_field= date)
-                        print('เซฟข้อมูลงฐานข้อมูลได้')
-
-                #if option is soldout same onsale
-
-                elif option == 'soldout':
-                    if Historysale.objects.filter(id=food_item.id , date_field = date ).exists():
-                        if food_item.options != option:
-                            food_item.options = option
-                            food_item.save()
-                            print('เปลี่ยนแปลงข้อมูลสำเร็จ')
-
-                        else:
-                            pass
-                    else:
-                        food_item.options = option
-                        food_item.save()
-                        history_sale= Historysale.objects.create(
-                        food=food_item,
-                        date_field= date)
-                        print('เซฟข้อมูลงฐานข้อมูลได้')
+                        history_sale = Historysale.objects.create(food=food_item, date_field=date)
+                        print('เซฟข้อมูลลงฐานข้อมูลได้ (Saved data to the database)')
 
         return redirect('managefood')
     else:
@@ -367,15 +346,75 @@ def managefood(req,date=None):
 
 
 def login(req):
-     if req.user.is_authenticated:
-         print('success login..........................................................')
-     return render(req,'app/login.html')
+      if req.user.is_authenticated:
+          print('success login..........................................................')
+      return render(req,'app/login.html')
 
+def line_login(request):
+    line = LineLogin()
+    auth_link = line.get_link()  # Get the authorization link
+
+    return redirect(auth_link)
+ 
+def line_callback(request):
+    if 'code' in request.GET and 'state' in request.GET:
+        code = request.GET['code']
+        state = request.GET['state']
+
+        line = LineLogin()
+        token = line.token(code, state)
+
+        if token.get('error'):
+            return redirect('managefood')
+
+        if token.get('id_token'):
+            profile = line.profile_from_id_token(token)
+            request.session['profile'] = profile
+
+            # Retrieve user information or create a new user
+            # Replace this logic with your Django User and Member models
+
+            user_id = profile.get('name')  # Assuming 'email' is used as user_id
+            user = User.objects.filter(username=user_id).first()
+            print(user)
+            print('user_id',user_id)
+
+            if user:
+                    auth_login(request, user)
+                    return redirect('home') 
+            else:
+                print('you in else')
+                line_user = request.user if request.user.is_authenticated else User.objects.create_user(username=user_id)
+                line_user_profile, created = Member.objects.get_or_create(
+                    #id =profile['user_id'],
+                    user=line_user,
+                    email=profile['email'],
+                    picture=profile['picture'],
+                    # Add other fields you want to populate in Member model
+                )
+                print('register success')
+                # Optionally redirect to home or another page
+            user = authenticate(request, username=user_id, password=None)
+            print('user:',user)
+            if user is not None:
+                    # Log the user in
+                    auth_login(request, user)
+                    return redirect('home') 
+
+    # Handle cases where 'code' or 'state' is not in the request.GET
+    return redirect('home')  # Redirect to a suitable page
+
+def logout(req):
+    auth_logout(req)
+    return redirect('home')
+
+def send_line_message(req):
+    pass
+'''
 def line_login(req):
       print('------------------------------------------------------------')
       line_login_url = 'https://access.line.me/oauth2/v2.1/login?returnUri=%2Foauth2%2Fv2.1%2Fauthorize%2Fconsent%3Fclient_id%3D2002071461%26redirect_uri%3Dhttp%253A%252F%252F127.0.0.1%253A8000%252Flogin%252Fcallback%252F%26scope%3Dprofile%2Bopenid%2Bemail%26response_type%3Dcode%26state%3Do5LbuxfoP3E5zU3p&loginChannelId=2002071461&loginState=5RSv0jsdBZgXGfTdkjcF0u'
       return redirect(line_login_url)
-
 
 
 def get_line_user_info(access_token):
@@ -442,8 +481,11 @@ def line_callback(req):
                 if user_info:
                      user = User.objects.get(username=user_info['user_id'])
                      if user !=[]:
-                        member = Member.objects.get(user=user)
-                        return render(req,'app/login.html',{'member':member})
+                        
+                        # member = Member.objects.get(user=user)
+                        auth_login(req, user)
+                        return redirect('home') 
+                        # return render(req,'app/home.html',{'member':member})
                      else:
                         line_user = req.user if req.user.is_authenticated else User.objects.create_user(username=user_info['user_id'])
                         line_user_profile, created = Member.objects.get_or_create(
@@ -462,7 +504,4 @@ def line_callback(req):
         else:
             print('Authorization code not found in callback data.')
             return redirect('error_page')  # Redirect to an error page or handle as needed
-
-
-def send_line_message(req):
-    pass
+'''

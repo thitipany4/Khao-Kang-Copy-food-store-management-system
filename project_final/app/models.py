@@ -4,13 +4,11 @@ from PIL import Image
 from django.contrib.auth.models import User
 from django.utils import timezone
 
-
-
 class Member(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    user_name = models.CharField(max_length=100)
     email =models.EmailField(blank=True,null=True)
-    name = models.CharField(max_length=100,blank=True,null=True)
+    first_name = models.CharField(max_length=100,blank=True,null=True)
+    last_name = models.CharField(max_length=100,blank=True,null=True)
     phone_number = models.CharField(max_length=100)
     picture = models.URLField(blank=True, null=True)
     age = models.CharField(max_length=20, choices=(
@@ -28,7 +26,8 @@ class Member(models.Model):
 
     ), default='11-20') 
     def __str__(self) -> str:
-        return f'{self.user_name} '
+        return f'{self.user} {self.email} '
+    
 class Food(models.Model):
     name = models.CharField(max_length=100)
     price = models.IntegerField(default=0)
@@ -67,7 +66,7 @@ class Reviewfood(models.Model):
     food = models.ForeignKey(Food,on_delete=models.CASCADE)
     owner = models.ForeignKey(Member,on_delete=models.CASCADE,null=True)
     review = models.TextField(max_length=500,blank=True,null=True)
-    created = models.DateTimeField(default=timezone.now)
+    created = models.DateTimeField(auto_now_add=True)
     rating = models.IntegerField(choices=(
         (1, '1 ดาว'),
         (2, '2 ดาว'),
