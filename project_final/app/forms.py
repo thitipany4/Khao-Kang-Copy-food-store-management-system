@@ -12,6 +12,15 @@ class FoodForm(forms.ModelForm):
             'unit',
             'image',
         ]
+class MemberForm(forms.ModelForm):
+    class Meta:
+        model = Member
+        fields =[
+            'first_name',
+            'last_name',
+            'phone_number',
+            'age'
+        ]
 class DateForm(forms.ModelForm):
     class Meta:
         model = Historysale

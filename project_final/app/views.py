@@ -1,7 +1,7 @@
 from collections import defaultdict
 import requests
-from django.shortcuts import redirect, render
-from app.forms import DateForm, FoodForm, ReviewFood
+from django.shortcuts import get_object_or_404, redirect, render
+from app.forms import *
 #from linebot import LineBotApi
 #from linebot.models import TextSendMessage
 from app.models import *
@@ -194,6 +194,29 @@ def updatefood(req,id):
         'form':form,
     }
     return render(req,'app/updatefood.html',context)
+
+def profile(req,username):
+    if req.method=='GET':
+        user =  get_object_or_404(User,username=username)
+        member = Member.objects.get(user=user)
+        form = MemberForm(instance=member)
+    else:
+        user =  get_object_or_404(User,username=username)
+        member = Member.objects.get(user=user)
+        form = MemberForm(req.POST,req.FILES,instance=member)
+        if form.is_valid():
+            form.instance.age = req.POST.get('age')
+            form.save()
+            print(form.instance.age)
+            return redirect('home')
+        else:
+            print(form.errors)
+            print(form.non_field_errors)
+    context ={
+        'member':member,
+        'form':form,
+    }
+    return render(req,'app/profile.html',context)
 def delete(req,id):
     #return render(request, 'kawai/delete.html')
     f = Food.objects.get(pk=id)

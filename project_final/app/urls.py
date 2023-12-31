@@ -21,7 +21,8 @@ urlpatterns = [
     path('line-login/', line_login, name='line'),
     path('logout/', logout, name='logout'),
     path('login/callback/',line_callback,name='line_ callback'),
-    path('about_us/',about_us,name='about-us')
+    path('about_us/',about_us,name='about-us'),
+    path('profile/<str:username>/',profile,name='profile')
 
 
 ] 
