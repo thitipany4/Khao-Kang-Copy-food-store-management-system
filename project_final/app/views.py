@@ -9,6 +9,9 @@ from django.contrib.auth.models import User
 import folium
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from .line_login import LineLogin
+from .calculator import calculator
+from .forms import FormNote
+from .utils import EventCalendar
 
 def getdate(x=None,th=None):
     '''
@@ -528,3 +531,116 @@ def line_callback(req):
             print('Authorization code not found in callback data.')
             return redirect('error_page')  # Redirect to an error page or handle as needed
 '''
+def calendar(req,date=None):
+    # Replace the code below with your logic to get the calendar HTML
+    # Create an instance of EventCalendar and generate the HTML
+    my_calendar = EventCalendar()
+    if date:
+        date = getdate(date)
+    else:
+        date = getdate()
+    date_str = datetime.strptime(date, '%Y-%m-%d')
+    print('rrrrrrr',date_str)
+    year = date_str.year
+    month = date_str.month
+    calendar_html = my_calendar.formatmonth(year, month)  # Example: December 2023
+    # Render the HTML calendar using the template
+    return render(req, 'app/calendar_template.html', {'calendar_html': calendar_html})
+
+def note(req, date=None):
+    print(date)
+    expenses = 'expenses'
+    income ='income'
+    form = FormNote()
+    if req.method =='POST':
+        name_values = req.POST.getlist('name')
+        price_values = req.POST.getlist('price')
+        amount_values = req.POST.getlist('amount')
+        transaction_type_values = req.POST.getlist('transaction')
+        print('namesssss :', name_values)
+        print('namesssss :', transaction_type_values)
+
+        for i in range(len(name_values)):
+            if name_values[i] == '':
+                continue
+            else:
+                check = Transaction.objects.filter(name=name_values[i])
+                print('check',check)
+                if check.exists():
+                    print('data are duplicate')
+                else:
+                    print('transaction_type ', [i], transaction_type_values[i])
+                    form = FormNote({
+                        'name': name_values[i],
+                        'price': price_values[i],
+                        'amount': amount_values[i],
+                    }, req.FILES)
+
+                    if form.is_valid():
+                        # Process form data and save to the database
+                        form.instance.date = date
+                        form.instance.transaction_type = transaction_type_values[i]
+                        form.save()
+                        print('form save success')
+            print('save round',[i])
+        print('redirect home')
+        return redirect('calendar')
+    else:
+        tran = Transaction.objects.filter(date=date)
+        if tran.exists():
+            print('have tran')
+            list_income = []
+            list_expenses =[]
+            list_leftover =[]
+            for t in tran:
+                if t.transaction_type == 'expenses':
+                    list_expenses.append(t)
+                    print(t,t.transaction_type)
+                    print('list_expenses',list_expenses)
+                elif t.transaction_type == 'income':
+                    list_income.append(t)
+                    print(t,t.transaction_type)
+                    print('list_income',list_income)
+                else:
+                    list_leftover.append(t)
+                    print(t,t.transaction_type)
+                    print('list_leftover',list_leftover)
+
+
+            context ={
+                'form':form,
+                'date':date,
+                'tran':tran,
+                'expenses':expenses,
+                'income':income,
+                'list_expenses':list_expenses,
+                'list_income':list_income,
+                'list_leftover':list_leftover,
+            }
+            return render(req,'app/view_form.html', context)
+        else:
+            print('dont have tran')
+            context ={
+                'form':form,
+                'date':date,
+                'expenses':expenses,
+                'income':income,
+            }
+            return render(req,'app/view_form.html', context)
+
+     
+def show_note(req,date=None):
+    note = Transaction.objects.filter(date=date)
+    sum_expenses,sum_income,list_expenses,list_income,list_leftover= calculator(note,'show_note')
+    total = sum_income- sum_expenses 
+    print(total)
+    context = {
+         'list_income':list_income,
+         'list_expenses':list_expenses,
+         'list_leftover':list_leftover,
+         'sum_expenses':sum_expenses,
+         'sum_income':sum_income,
+         'total':total,
+         'date':date,
+    }
+    return render(req, 'app/show-note.html',context )

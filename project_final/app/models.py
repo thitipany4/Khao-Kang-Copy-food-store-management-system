@@ -79,3 +79,18 @@ class Reviewfood(models.Model):
     def __str__(self) -> str:
         return f'{self.food.name} rating : {self.rating}'
 
+class Transaction(models.Model):
+    TRANSACTION_TYPES = [
+        ('expenses', 'expenses'),
+        ('income', 'income'),
+        ('leftover','Leftover')
+    ]
+    name = models.CharField(max_length=100)
+    price = models.FloatField(default=0.0)
+    amount = models.IntegerField(default=0)
+    date = models.DateField(null=True,blank=True)
+    created = models.DateTimeField(default=timezone.now)
+    transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
+
+    def __str__(self) -> str:
+        return f'{self.name} {self.date}'

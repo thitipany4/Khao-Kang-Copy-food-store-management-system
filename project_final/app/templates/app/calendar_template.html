@@ -1,0 +1,187 @@
+<!-- calendar_template.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calendar</title>
+    <!-- Add your CSS styles here -->
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            display: flex;
+            font-family: "Comfortaa", sans-serif;
+            justify-content: center;
+
+
+
+        }
+        .container-calendar {
+            display: flex;
+            width: auto;
+            height: 700px;
+            border: 1px solid red;
+            justify-content: center;
+            margin: 5px;
+            
+
+
+        }
+        .calendar {
+            display: flex;
+            justify-content: center;
+
+
+        }
+        .body-calendar {
+
+            border: 1px solid #EAEAEA;
+            border-radius: 0.5rem;
+            padding: 10px;
+            display: flex;
+            width: 80%;
+            height:620px;
+            margin-bottom: 20px;
+            font-size: 12px;
+            background-color: #FFFDFD;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+
+
+
+        }
+        .month {
+
+            font-size: 28px;
+            background: var(--color);   
+            /* font: 900 75px "Montserrat", sans-serif; */
+            text-transform: uppercase;
+            padding: 20px 30px;
+            text-align: center;
+            /* color: rgba(255, 255, 255, 0.6); */
+            color: red;
+            background-color: #FFFDFD;
+            text-shadow: 0 0px 4px rgba(0, 0, 0, 0.1);
+
+        }
+
+        .mon,.tue,.wed,.thu,.fri,.sat,.sun {
+            font-size: 28px;
+            color: aquamarine;
+            /* border: 1px solid violet; */
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+            /* background-color: antiquewhite; */
+            text-align: center;
+            border-bottom: 2px solid #DFDFDF;
+        
+        }
+
+        .noday {
+            width: 300px;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            
+        }
+        .calendar-day {
+            margin-top:10px ;
+            width: calc(100%/ 7); 
+            height: 90px;
+            justify-content: end;
+            /* border-right: 1px solid gray; */
+            margin: 6px;
+            padding: 10px;
+            background-color: #FFFDFD;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+
+        }
+        /* .day-number {
+            display: flex;
+            align-items: start;
+            top: -4%;
+            margin-bottom: 5px;
+            margin-left:5px ;
+            position: relative;
+            border: 1px solid palegreen;
+         } */
+        .day-link {
+            text-decoration: none;
+            color: black;
+            height: 70px;
+            /* border: 1px solid red; */
+
+        }
+        .text-event {
+            font-size: 12px;
+            position: relative;
+            top: -5%;
+            display: flex;
+            flex-direction: column;
+            width: 120px;
+            height: 70px;
+            border: 1px solid palegreen;
+            margin: 0;
+
+        }
+        .day-content {
+            display: flex;
+            position: absolute;
+            margin-left: 30px;
+            top: 30%;
+            
+  
+        }
+        .text-expenses,.text-income {
+            display: flex;
+            margin: 1px;
+            margin-left: 10px;
+        }
+        .text-expenses {
+            margin-bottom: 5px;
+        }
+        .str-expenses {
+            margin-right: 25px;
+        }
+        .str-income {
+            margin-right: 32px;
+        }
+        .str-expenses,.num-expenses {
+            color: #FF5119;
+        }
+        .str-income,.num-income {
+            color: #2EFF19;
+        }
+        .text-total {
+            margin-top: 5px;
+            font-size: 16px;
+            margin-left: 50px;
+        }
+        .num-total-plus {
+            color: #2EFF19;
+
+        }
+        .num-total-negative {
+            color: #FF5119;
+
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="bar-options">
+            <h1>asdfasdfasdf</h1>
+            <h1>asdfasdfasdf</h1>
+        </div>
+        <div class="container-calendar">
+            <div class="calendar">
+                {{ calendar_html|safe }}
+            </div>
+
+        </div>
+    </div>
+
+
+
+</body>
+</html>

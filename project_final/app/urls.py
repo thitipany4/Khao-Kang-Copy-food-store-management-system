@@ -22,7 +22,11 @@ urlpatterns = [
     path('logout/', logout, name='logout'),
     path('login/callback/',line_callback,name='line_ callback'),
     path('about_us/',about_us,name='about-us'),
-    path('profile/<str:username>/',profile,name='profile')
+    path('profile/<str:username>/',profile,name='profile'),
+    path('calendar/',calendar,name='calendar'),
+    path('calendar/<str:date>/',calendar,name='calendar-date'),
+    path('note/<str:date>/',note,name='note'),
+    path('show_note/<str:date>/',show_note,name='show-note'),
 
 
 ] 

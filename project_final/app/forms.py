@@ -41,3 +41,12 @@ class ReviewFood(forms.ModelForm):
             'review',
             'rating',
         ]
+class FormNote(forms.ModelForm):
+    class Meta:
+        model = Transaction
+        fields = [
+            'name',
+            'price',
+            'amount',
+
+        ]

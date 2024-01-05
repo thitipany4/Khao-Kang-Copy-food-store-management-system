@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid red;
+            height: auto;
+            width: auto;
+            /* justify-content: center; */
+            align-items: center;
+
+        }
+        .expenses-text,.income-text,.leftover-text {
+            display: flex;
+            width: 170px;
+            /* border: 1px solid red; */
+            font-size: 28px;
+            margin-left: 40px;
+            margin-right: 60px;
+            margin-top: 10px;
+
+        }
+        .headline-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: absolute;
+            border: 1px solid rebeccapurple;
+            background-color: #F94D4D;
+            border-radius: 0.5rem;
+            padding: 10px;
+            top: -2%;
+            width: 100px;
+            height: 30px;
+            font-size: 24px;
+
+        }
+        .box-note {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            border: 1px solid #D9DAD9;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            /* background-color: #D9DAD9; */
+            width: 70%;
+            height: auto;
+            margin-top: 20px;
+
+        }
+
+        .text-box-top {
+            display: flex;
+            justify-content: space-between;
+            width: 540px;
+            margin-left: 330px;
+            /* border: 1px solid red; */
+            margin-top: 40px;
+        }
+        .text-box {
+            display: flex;
+            justify-content: space-between;
+            width: 540px;
+            margin-left: 330px;
+            /* border: 1px solid red; */
+
+        }
+        .bar-text {
+            margin-right: 30px;
+            font-size: 24px;
+        }
+
+        .box-expenses,.box-leftover {
+            display: flex;
+        }
+
+        .forms-expenses,.forms-income,.forms-leftover {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            /* border: 1px solid blue; */
+            margin-top: 10px;
+            /* margin-left: 200px; */
+
+        }
+
+        .box-income {
+            display: flex;
+            margin-bottom: 10px;
+        }
+
+        .note-expenses,.note-income,.note-leftover,.add-expenses,.add-income,.add-leftover {
+            display: flex;
+            flex-direction: row;
+            height: 20px;
+            margin-bottom: 10px;
+            /* border: 1px solid blue; */
+
+        }
+        .container-add-form {
+            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+
+        }
+
+        .bar-str {
+            width: 140px;
+            margin-right: 15px;
+
+        }
+        .bar-price,.bar-amount {
+            width: 70px;
+
+        }
+        .bar-price {
+            margin-left: 35px;
+            margin-right: 75px;
+        }
+        .bar-amount {
+            margin-right: 100px;
+
+        }
+        z
+        .total {
+            margin-right: 50px;
+        }
+        .button-box {
+            display: flex;
+            /* border: 1px solid tomato; */
+            width: 250px;
+            height: 100px;
+            justify-content: space-between;
+            align-items: center;
+            margin: 10px;
+
+    }
+        .add-form-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 35px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+            border: 1px solid #19FF5F;
+            background-color: #19FF5F;
+            width: 120px;
+            margin-left: 260px;
+            margin-bottom: 10px;
+        }
+        .button-btn,.cancel-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 40px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+        }
+        .button-btn {
+                border: 1px solid #3498db;
+                background-color: #3498db;
+                width: 120px;
+            }
+
+        .cancel-btn {
+                border: 1px solid #F94D4D;
+                background-color: #F94D4D;
+                width: 100px;
+            }
+        .delete-button {
+            display: flex;
+            justify-content: center;
+            background-color: #F94D4D;
+            align-items: center;
+            height: 20px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="box-note">
+            <div class="headline-text">{{date}}</div>
+            <div class="note-top">
+                <div class="text-box-top">
+                    <h1 class="bar-text">ชื่อ</h1>
+                    <h1 class="bar-text">ราคา</h1>
+                    <h1 class="bar-text">จำนวน</h1>
+                    <h1 class="bar-text">รวม</h1>
+
+                </div>
+                <div class="box-expenses">
+                    <div class="expenses-text">
+                        รายจ่าย
+                    </div>
+                    <div class="forms-expenses">
+                        {%for e in list_expenses%}
+                            <form method="post" class="note-expenses" action="/note/{{date}}/" enctype="multipart/form-data">
+                                {%csrf_token%}
+                                <input  class="bar-str" type="text" name="name" step="any" required id="id_name" value="{{e.name}}">
+
+                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price" value="{{e.price}}">
+
+                                <input class="bar-amount" type="text" name="amount" step="any" required id="id_amount" value="{{e.amount}}">
+
+                                <input  type="hidden" name="transaction" value="{{e.transaction_type}}">
+                                <span class="total">0.00</span>
+
+                            </form>
+                        {%endfor%}
+                        <div class="container-add-form" id="forms-container-expenses">
+                            <form method="post" class="add-expenses" action="/note/{{date}}/" enctype="multipart/form-data">
+                                {%csrf_token%}
+
+                                <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
+
+                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
+
+                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
+
+                                <input type="hidden" name="transaction" value="{{expenses}}">
+
+                                <!-- <select name="options" id="transaction_type">
+                                    <option value="expenses">expenses</option>
+                                    <option value="income">income</option>
+                                </select> -->
+                                <button type="button" class="delete-button" onclick="deleteForm(this)">Delete</button>
+
+                            </form>
+                            <button class="add-form-btn" onclick="addFormExpenses()">Add more form</button>
+                        </div>
+                        </div>
+                </div>
+                <hr>
+                <div class="text-box">
+                    <h1 class="bar-text">ชื่อ</h1>
+                    <h1 class="bar-text">ราคา</h1>
+                    <h1 class="bar-text">จำนวน</h1>
+                    <h1 class="bar-text">รวม</h1>
+
+                </div>
+                <div class="box-income">
+                    <div class="income-text">
+                        รายรับ
+                    </div>
+                    <div class="forms-income">
+                        {%for i in list_income%}
+                        <form method="post" class="note-income" action="/note/{{date}}/" enctype="multipart/form-data">
+                            {%csrf_token%}
+
+                            <input  class="bar-str" type="text" name="name" step="any" required id="id_name" value="{{i.name}}">
+
+                            <input  class="bar-price" type="text" name="price" step="any" required id="id_price" value="{{i.price}}">
+
+                            <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount" value="{{i.amount}}">
+
+                            <input type="hidden" name="transaction" value="{{i.transaction_type}}">
+                            <span class="total">0.00</span>
+
+                        </form>
+                        {%endfor%}
+                        <div class="container-add-form" id="forms-container-income">
+                            <form method="post" class="add-income" action="/note/{{date}}/" enctype="multipart/form-data">
+                                {%csrf_token%}
+
+                                <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
+
+                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
+
+                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
+
+                                <input type="hidden" name="transaction" value="income">
+
+                                <!-- <select name="options" id="transaction_type">
+                                    <option value="expenses">expenses</option>
+                                    <option value="income">income</option>
+                                </select> -->
+
+                                <button type="button" class="delete-button" onclick="deleteForm(this)">Delete</button>
+
+                            </form>
+
+                            <button class="add-form-btn" onclick="addFormIncome()">Add more form</button>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="text-box">
+                    <h1 class="bar-text">ชื่อ</h1>
+                    <h1 class="bar-text">ราคา</h1>
+                    <h1 class="bar-text">จำนวน</h1>
+                    <h1 class="bar-text">รวม</h1>
+
+                </div>
+                <div class="box-leftover">
+                    <div class="leftover-text">
+                        อาหารที่เหลือ
+                    </div>
+                    <div class="forms-leftover">
+                        {%for l in list_leftover%}
+                            <form method="post" class="note-leftover" action="/note/{{date}}/" enctype="multipart/form-data">
+                                {%csrf_token%}
+                                <input  class="bar-str" type="text" name="name" step="any" required id="id_name" value="{{l.name}}">
+
+                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price" value="{{l.price}}">
+
+                                <input class="bar-amount" type="text" name="amount" step="any" required id="id_amount" value="{{l.amount}}">
+
+                                <input  type="hidden" name="transaction" value="{{e.transaction_type}}">
+                                <span class="total">0.00</span>
+                            </form>
+                        {%endfor%}
+                        <div class="container-add-form" id="forms-container-leftover">
+                            <form method="post" class="add-leftover" action="/note/{{date}}/" enctype="multipart/form-data">
+                                {%csrf_token%}
+
+                                <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
+
+                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
+
+                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
+
+                                <input type="hidden" name="transaction" value="leftover">
+
+                                <!-- <select name="options" id="transaction_type">
+                                    <option value="expenses">expenses</option>
+                                    <option value="income">income</option>
+                                </select> -->
+
+                                <button type="button" class="delete-button" onclick="deleteForm(this)">Delete</button>
+
+                            </form>
+                            <button class="add-form-btn" onclick="addFormLeftover()">Add more form</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-box">
+                <button class="button-btn" type="button" onclick="submitForms()">Submit All Forms</button>
+                <a class="cancel-btn" href="/note/{{date}}/">Cancel</a>
+            </div>
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+                function calculateAndUpdateTotal() {
+                    $('.note-expenses,.note-income,.note-leftover,.add-expenses,.add-income,.add-leftover').each(function () {
+                        var price = parseFloat($(this).find('[name="price"]').val());
+                        var amount = parseFloat($(this).find('[name="amount"]').val());
+                        var totalField = $(this).find('.total'); // Get the total field
+
+                        // Check if both price and amount are valid numbers
+                        if (!isNaN(price) && !isNaN(amount)) {
+                            var total = price * amount;
+                            totalField.text(total.toFixed(2)); // Update the total value in the respective span
+                        } else {
+                            totalField.text('0.00'); // If any value is not a number, set total as 0.00
+                        }
+                    });
+                }
+
+                // Calculate and update totals on page load
+                calculateAndUpdateTotal();
+
+                // Bind calculation function to input changes
+                $('.note-expenses,.note-income,.add-expenses,.add-income').on('input', 'input[name="price"], input[name="amount"]', function () {
+                    calculateAndUpdateTotal();
+                });
+            });
+
+        function addFormIncome() {
+            const firstForm = document.querySelector('.add-income');
+            const clonedForm = firstForm.cloneNode(true);
+
+            // Clear the values in the cloned form
+            const inputs = clonedForm.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                input.value = ''; // Clear input values
+            });
+
+            // Append the cloned form to the forms container
+            const formsContainer = document.getElementById('forms-container-income');
+            formsContainer.insertBefore(clonedForm, formsContainer.lastElementChild);
+        }
+        function addFormExpenses() {
+                const firstForm = document.querySelector('.add-expenses');
+            const clonedForm = firstForm.cloneNode(true);
+
+
+            // Clear the values in the cloned form
+            const inputs = clonedForm.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                input.value = ''; // Clear input values
+            });
+
+            // Append the cloned form to the forms container
+            const formsContainer = document.getElementById('forms-container-expenses');
+            formsContainer.insertBefore(clonedForm, formsContainer.lastElementChild);
+        }
+        function addFormLeftover() {
+            const firstForm = document.querySelector('.add-leftover');
+        const clonedForm = firstForm.cloneNode(true);
+
+
+        // Clear the values in the cloned form
+        const inputs = clonedForm.querySelectorAll('input[type="text"]');
+        inputs.forEach(input => {
+            input.value = ''; // Clear input values
+        });
+
+        // Append the cloned form to the forms container
+        const formsContainer = document.getElementById('forms-container-leftover');
+        formsContainer.insertBefore(clonedForm, formsContainer.lastElementChild);
+    }
+        function deleteForm(button) {
+            const form = button.closest('.note-form');
+            const forms = document.querySelectorAll('.note-form');
+            if (forms.length != 1)  {
+                form.remove();
+            }}
+        function deleteForm(button) {
+        const formToDelete = button.parentElement;
+        formToDelete.remove();
+    }
+        const dateValue = "{{ date }}";
+        function submitForms() {
+            const forms = document.querySelectorAll('.note-expenses, .note-income,.note-leftover,.add-income,.add-expenses,.add-leftover');
+            if (forms.length ===0) {
+                console.log("No forms to submit.");
+                return; // Stop the function if there are no forms
+            }
+            const formData = new FormData();
+
+            forms.forEach(form => {
+                const formInputs = form.querySelectorAll('input, select');
+                formInputs.forEach(input => {
+                    formData.append(input.name, input.value);
+                });
+            });
+
+            // Ajax request to submit form data to Django backend
+            fetch('/note/' + dateValue + '/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (response.ok) {
+                    const homeURL = "{% url 'calendar' %}";
+                    window.location.href = homeURL;
+                }
+            })
+        }
+
+
+    </script>
+
+</body>
+</html>
