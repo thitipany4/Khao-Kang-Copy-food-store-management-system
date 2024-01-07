@@ -18,23 +18,12 @@ class EventCalendar(HTMLCalendar):
         Return a day as a table cell.
         """
         show_text = ""
-        # show_text = f'<div class="text-event">test line 1 <br> test line 2</div>'    
-        # data_objects = Transaction.objects.filter(Created=day)
-        # if data_objects.exists():
-        #     for data_obj in data_objects:
-        #         show_text += f'<div class="text-event">{data_obj.name} <br> {data_obj.price}</div>'
-        # else:
-           #show_text += f'<div class="text-event">รายรับ <br> ราบจ่าย</div>'
-
-        # data_objects = Data.objects.filter(pk=day)
-        # for data_obj in data_objects:
-        #     show_text += f'<div class="text-event">{data_obj.name} <br> {data_obj.price}</div>'
         date = f'{month}-{day}'
         if day == 0:
             return '<td class="noday">&nbsp;</td>'  # day outside month
         else:
             events_for_day = Transaction.objects.filter(date=date)  # Assuming Event is your model and 'date' is the field storing the event date
-            sum_expenses,sum_income = calculator(events_for_day,'calendar')
+            sum_expenses,sum_income = calculator(events_for_day)
             sum = sum_income - sum_expenses
             if sum>0:
                 total = f'<div class="num-total-plus">+{sum}</div>'

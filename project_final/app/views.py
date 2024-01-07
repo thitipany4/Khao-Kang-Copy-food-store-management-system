@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import timedelta
 import requests
 from django.shortcuts import get_object_or_404, redirect, render
 from app.forms import *
@@ -531,21 +532,62 @@ def line_callback(req):
             print('Authorization code not found in callback data.')
             return redirect('error_page')  # Redirect to an error page or handle as needed
 '''
-def calendar(req,date=None):
-    # Replace the code below with your logic to get the calendar HTML
-    # Create an instance of EventCalendar and generate the HTML
+def get_prev_month(d):
+    year = d.year - 1 if d.month == 1 else d.year
+    month = d.month - 1 if d.month > 1 else 12
+
+    prev_month_date = d.replace(year=year, month=month)
+    return prev_month_date
+
+def get_next_month(d):
+    year = d.year + (d.month // 12)
+    month = d.month % 12 + 1
+    next_month_date = d.replace(year=year, month=month)
+    return next_month_date
+
+def calendar(req,date=None,mark=None):
     my_calendar = EventCalendar()
-    if date:
-        date = getdate(date)
+    if req.method == 'GET':
+        if date and mark =='next_month':
+            d = datetime.strptime(date, '%Y-%m-%d').date()
+            date_str = get_next_month(d)
+            date=getdate(date_str)
+            print('date11',date_str)
+        elif date and mark =='prev_month':
+            d = datetime.strptime(date, '%Y-%m-%d').date()
+            date_str = get_prev_month(d)
+            date=getdate(date_str)
+            print('date11',date_str)
+        else:
+            date = getdate()
+            print('currect month')
+            date_str = datetime.strptime(date, '%Y-%m-%d').date()
+        
+        print('rrrrrrr',date_str)
+        year = date_str.year
+        month = date_str.month
+        calendar_html = my_calendar.formatmonth(year, month)
     else:
-        date = getdate()
-    date_str = datetime.strptime(date, '%Y-%m-%d')
-    print('rrrrrrr',date_str)
-    year = date_str.year
-    month = date_str.month
-    calendar_html = my_calendar.formatmonth(year, month)  # Example: December 2023
-    # Render the HTML calendar using the template
-    return render(req, 'app/calendar_template.html', {'calendar_html': calendar_html})
+        date = req.POST.get('move_to_month')
+        print('date ==',date)
+        if date:
+            d = datetime.strptime(date, '%Y-%m').date()
+            year = d.year
+            month = d.month
+            calendar_html = my_calendar.formatmonth(year, month)
+        else:
+            print('วันที่ภายในฟอร์มไม่ได้เลือก')
+            return redirect('home')
+    note = Transaction.objects.filter(date__year=date_str.year, date__month=date_str.month)
+    # print(note)
+    sum_expenses,sum_income= calculator(note)
+    total = sum_income- sum_expenses 
+    context = {'calendar_html': calendar_html,
+                'date':date,
+                'total':total,
+                'sum_expenses':sum_expenses,
+                'sum_income':sum_income,}
+    return render(req, 'app/calendar_template.html',context)
 
 def note(req, date=None):
     print(date)

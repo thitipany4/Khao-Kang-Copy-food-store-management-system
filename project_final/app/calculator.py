@@ -1,4 +1,4 @@
-def calculator(orb,text):
+def calculator(orb,text=None):
     list_income = []
     list_expenses =[]
     list_leftover =[]
