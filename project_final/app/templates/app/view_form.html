@@ -5,11 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        
+        body {
+            background-color: #D9D9D9;
+        }
         .container {
             display: flex;
             flex-direction: column;
-            border: 1px solid red;
+            /* border: 1px solid red; */
             height: auto;
             width: auto;
             /* justify-content: center; */
@@ -47,6 +49,7 @@
             align-items: center;
             position: relative;
             border: 1px solid #D9DAD9;
+            background-color: #FFFF;
             border-radius: 0.5rem;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             /* background-color: #D9DAD9; */
@@ -190,6 +193,7 @@
     </style>
 </head>
 <body>
+    {% include 'app/navbar.html' %}
     <div class="container">
         
         <div class="box-note">
@@ -387,6 +391,7 @@
             const firstForm = document.querySelector('.add-income');
             const clonedForm = firstForm.cloneNode(true);
 
+
             // Clear the values in the cloned form
             const inputs = clonedForm.querySelectorAll('input[type="text"]');
             inputs.forEach(input => {
@@ -397,6 +402,7 @@
             const formsContainer = document.getElementById('forms-container-income');
             formsContainer.insertBefore(clonedForm, formsContainer.lastElementChild);
         }
+
         function addFormExpenses() {
                 const firstForm = document.querySelector('.add-expenses');
             const clonedForm = firstForm.cloneNode(true);
@@ -427,15 +433,19 @@
         const formsContainer = document.getElementById('forms-container-leftover');
         formsContainer.insertBefore(clonedForm, formsContainer.lastElementChild);
     }
-        function deleteForm(button) {
-            const form = button.closest('.note-form');
-            const forms = document.querySelectorAll('.note-form');
-            if (forms.length != 1)  {
-                form.remove();
-            }}
-        function deleteForm(button) {
-        const formToDelete = button.parentElement;
-        formToDelete.remove();
+    function deleteForm(button) {
+        // Get the container and all forms inside it
+        var container = button.parentElement.parentElement;
+        var forms = container.querySelectorAll('form');
+
+        // Check if it's the last form
+        if (forms.length > 1) {
+            // Remove the form when it's not the last form
+            var form = button.parentElement;
+            container.removeChild(form);
+        } else {
+            alert("You can't delete the last form.");
+        }
     }
         const dateValue = "{{ date }}";
         function submitForms() {

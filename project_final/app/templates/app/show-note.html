@@ -5,11 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        
+        body {
+            background-color: #D9D9D9;
+        }
         .container {
             display: flex;
             flex-direction: column;
-            border: 1px solid red;
+            
+            /* border: 1px solid red; */
             height: auto;
             width: auto;
             /* justify-content: center; */
@@ -47,6 +50,7 @@
             align-items: center;
             position: relative;
             border: 1px solid #D9DAD9;
+            background-color: #FFFFFF;
             border-radius: 0.5rem;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             /* background-color: #D9DAD9; */
@@ -189,31 +193,32 @@
         }
         .total-all {
             display: flex;
-            border: 1px solid aqua;
+            /* border: 1px solid aqua; */
             margin-top: 20px;
-            width: 80%;
+            width: 90%;
             height: 80px;
             align-items: center;
-
-
 
         }
         .text-total {
             display: flex;
+            justify-content: center;
             padding: 10px;
             border: 1px solid black;
             font-size: 24px;
             margin-left: 10px;
+            margin-right: 10px;
+            width: 170px;
 
 
         }
         .total-expenses,.total-income {
-            border: 1px solid black;
+            /* border: 1px solid black; */
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-left: 10px;
-            width: 180px;
+            width: 230px;
             height: 60px;
 
         }
@@ -225,12 +230,15 @@
             padding: 10px;
             font-size: 18px;
             margin-left: 10px;
+
         }
         .total-expenses-text {
-            border: 1px solid red;
+            border: 1px solid #F94D4D;
+            background-color: #F94D4D;
         }
         .total-income-text {
-            border: 1px solid blue;
+            border: 1px solid #3498db;
+            background-color: #3498db;
 
         }
         .total-expenses-num,.total-income-num {
@@ -254,6 +262,7 @@
     </style>
 </head>
 <body>
+    {% include 'app/navbar.html' %}
     <div class="container">
         
         <div class="box-note">

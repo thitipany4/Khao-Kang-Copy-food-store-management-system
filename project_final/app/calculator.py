@@ -5,11 +5,11 @@ def calculator(orb,text=None):
     for t in orb:
             if t.transaction_type == 'expenses':
                     list_expenses.append(t)
-                    print(t,t.transaction_type)
+                #     print(t,t.transaction_type)
 
             elif t.transaction_type == 'income':
                     list_income.append(t)
-                    print(t,t.transaction_type)
+                #     print(t,t.transaction_type)
 
             else:
                  list_leftover.append(t)

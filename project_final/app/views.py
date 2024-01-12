@@ -575,9 +575,20 @@ def calendar(req,date=None,mark=None):
             year = d.year
             month = d.month
             calendar_html = my_calendar.formatmonth(year, month)
+            note = Transaction.objects.filter(date__year=year, date__month=month)
+            # print(note)
+            sum_expenses,sum_income= calculator(note)
+            total = sum_income- sum_expenses 
+            context = {'calendar_html': calendar_html,
+                        'date':date,
+                        'total':total,
+                        'sum_expenses':sum_expenses,
+                        'sum_income':sum_income,}
+            return render(req, 'app/calendar_template.html',context)
         else:
             print('วันที่ภายในฟอร์มไม่ได้เลือก')
             return redirect('home')
+
     note = Transaction.objects.filter(date__year=date_str.year, date__month=date_str.month)
     # print(note)
     sum_expenses,sum_income= calculator(note)
@@ -648,6 +659,30 @@ def note(req, date=None):
                     print(t,t.transaction_type)
                     print('list_leftover',list_leftover)
 
+            tem = '''
+                        <div class="container-add-form" id="forms-container-leftover">
+                            <form method="post" class="add-leftover" action="/note/{{date}}/" enctype="multipart/form-data">
+                                {%csrf_token%}
+
+                                <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
+
+                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
+
+                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
+
+                                <input type="hidden" name="transaction" value="leftover">
+
+                                <!-- <select name="options" id="transaction_type">
+                                    <option value="expenses">expenses</option>
+                                    <option value="income">income</option>
+                                </select> -->
+
+                                <button type="button" class="delete-button" onclick="deleteForm(this)">Delete</button>
+
+                            </form>
+            
+                        </div>
+                '''
 
             context ={
                 'form':form,
@@ -658,6 +693,7 @@ def note(req, date=None):
                 'list_expenses':list_expenses,
                 'list_income':list_income,
                 'list_leftover':list_leftover,
+                'tem':tem,
             }
             return render(req,'app/view_form.html', context)
         else:
