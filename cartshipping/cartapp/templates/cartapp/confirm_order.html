@@ -1,0 +1,14 @@
+<h2>Confirm Order</h2>
+<p>Order Details:</p>
+<ul>
+    {% for item in order.orderitem_set.all %}
+        <li>{{ item.quantity }} x {{ item.product.name }} - ${{ item.price }}</li>
+    {% endfor %}
+</ul>
+<p>Total Price: ${{ order.total_price }}</p>
+
+<form method="post" action="{% url 'confirm_order' order.id %}">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Confirm Order</button>
+</form>

@@ -1,0 +1,29 @@
+<!-- cartapp/view_cart.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart</title>
+</head>
+<body>
+  <h2>Shopping Cart</h2>
+  <ul>
+    {% for item in items %}
+      <li>
+        {{ item.name }} - Price: {{ item.price }} - Quantity: {{ item.quantity }} - Subtotal: {{ item.subtotal }}
+        <a href="{% url 'delete_from_cart' item.id %}">Delete</a>
+      </li>
+    {% endfor %}
+  </ul>
+  <p>Total Price: {{ total_price }}</p>
+  <p><a href="{% url 'product_list' %}">add more food</a></p>
+  <p><a href="{% url 'product_list2' %}">add more food 2</a></p>
+
+  <p><a href="{% url 'checkout' %}">Proceed to Checkout</a></p>
+  <p><a href="{% url 'product_list' %}">Continue Shopping</a></p>
+
+  <a href="{%url 'delete_cart'%}">delete this cart</a>
+</body>
+</html>

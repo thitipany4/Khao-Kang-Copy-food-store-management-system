@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Checkout</h2>
+    <p>Review your order before completing the checkout process:</p>
+    <h3>Order Items:</h3>
+    <ul>
+      {% for item in order_items %}
+        <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}</li>
+      {% endfor %}
+    </ul>
+    <p>Total Price: {{ order.total_price }}</p>
+    <form method="post" action="{% url 'place_order' %}">
+      {% csrf_token %}
+      <button type="submit">Place Order</button>
+    </form>
+    <p><a href="{% url 'view_cart' %}">Go Back to Cart</a></p>
+</body>
+</html>

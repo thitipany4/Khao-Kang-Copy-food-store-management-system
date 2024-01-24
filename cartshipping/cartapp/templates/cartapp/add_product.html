@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Add Product</h2>
+    <form method="post" action="{% url 'add_product' %}">
+      {% csrf_token %}
+      {{ form.name.label_tag }} {{ form.name }}
+      {{ form.description.label_tag }} {{ form.description }}
+      {{ form.price.label_tag }} {{ form.price }}
+      {{ form.quantity.label_tag }}
+      <div class="quantity-control">
+        <button type="button" onclick="decrementQuantity()">-</button>
+        {{ form.quantity }}
+        <button type="button" onclick="incrementQuantity()">+</button>
+      </div>
+      <button type="submit">Add Product</button>
+    </form>
+  
+    <script>
+      function incrementQuantity() {
+        var quantityInput = document.getElementById("id_quantity");
+        quantityInput.value = parseInt(quantityInput.value) + 1;
+      }
+  
+      function decrementQuantity() {
+        var quantityInput = document.getElementById("id_quantity");
+        var currentQuantity = parseInt(quantityInput.value);
+        quantityInput.value = currentQuantity > 0 ? currentQuantity - 1 : 0;
+      }
+    </script>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Product List</h2>
+    <ul>
+      {% for product in products %}
+        <li>
+          {{ product.name }} - Quantity: {{ product.quantity }}
+          <form class="add-to-cart-form" method="post" action="{% url 'add_to_cart' 'type1' %}">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            <div class="quantity-control">
+                <button type="button" onclick="decrementQuantity('{{ product.id }}')">-</button>
+                <input type="number" name="quantity" id="id_quantity_{{ product.id }}" value="0" min="0">
+                <button type="button" onclick="incrementQuantity('{{ product.id }}')">+</button>
+            </div>
+          </form>
+        </li>
+      {% endfor %}
+      <button class="button-btn" type="button" onclick="submitForms()">Submit All Forms</button>
+    </ul>
+    <p><a href="{% url 'add_product' %}">Add a new product</a></p>
+    <p><a href="{% url 'view_cart' %}">View Cart</a></p>
+
+    <script>
+    const typeValue = "type1";
+    
+    function submitForms() {
+        const forms = document.querySelectorAll('.add-to-cart-form');
+        const formData = new FormData();
+
+        forms.forEach(form => {
+            const quantityInput = form.querySelector('input[name="quantity"]');
+            const quantityValue = parseInt(quantityInput.value);
+
+            if (quantityValue > 0) {
+                const formInputs = form.querySelectorAll('input');
+                formInputs.forEach(input => {
+                    formData.append(input.name, input.value);
+                });
+            }
+        });
+
+        // Check if there are forms with quantity > 0 before making the request
+        if (formData.has('quantity')) {
+            // Ajax request to submit form data to Django backend
+            fetch('/add-to-cart/' + typeValue + '/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (response.ok) {
+                    const homeURL = "{% url 'view_cart' %}";
+                    window.location.href = homeURL;
+                }
+            });
+        } else {
+            alert('No forms with quantity greater than 0.');
+        }
+    }
+
+      function incrementQuantity(productId) {
+        var quantityInput = document.getElementById("id_quantity_" + productId);
+        quantityInput.value = parseInt(quantityInput.value) + 1;
+      }
+
+      function decrementQuantity(productId) {
+        var quantityInput = document.getElementById("id_quantity_" + productId);
+        var currentQuantity = parseInt(quantityInput.value);
+        quantityInput.value = currentQuantity > 0 ? currentQuantity - 1 : 0;
+      }
+    </script>
+</body>
+</html>

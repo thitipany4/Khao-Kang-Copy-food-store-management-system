@@ -1,0 +1,20 @@
+<h2>Order History</h2>
+{% if user_orders %}
+  <ul>
+    {% for order in user_orders %}
+      <li>
+        Order ID: {{ order.id }} - Total Price: {{ order.total_price }} - Created at: {{ order.created_at }} cornfirmed: {{order.confirmed}}
+        
+        <ul>
+          {% for item in order.orderitem_set.all %}
+            <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}</li>
+          {% endfor %}
+        </ul>
+        
+      </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No orders found.</p>
+{% endif %}
+<p><a href="{% url 'product_list' %}">Back to Product List</a></p>
