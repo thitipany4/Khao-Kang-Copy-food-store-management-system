@@ -48,7 +48,7 @@ class LineLogin:
         print(token)
         print(',,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
         payload = token['id_token'].split('.')
-        ret = {
+        datas = {
             'access_token':  token['access_token'],
             'refresh_token': token['refresh_token'],
             'user_id':'',
@@ -58,14 +58,17 @@ class LineLogin:
         }
 
         if len(payload) == 3:
-            data = json.loads(base64.b64decode(payload[1]))
-            print('data',data)
-            ret['user_id'] = data.get('sub','')
-            ret['name'] = data.get('name', '')
-            ret['picture'] = data.get('picture', '')
-            ret['email'] = data.get('email', '')
-        print(ret)
-        return ret
+            # Add padding to make the length a multiple of 4
+            padded_payload = payload[1] + '=' * ((4 - len(payload[1]) % 4) % 4)
+            data = json.loads(base64.urlsafe_b64decode(padded_payload).decode('utf-8'))
+            print('data', data)
+            datas['user_id'] = data.get('sub', '')
+            datas['name'] = data.get('name', '')
+            datas['picture'] = data.get('picture', '')
+            datas['email'] = data.get('email', '')
+        print(datas)
+        return datas
+
     '''
     def profile(self, token):
         header = {'Authorization': f'Bearer {token}'}

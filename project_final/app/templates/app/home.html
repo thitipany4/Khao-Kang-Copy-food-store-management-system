@@ -58,9 +58,16 @@
         .detail_food {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             margin-left: 10px;
             margin-bottom: 0;
+            /* border: 1px solid red; */
+        }
+        .review_data {
+            display: flex;
+            margin-right: 20px;
+        }
+        .score {
+            margin-right: 5px;
         }
         .name {
             margin-top: 5px;
@@ -81,7 +88,7 @@
 
         .overlay {
             position: absolute;
-            top: 40px;
+            top: 30px;
             left: 200px;
             transform: translate(-50%, -50%);
             padding: 10px;
@@ -136,13 +143,16 @@
                                 <div class="name">{{f.name}}</div> 
                                 <div class="detail_food">
                                     <div class="food-price">{{f.price}} {{f.unit}}</div>
-                                    {%if f.score%}
+                                    <div class="review_data">
+                                        {%if f.score and f.quantity_review > 5 %}
                                         <div class="score">{{f.score}}</div>
                                     {%endif%}
 
-                                    {%if f.quantity_review >= 10%}
+                                    {%if f.quantity_review > 5 %}
                                         <div class="quantity_review">({{f.quantity_review}})</div>
                                     {%endif%}
+                                    </div>
+                                  
                                 </div>
                             </div>
                             

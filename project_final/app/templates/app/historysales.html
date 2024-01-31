@@ -154,38 +154,6 @@
             /* border: 1px solid #333; */
         
         }
-        .popup-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .buttonpopup {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-        }
-        .message {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            /* border: 1px solid blue; */
-
-        }
-        .popup {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border: 1px solid #000;
-            background-color: #fff;
-            padding: 20px;
-            z-index: 9999;
-            width: 150px;
-            height: 150px;
-}
         .box-button {
             display: flex;
             justify-content: center;
@@ -301,34 +269,13 @@
                     <!-- Render DateField -->
                     <label for="id_my_date_field">เลือกวันที่</label>
                     {{ form.date_field }}
-                    <button type="submit">Submit</button>
+                    <button type="submit">OK</button>
                 </form>
                 <div class="showdate">{{thai_date}}</div>
                 <div class="rightbar">
                     <a href="/create/" class="addfood">เพิ่มเมนูอาหาร</a>
-                    <a href="#" class="clearfood" onclick="openPopup()">จบวัน</a>
-                    <div id="popup" class="popup">
-                        <div class="popup-content">
-                          <form action="/clear_food/" method="post" class="form-popup">
-                                {%csrf_token%}
-                                <p class="message">คุณแน่ใจที่จะจบการขายของวันนี้หรือไม่</p>
-                                <div class="buttonpopup">
-                                    <button type="submit">ok</button>
-                                    <button type="button" onclick="closePopup()">cancel</button>
-                                </div>
-                          </form>
                           
                           <!-- You can add any content or form elements here -->
-                            <script>
-                                function openPopup() {
-                                    var popup = document.getElementById("popup");
-                                    popup.style.display = "block";
-                                }
-                                function closePopup() {
-                                    var popup = document.getElementById("popup");
-                                    popup.style.display = "none";
-                                }
-                            </script>
                         </div>
                       </div>
                 </div>

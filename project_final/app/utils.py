@@ -87,7 +87,7 @@ class EventCalendar(HTMLCalendar):
         """
         print('....................')
         month = f'{theyear}-{themonth}'
-        print(month)
+        # print(month)
 
         v = []
         a = v.append

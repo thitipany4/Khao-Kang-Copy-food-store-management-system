@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>{% block title %}เว็บไซต์ของฉัน{% endblock %}</title>
 </head>
 <body>
-    {% include 'app/navbar.html' %}
-    {% block content %} 
+    <!-- โครงสร้าง HTML ทั่วไปของคุณจะอยู่ที่นี่ -->
     
-    {% endblock %} 
+    {% block content %}{% endblock %}
+    
+    <!-- สคริปต์ทั่วไปของคุณจะอยู่ที่นี่ -->
+    <script src="https://example.com/common-scripts.js"></script>
 </body>
 </html>

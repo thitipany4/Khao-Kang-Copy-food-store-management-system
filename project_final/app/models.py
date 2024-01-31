@@ -34,6 +34,7 @@ class Food(models.Model):
     unit = models.CharField(max_length=100,default='บาทต่อถุง')
     score = models.FloatField(default=0,blank=True,null=True)
     quantity_review = models.IntegerField(default=0,blank=True,null=True)
+    quantity_sale = models.IntegerField(default=0)
     image = models.ImageField(upload_to='media/image/',blank=True,null=True)
     options = models.CharField(max_length=20, choices=(
         ('notchoose', 'ไม่ได้เลือก'),
@@ -57,8 +58,8 @@ class Food(models.Model):
     
 class Historysale(models.Model):
     date_field = models.DateField()
-    food = models.ForeignKey(Food,on_delete=models.DO_NOTHING,null=True,blank=True)
-
+    food = models.ForeignKey(Food,on_delete=models.CASCADE,null=True,blank=True)
+    quantity = models.IntegerField(default=0)
     def __str__(self) -> str:
         return f'{self.date_field} {self.food}'
     

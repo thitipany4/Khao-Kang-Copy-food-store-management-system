@@ -149,10 +149,25 @@
         }
         .options_sale {
             display: flex;
-            justify-content: flex-end;
+            justify-content: space-around;
+            align-items: center;
             margin-right: 10px;
             /* border: 1px solid #333; */
         
+        }
+        .input_q {
+            margin-bottom: 5px;
+        }
+        .label_input {
+            font-size: 14px;
+        }
+        .input_button {
+            width: 65px;
+
+        }
+        .select_button {
+            height: 22px;
+
         }
         .popup-content {
             display: flex;
@@ -186,11 +201,21 @@
             width: 150px;
             height: 150px;
 }
+        .pop_ok {
+            background-color: #76FF76;
+            margin-right: 20px;
+            width: 60px;
+        }
+        .pop_cancel {
+            background-color: #FF7676;
+            width: 60px;
+        }
         .box-button {
             display: flex;
             justify-content: center;
 
         }
+
         .button-submit {
             display: flex;
             width: 20%;
@@ -280,7 +305,7 @@
                     <!-- Render DateField -->
                     <label for="id_my_date_field">เลือกวันที่</label>
                     {{ form.date_field }}
-                    <button type="submit">Submit</button>
+                    <button type="submit">OK</button>
                 </form>
                 <div class="showdate">{{thai_date}}</div>
                 <div class="rightbar">
@@ -292,8 +317,8 @@
                                 {%csrf_token%}
                                 <p class="message">คุณแน่ใจที่จะจบการขายของวันนี้หรือไม่</p>
                                 <div class="buttonpopup">
-                                    <button type="submit">ok</button>
-                                    <button type="button" onclick="closePopup()">cancel</button>
+                                    <button class="pop_ok" type="submit">ok</button>
+                                    <button class="pop_cancel" type="button" onclick="closePopup()">cancel</button>
                                 </div>
                           </form>
                           
@@ -330,9 +355,13 @@
                             {%endif%}
                             <input type="hidden" name="food_id" value="{{ f.id }}">
                             <div class="options_sale">
+                                <div class="input_q">
+                                    <label class="label_input" for="input_button">จำนวน</label>
+                                    <input class="input_button" name="input_quantity" type="number" value='{{f.quantity_sale}}'>
+                                </div>
                                 {%if f.options == 'onsale'%}
-                                    <label for="option_{{f.id}}"></label>
-                                    <select name="options" id="option_{{f.id}}">
+                                    <label  for="option_{{f.id}}"></label>
+                                    <select class="select_button" name="options" id="option_{{f.id}}">
                                         <option value="onsale">วางขาย</option>
                                         <option value="notchoose">ไม่ได้เลือก</option>
                                         <option value="soldout">ขายหมดเเล้ว</option>
@@ -340,7 +369,7 @@
                                 {%endif%}
                                 {%if f.options == 'soldout'%}
                                 <label for="option_{{f.id}}"></label>
-                                <select name="options" id="option_{{f.id}}">
+                                <select class="select_button" name="options" id="option_{{f.id}}">
                                     <option value="soldout">ขายหมดเเล้ว</option>
                                     <option value="notchoose">ไม่ได้เลือก</option>
                                     <option value="onsale">วางขาย</option>
@@ -348,7 +377,7 @@
                                 {%endif%}
                                 {%if f.options == 'notchoose'%}
                                 <label for="option_{{f.id}}"></label>
-                                <select name="options" id="option_{{f.id}}">
+                                <select class="select_button" name="options" id="option_{{f.id}}">
                                     <option value="notchoose">ไม่ได้เลือก</option>
                                     <option value="onsale">วางขาย</option>
                                     <option value="soldout">ขายหมดเเล้ว</option>

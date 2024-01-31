@@ -178,7 +178,7 @@ def clearfood(req):
             if f.options != 'notchoose':
                 print('setsetset')
                 print(f)
-                f.options = 'soldout'
+                f.options = 'notchoose'
                 f.save()
         return redirect('managefood')
     else:
@@ -302,8 +302,14 @@ def reviewfood(req,id):
         if form.is_valid():
             review = form.save(commit=False)
             member = Member.objects.get(user=req.user)
+            print(form.instance.rating)
             review.owner = member
-
+            food.quantity_review +=1
+            if food.quantity_review !=0:
+                average_score = (food.score * (int(food.quantity_review) - 1) + form.instance.rating) / food.quantity_review
+                food.score = round(average_score, 2)
+                food.score = average_score
+            food.save()
             review.save()
             return redirect('home')
         else:
@@ -319,15 +325,21 @@ def reviewfood(req,id):
 def managefood(req, date=None):
     print(date)
     if req.method == 'POST':
+        quantity = req.POST.getlist('input_quantity')
+        print(quantity)
         food_ids = req.POST.getlist('food_id')
         print(food_ids)
         options = req.POST.getlist('options')
         print(options)
         if len(food_ids) == len(options):
-            for id, option in zip(food_ids, options):
+            for id, option,quantity in zip(food_ids, options,quantity):
                 food_item = Food.objects.get(pk=id)
                 print(food_item, f'pass {option}')
-
+                if quantity != '':
+                    food_item.quantity_sale = int(quantity)
+                    print(' food_item.quantity_sale', food_item.quantity_sale)
+                    food_item.save()
+                    print('save quantity done')
                 if option == 'notchoose':
                     found = Historysale.objects.filter(food_id=food_item.id, date_field=date)
                     print(found)
@@ -340,7 +352,8 @@ def managefood(req, date=None):
                         print('ไม่พบข้อมูลในฐานข้อมูล (Data not found in the database)')
 
                 elif option in ['onsale', 'soldout']:
-                    if Historysale.objects.filter(food_id=food_item.id, date_field=date).exists():
+                    found = Historysale.objects.filter(food_id=food_item.id, date_field=date)
+                    if found.exists():
                         if food_item.options != option:
                             food_item.options = option
                             food_item.save()
@@ -351,6 +364,7 @@ def managefood(req, date=None):
                         food_item.options = option
                         food_item.save()
                         history_sale = Historysale.objects.create(food=food_item, date_field=date)
+
                         print('เซฟข้อมูลลงฐานข้อมูลได้ (Saved data to the database)')
 
         return redirect('managefood')
