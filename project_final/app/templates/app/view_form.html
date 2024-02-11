@@ -23,8 +23,8 @@
             width: 170px;
             /* border: 1px solid red; */
             font-size: 28px;
-            margin-left: 40px;
-            margin-right: 60px;
+            margin-left: 10px;
+            margin-right: 40px;
             margin-top: 10px;
 
         }
@@ -53,9 +53,10 @@
             border-radius: 0.5rem;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             /* background-color: #D9DAD9; */
-            width: 70%;
+            width: 80%;
             height: auto;
             margin-top: 20px;
+            
 
         }
 
@@ -63,7 +64,7 @@
             display: flex;
             justify-content: space-between;
             width: 540px;
-            margin-left: 330px;
+            margin-left: 280px;
             /* border: 1px solid red; */
             margin-top: 40px;
         }
@@ -71,7 +72,7 @@
             display: flex;
             justify-content: space-between;
             width: 540px;
-            margin-left: 330px;
+            margin-left: 280px;
             /* border: 1px solid red; */
 
         }
@@ -106,6 +107,7 @@
             margin-bottom: 10px;
             /* border: 1px solid blue; */
 
+
         }
         .container-add-form {
             margin-top: 20px;
@@ -116,11 +118,11 @@
 
         .bar-str {
             width: 140px;
-            margin-right: 15px;
+            /* margin-right: 10px; */
 
         }
         .bar-price,.bar-amount {
-            width: 70px;
+            width: 80px;
 
         }
         .bar-price {
@@ -128,7 +130,7 @@
             margin-right: 75px;
         }
         .bar-amount {
-            margin-right: 100px;
+            margin-right: 90px;
 
         }
         z
@@ -221,7 +223,7 @@
                                 <input class="bar-amount" type="text" name="amount" step="any" required id="id_amount" value="{{e.amount}}">
 
                                 <input  type="hidden" name="transaction" value="{{e.transaction_type}}">
-                                <span class="total">0.00</span>
+                                <div class="total">0.00</div>
 
                             </form>
                         {%endfor%}
@@ -236,15 +238,11 @@
                                 <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
 
                                 <input type="hidden" name="transaction" value="{{expenses}}">
-
-                                <!-- <select name="options" id="transaction_type">
-                                    <option value="expenses">expenses</option>
-                                    <option value="income">income</option>
-                                </select> -->
                                 <button type="button" class="delete-button" onclick="deleteForm(this)">Delete</button>
 
                             </form>
                             <button class="add-form-btn" onclick="addFormExpenses()">Add more form</button>
+                            
                         </div>
                         </div>
                 </div>

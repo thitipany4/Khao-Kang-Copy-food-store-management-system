@@ -66,7 +66,10 @@ def getdate(x=None,th=None):
 # Create your views here.
 
 def home(req):
-    key = check()
+    t = Transaction.objects.all()
+    for d in t:
+        print('tran id',d.id)
+    #key = check()
     food = Food.objects.all()
     context ={
         'food':food,
@@ -375,6 +378,7 @@ def managefood(req, date=None):
                                 food_item.save()
                     else:
                         food_item.options = option
+                        food_item.quantity_sale = quantity
                         food_item.save()
                         history_sale = Historysale.objects.create(food=food_item, date_field=date,quantity=quantity)
 
@@ -596,6 +600,7 @@ def calendar(req,date=None,mark=None):
             date=getdate(date_str)
             print('date11',date_str)
         elif date and mark =='prev_month':
+            print('date  dd' ,date)
             d = datetime.strptime(date, '%Y-%m-%d').date()
             date_str = get_prev_month(d)
             date=getdate(date_str)
@@ -610,10 +615,11 @@ def calendar(req,date=None,mark=None):
         month = date_str.month
         calendar_html = my_calendar.formatmonth(year, month)
     else:
-        date = req.POST.get('move_to_month')
+        date = req.POST.get('move_to_month') + '-01'
         print('date ==',date)
         if date:
-            d = datetime.strptime(date, '%Y-%m').date()
+            d = datetime.strptime(date, '%Y-%m-%d').date()
+            print('move to',d)
             year = d.year
             month = d.month
             calendar_html = my_calendar.formatmonth(year, month)
@@ -653,16 +659,25 @@ def note(req, date=None):
         amount_values = req.POST.getlist('amount')
         transaction_type_values = req.POST.getlist('transaction')
         print('namesssss :', name_values)
-        print('namesssss :', transaction_type_values)
+        print('namesssss :', price_values)
+        print('namesssss :', amount_values)
+
 
         for i in range(len(name_values)):
             if name_values[i] == '':
                 continue
             else:
-                check = Transaction.objects.filter(name=name_values[i])
+                check = Transaction.objects.filter(name=name_values[i],date=date).first()
                 print('check',check)
-                if check.exists():
-                    print('data are duplicate')
+                if check:
+                    if check.name !=name_values[i] or check.price !=price_values[i] or check.amount !=amount_values[i]:
+                        form = FormNote({'name': name_values[i],
+                                         'price': price_values[i],
+                                         'amount': amount_values[i],},
+                                         req.POST,instance=check)
+                        if form.is_valid():
+                            form.save()
+                        print('data are duplicate')
                 else:
                     print('transaction_type ', [i], transaction_type_values[i])
                     form = FormNote({
@@ -764,6 +779,17 @@ def show_note(req,date=None):
          'date':date,
     }
     return render(req, 'app/show-note.html',context )
+def delete_note(request,note_id,date):
+    note = get_object_or_404(Transaction, pk=note_id,date=date)
+    print(note , 'delete done')
+    if note:
+        note.delete()
+        return redirect('show-note',date=date)
+
+    else:
+        return redirect('show-note',date=date)
+
+
 
 def create_cart(request):
     existing_order = Order.objects.filter(user=request.user,checkout=False).first()
@@ -1137,7 +1163,7 @@ def order_confirmation(request, order_id=None):
         order.checkout = True
         order.save()
         print('order has been checkout')
-        context ={
+        context ={  
             'order':order,
             'order_item1':order_item1,
             'order_item2':order_item2,

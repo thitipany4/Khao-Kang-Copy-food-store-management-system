@@ -25,7 +25,7 @@
             /* border: 1px solid red; */
             font-size: 28px;
             margin-left: 40px;
-            margin-right: 80px;
+            margin-right: 50px;
             margin-top: 10px;
 
         }
@@ -44,6 +44,7 @@
             font-size: 24px;
 
         }
+
         .box-note {
             display: flex;
             flex-direction: column;
@@ -64,7 +65,7 @@
             display: flex;
             justify-content: space-between;
             width: 540px;
-            margin-left: 330px;
+            margin-left: 270px;
             /* border: 1px solid red; */
             margin-top: 40px;
         }
@@ -72,7 +73,7 @@
             display: flex;
             justify-content: space-between;
             width: 540px;
-            margin-left: 330px;
+            margin-left: 270px;
             /* border: 1px solid red; */
 
         }
@@ -99,12 +100,16 @@
             display: flex;
             margin-bottom: 10px;
         }
-
+        .note_delete {
+            display: flex;
+        }
         .note-expenses,.note-income,.note-leftover {
             display: flex;
             flex-direction: row;
             height: 20px;
             margin-bottom: 10px;
+            margin-right: 10px;
+            width: 600px;
             /* border: 1px solid blue; */
 
         }
@@ -116,8 +121,8 @@
         }
 
         .bar-str {
-            width: 140px;
-            margin-right: 15px;
+            width: 120px;
+            margin-right: 5px;
 
         }
         .bar-price,.bar-amount {
@@ -129,7 +134,7 @@
             margin-right: 95px;
         }
         .bar-amount {
-            margin-right: 100px;
+            margin-right: 80px;
 
         }
         z
@@ -160,12 +165,10 @@
             margin-left: 260px;
             margin-bottom: 10px;
         }
-        .button-btn,.cancel-btn {
+        .button-btn,.cancel-btn,.delete_note {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 40px;
-            border-radius: 4px;
             text-decoration: none;
             color: white;
         }
@@ -173,13 +176,26 @@
                 border: 1px solid #3498db;
                 background-color: #3498db;
                 width: 120px;
+                height: 40px;
+                border-radius: 4px;
             }
 
         .cancel-btn {
                 border: 1px solid #F94D4D;
                 background-color: #F94D4D;
                 width: 100px;
+                height: 40px;
+                border-radius: 4px;
             }
+        .delete_note {
+
+            background-color: #F94D4D;
+            font-size: 12px;
+            padding: 3px;
+            border-radius: 3px;
+
+
+        }
         .delete-button {
             display: flex;
             justify-content: center;
@@ -281,6 +297,7 @@
                     </div>
                     <div class="forms-expenses">
                         {%for e in list_expenses%}
+                        <div class="note_delete">
                             <div class="note-expenses">
                                 {%csrf_token%}
                                 <div class="bar-str">{{e.name}}</div>
@@ -290,26 +307,15 @@
                                 <!-- <input  class="bar-price" type="text" name="price" step="any" required id="id_price" value="{{e.price}}"> -->
                                 <!-- <input class="bar-amount" type="text" name="amount" step="any" required id="id_amount" value="{{e.amount}}"> -->
                                 <span class="total">0.00</span>
-
                             </div>
+                            <div class="delete_btn">
+                                <a class="delete_note" href="/delete_note/{{e.id}}/{{date}}/">Delete</a>
+                            </div>
+                        </div>
+
                         {%endfor%}
-                        <div class="container-add-form" id="forms-container-expenses">
-                            <!-- <form method="post" class="add-expenses" action="/note/{{date}}/" enctype="multipart/form-data">
-                                {%csrf_token%}
 
-                                <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
-
-                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
-
-                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
-
-                                <input type="hidden" name="transaction" value="{{expenses}}">
-
-
-                            </form> -->
-
-                        </div>
-                        </div>
+                    </div>
                 </div>
                 <hr>
                 <div class="text-box">
@@ -324,31 +330,22 @@
                         รายรับ
                     </div>
                     <div class="forms-income">
-                        {%for i in list_income%}
-                        <div class="note-expenses">
-                            <div class="bar-str">{{i.name}}</div>
-                            <div class="bar-price"  name="price">{{i.price}}</div>
-                            <div class="bar-amount" name="amount">{{i.amount}}</div>
-
-                            <span class="total">0.00</span>
-                        </div>
-                        {%endfor%}
-                        <div class="container-add-form" id="forms-container-income">
-                            <!-- <form method="post" class="add-income" action="/note/{{date}}/" enctype="multipart/form-data">
+                        {%for e in list_income%}
+                        <div class="note_delete">
+                            <div class="note-income">
                                 {%csrf_token%}
-
-                                <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
-
-                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
-
-                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
-
-                                <input type="hidden" name="transaction" value="income">
-
-                            </form> -->
-
-
+                                <div class="bar-str">{{e.name}}</div>
+                                <div class="bar-price" name="price">{{e.price}}</div>
+                                <div class="bar-amount" name="amount">{{e.amount}}</div>
+                                <span class="total">0.00</span>
+                            </div>
+                            <div class="delete_btn">
+                                <a class="delete_note" href="/delete_note/{{e.id}}/{{date}}/">Delete</a>
+                            </div>
                         </div>
+
+                        {%endfor%}
+
                     </div>
                 </div>
                 <hr>
@@ -364,34 +361,22 @@
                         อาหารที่เหลือ
                     </div>
                     <div class="forms-leftover">
-                        {%for l in list_leftover %}
-                        <div class="note-leftover">
-                            <div class="bar-str">{{l.name}}</div>
-                            <div class="bar-price"  name="price">{{l.price}}</div>
-                            <div class="bar-amount" name="amount">{{l.amount}}</div>
-
-                            <span class="total">0.00</span>
-                        </div>
-                        {%endfor%}
-                        <div class="container-add-form" id="forms-container-leftover">
-                            <!-- <form method="post" class="add-leftover" action="/note/{{date}}/" enctype="multipart/form-data">
+                        {%for e in list_leftover%}
+                        <div class="note_delete">
+                            <div class="note-leftover">
                                 {%csrf_token%}
-
-                                <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
-
-                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
-
-                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
-
-                                <input type="hidden" name="transaction" value="leftover">
-
-             
-
-
-
-                            </form> -->
- 
+                                <div class="bar-str">{{e.name}}</div>
+                                <div class="bar-price" name="price">{{e.price}}</div>
+                                <div class="bar-amount" name="amount">{{e.amount}}</div>
+                                <span class="total">0.00</span>
+                            </div>
+                            <div class="delete_btn">
+                                <a class="delete_note" href="/delete_note/{{e.id}}/{{date}}/">Delete</a>
+                            </div>
                         </div>
+
+                        {%endfor%}
+
                     </div>
                 </div>
             </div>

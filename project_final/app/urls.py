@@ -27,6 +27,7 @@ urlpatterns = [
     path('calendar/<str:date>/<str:mark>/',calendar,name='calendar-date'),
     path('note/<str:date>/',note,name='note'),
     path('show_note/<str:date>/',show_note,name='show-note'),
+    path('delete_note/<str:note_id>/<str:date>/',delete_note,name='delete_note'),
 
     path('create_cart/', create_cart, name='create_cart'),
     path('view-cart/', view_cart, name='view_cart'),
