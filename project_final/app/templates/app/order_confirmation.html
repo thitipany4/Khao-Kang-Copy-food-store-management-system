@@ -1,0 +1,11 @@
+<h2>Order Confirmation</h2>
+<p>Thank you for your order!</p>
+<p>Order ID: {{ order.ref_code }}</p>
+<p>Total Price: {{ order.total_price }}</p>
+<h3>Order Items:</h3>
+<ul>
+  {% for item in order_items %}
+    <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}</li>
+  {% endfor %}
+</ul>
+<p><a href="{% url 'home' %}">Continue Shopping</a></p>

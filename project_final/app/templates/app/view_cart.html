@@ -1,0 +1,258 @@
+<!-- cartapp/view_cart.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shopping Cart</title>
+</head>
+<style>
+    body {
+            background-color: #E3E3E3;
+        }
+  .container {
+    display: flex;
+    margin: 10px;
+    flex-direction: column;
+    align-items: center;
+    /* border: 1px solid red; */
+  }
+  .area_container {
+    border: 1px solid #393632;
+    background-color: #FDFDFD;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 50%;
+
+  }
+  .box_container {
+    display: flex;
+    margin: 10px;
+    width: 95%;
+    flex-direction: column;
+    /* border: 1px solid palegreen; */
+  }
+  .total_price {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    font-size: 18px;
+    height: 30px;
+    /* border: 1px solid blue; */
+    margin-right: 20px;
+
+  }
+  .type1_box,.type2_box {
+    display: flex;
+    flex-direction: column;
+    /* border: 1px solid blue; */
+
+  }
+  .head_box1 {
+    display: flex;
+    align-items: center;
+
+  }
+  .line {
+    border-bottom: 1px solid #393632 ;
+
+  }
+  .type1_box {
+    margin-bottom: 20px;
+    
+  }
+  .type2_box {
+    margin-bottom: 40px;
+  }
+  .head_type1 ,.head_type2 {
+    margin-bottom: 10px;
+  }
+  .head_type1 {
+    margin-right: 183px;
+  }
+  .detail_type1,.detail_type2 {
+    display: flex;
+    border: 1px solid green;
+    align-items: center;
+    height: 40px;
+    justify-content: space-between;
+    /* margin-bottom: 10px; */
+    
+  }
+  .detail_type1 {
+    width: 73%;
+  }
+  .detail_type2 {
+    width: 80%;
+  }
+  .name_quantity {
+    display: flex;
+    /* border: 1px solid green; */
+    width: 200px;
+    justify-content: space-between;
+    margin-right: 20px;
+  }
+  .price_delete_m1 {
+    display: flex;
+    border: 1px solid tomato;
+    width: 150px;
+    justify-content: space-between;
+    margin-right: 55px;
+  }
+  .price_delete_m2 {
+    display: flex;
+    border: 1px solid tomato;
+    width: 220px;
+    justify-content: space-between;
+    margin-right: 30px;
+  }
+  .delete_modify {
+    display: flex;
+
+  }
+  .modify_btn {
+    margin-left: 15px;
+  }
+
+  .btn_box {
+        display: flex;
+        /* border: 1px solid tomato; */
+        
+        justify-content: end;
+        align-items: center;
+
+    }
+  .delete_food,.add_food,.delete_cart,.checkout,.modify_btn  {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 4px;
+        text-decoration: none;
+        color: white;
+    }
+    .delete_food {
+      width: 50px;
+      height: 20px;
+      border: 1px solid #F94D4D;
+      background-color: #F94D4D;
+    }
+    .modify_btn {
+      width: 50px;
+      height: 20px;
+      border: 1px solid #774DF9;
+      background-color: #774DF9;
+    }
+    .add_food {
+      width: 100px;
+      height: 35px;
+      margin-top: 10px;
+      border: 1px solid #3498db;
+      background-color: #3498db;
+    }
+    .delete_cart {
+      width: 100px;
+      height: 35px;
+      border: 1px solid #F94D4D;
+      background-color: #F94D4D;
+    }
+    .checkout {
+      width: 100px;
+      height: 35px;
+      border: 1px solid #62DB34;
+      background-color: #62DB34;
+      margin-left: 20px;
+    }
+</style>
+<body>
+  {% include 'app/navbar.html' %}
+
+  <div class="container">
+    <div class="area_container">
+    <h2>Shopping Cart</h2>
+    <div class="box_container">
+      <div class="total_price">
+        Total Price: {{ order.total_price }}
+      </div>
+     
+      <div class="type1_box">
+        <div class="head_box1">
+          <div class="head_type1">รายการสั่งอาหารแบบถุง</div>
+          {%if order_item1%}
+          <a class="modify_btn" href="/modify_cart1/">แก้ไข</a>
+          {%endif%}
+        </div>
+          {%if order_item1%}
+          <div class="line"></div>
+          {% for item in order_item1 %}
+          <div class="detail_type1">
+            <div class="name_quantity">
+              <div class="food_name">{{ item.food.name }}</div>
+              <div class="quantity_food">x {{ item.quantity }}</div>
+            </div>
+            <div class="price_delete_m1">
+              <div class="price">{{ item.price }}</div>
+              <div class="delete_modify">
+                <a class="delete_food" href="{% url 'delete_from_cart' product_id=item.id type=type_1 %}">Delete</a>
+              </div>
+            </div>
+
+          </div>
+          <div class="line"></div>
+
+          {% endfor %}
+          {%endif%}
+          <div class="add_type1">
+            <a class="add_food" href="/shopping_food_type1/">เพิ่มอาหาร</a>
+          </div>
+
+      </div>
+
+
+      <div class="type2_box">
+        <div class="head_type2">รายการสั่งอาหารแบบกล่อง</div>
+        {%if order_item2%}
+        <div class="line"></div>
+
+        {% for item in order_item2 %}
+        <div class="detail_type2">
+            <div class="name_quantity">
+              {%if item.price == 50 %}
+              <div class="food_name">{{ item.name }} พิเศษ</div>
+              {%else%}
+              <div class="food_name">{{ item.name }}</div>
+              
+              {%endif%}
+              <div class="quantity_food">x {{ item.quantity }}</div>
+            </div>
+            <div class="price_delete_m2">
+              <div class="price">{{ item.price }}</div>
+              <div class="delete_modify">
+                <a class="delete_food" href="{% url 'delete_from_cart' product_id=item.id type=type_2 %}">Delete</a>
+                <a class="modify_btn" href="/modify_cart2/{{item.id}}/">แก้ไข</a>
+              </div>
+            </div>
+            
+        </div>
+        <div class="line"></div>
+
+        {% endfor %}
+        {%endif%}
+        <div class="add_type2">
+          <a class="add_food" href="/shopping_food_type2/">เพิ่มอาหาร</a>
+        </div>
+      </div>
+      <div class="btn_box">
+
+          <a class="delete_cart" href="/delete_cart/{{order.ref_code}}/">ลบตระกร้า</a>
+          <a class="checkout" href="{% url 'checkout' %}">checkout</a>
+  
+      </div>
+
+    </div>
+  </div>
+  </div>
+  
+</body>
+</html>

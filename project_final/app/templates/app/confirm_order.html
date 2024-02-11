@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        .container {
+            display: flex;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    
+        .table {
+
+            align-items: center;
+            text-align: center;
+            width: 1200px;
+            margin-top: 20px;
+            border: 1px solid red;
+        }
+    
+        .head_table {
+            display: flex;
+            /* justify-content: center; */
+            width: 1000px; /* Change the width to match the width of .table */
+            text-align: center;
+        }
+        .body_table {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid red;
+
+        }
+        .create_head {
+            width: 200px;
+        }
+        .create_body {
+            width: 200px;
+
+
+        }
+        .confirm_head {
+            width: 200px;
+        }
+        .confirm_body {
+            width: 200px;
+
+
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            width: 100px; /* You may adjust this value based on your design */
+            border-bottom: 1px solid #ddd;
+        }
+    
+        th {
+            background-color: #f2f2f2;
+        }
+    
+        tbody tr:hover {
+            background-color: #f5f5f5;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <table class="table">
+            <thead class="head_table">
+                <tr class="box_head">
+                    <th class="user_head">User</th>
+                    <th class="create_head">created</th>
+                    <th class="price_head">price</th>
+                    <th class="code_head">code</th>
+                    <th class="confirm_head">confirmed</th>
+                    <th class="status_head">status</th>
+
+                </tr>
+            </thead>
+            <tbody class="body_table">
+                {%for o in order%}
+                <div class="table_detail">
+                    <tr class="box_body">
+                        <td class="user_body">{{o.user}}</td>
+                        <td class="create_body">{{o.created_at}}</td>
+                        <td class="price_body">{{o.total_price}}</td>
+                        <td class="code_body">{{o.ref_code}}</td>
+                        <td class="confirm_body">{{o.confirm}}</td>
+                        <td class="status_body">
+                            <div class="button_confirm">
+                                <a class="confirm_btn" href="/confirm_order/{{o.ref_code}}/{{confirm}}/">confirm</a>
+                                <a class="cancle_btn" href="/confirm_order/{{o.ref_code}}/{{cancel}}/">cancel</a>
+                            </div>
+                        </td>
+                    </tr>
+                </div>
+                {%endfor%}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

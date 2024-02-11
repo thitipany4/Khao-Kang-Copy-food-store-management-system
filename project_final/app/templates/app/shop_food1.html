@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+   .container-area {
+            display: grid;
+            padding: 0.5rem;
+            margin: 0.5rem;
+            grid-template-columns: repeat(4,1fr);
+            grid-gap: 10px;
+            width: 1140px;
+            margin: 0 auto;
+            margin-top: 20px;
+
+        }
+        .boxlistfood {
+            /* border: 1px solid blue; */
+            margin-top: 20px;
+            width: 220px;
+            height: 200px;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+
+            
+        }
+        .boxlistfood div {
+
+            text-align: center;
+            margin-bottom: 10px;
+            
+        }
+        .listitem a {
+            text-decoration: none;
+            color: black;
+        }
+        .image-food {
+            width: 100% ;
+            border-radius: 1rem;
+            height: 110px;
+            margin-bottom: 20px;
+
+
+        }
+        .image-food img {
+            height: 130px; /* Set the height of the image container */
+            width: 99.5%; /* Set the width of the image container */
+
+            
+
+        }
+        .detail_food {
+            display: flex;
+            justify-content: space-between;
+            margin-left: 10px;
+            margin-bottom: 0;
+            /* border: 1px solid red; */
+        }
+        .review_data {
+            display: flex;
+            margin-right: 20px;
+        }
+        .score {
+            margin-right: 5px;
+        }
+        .name {
+            margin-top: 5px;
+            margin-bottom: 0;
+        }
+
+        .box-detail {
+            display: flex;
+            flex-direction: column;
+            border-radius: 0.3rem;
+            height: 70px;
+            position: relative;
+            margin-top: 20px;
+            /* border: 1px solid red; */
+            background-color: #FDFDFD;
+
+        }
+
+        .overlay {
+            position: absolute;
+            top: 30px;
+            left: 200px;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+            border-radius: 5px; 
+            width: 30px;
+}
+        .status-sale-green {
+            background-color: greenyellow; /* Change the background color and opacity as needed */
+            display: inline-block;
+            padding: 6px;
+            width: 10px;
+            height: 5px;
+            border-radius: 0.5rem;
+        }
+        .status-sale-red {
+            background-color: #E84F2F; /* Change the background color and opacity as needed */
+            display: inline-block;
+            padding: 6px;
+            width: 10px;
+            height: 5px;
+            border-radius: 0.5rem;
+        }
+
+</style>
+<body>
+  {% include 'app/navbar.html' %}
+
+  <div class="container-area">
+    {% if food %}
+        {%for f in food %}
+            {{modify}}
+            {%if f.options != 'notchoose'%}
+            <div class="listitem">
+                <a href="/foodview/{{f.id}}/">
+
+                    <div class="boxlistfood">
+                        {%if f.image %}
+                        <div class="image-food">
+                            <img src="{{f.image.url}}" alt="food-image">
+                        </div>
+                        {%endif%}
+
+                        <div class="box-detail">
+                            <div class="overlay">
+                                {%if f.options == 'onsale' %}
+                                <div class="status-sale-green"></div>
+                                {%endif%}
+                                {%if f.options == 'soldout'%}
+                                <div class="status-sale-red"></div>
+                                {%endif%}
+                            </div>
+                            
+                            <div class="name">{{f.name}}</div> 
+                            <div class="detail_food">
+                                <div class="food-price">{{f.price}} {{f.unit}}</div>
+                                <div class="review_data">
+                                    {%if f.score and f.quantity_review > 5 %}
+                                    <div class="score">{{f.score}}</div>
+                                {%endif%}
+
+                                {%if f.quantity_review > 5 %}
+                                    <div class="quantity_review">({{f.quantity_review}})</div>
+                                {%endif%}
+                                </div>
+                            
+                            </div>
+                        </a>
+                            <form class="add-to-cart-form" method="post" action="{% url 'add_to_cart' 'type1' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ f.id }}">
+                            <div class="quantity-control">
+                                <button class="left_de" type="button" onclick="decrementQuantity('{{ f.id }}')">-</button>
+                                <input class="cen_num" type="number" name="quantity" id="id_quantity_{{ f.id }}" value="0" min="0">
+                                <button class="right_in" type="button" onclick="incrementQuantity('{{ f.id }}')">+</button>
+                            </div>
+                            </form>
+                        </div>
+                        
+                    </div>
+
+            </div>
+            {%endif%}
+
+        {%endfor%}
+      <button class="button-btn" type="button" onclick="submitForms()">Submit All </button>
+
+    {%endif%}
+    
+    {%if food_item %}
+            food item
+            {{modify}}
+        {%for f,i in food_item %}
+        {%if f.options != 'notchoose'%}
+        <div class="listitem">
+            <a href="/foodview/{{f.id}}/">
+
+                <div class="boxlistfood">
+                    {%if f.image %}
+                    <div class="image-food">
+                        <img src="{{f.image.url}}" alt="food-image">
+                    </div>
+                    {%endif%}
+
+                    <div class="box-detail">
+                        <div class="overlay">
+                            {%if f.options == 'onsale' %}
+                            <div class="status-sale-green"></div>
+                            {%endif%}
+                            {%if f.options == 'soldout'%}
+                            <div class="status-sale-red"></div>
+                            {%endif%}
+                        </div>
+                        
+                        <div class="name">{{f.name}}</div> 
+                        <div class="detail_food">
+                            <div class="food-price">{{f.price}} {{f.unit}}</div>
+                            <div class="review_data">
+                                {%if f.score and f.quantity_review > 5 %}
+                                <div class="score">{{f.score}}</div>
+                            {%endif%}
+
+                            {%if f.quantity_review > 5 %}
+                                <div class="quantity_review">({{f.quantity_review}})</div>
+                            {%endif%}
+                            </div>
+                        
+                        </div>
+                    </a>
+                        <form class="add-to-cart-form" method="post" action="{% url 'add_to_cart' 'type1' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ f.id }}">
+                        <div class="quantity-control">
+                           
+                            <button class="left_de" type="button" onclick="decrementQuantity('{{ f.id }}')">-</button>
+                            {%if not i.quantity %}
+                                <input class="cen_num" type="number" name="quantity" id="id_quantity_{{ f.id }}" value="0" min="0">
+                            {%else%}
+                                <input class="cen_num" type="number" name="quantity" id="id_quantity_{{ f.id }}" value="{{i.quantity}}" min="0">
+                            {%endif%}
+                            <button class="right_in" type="button" onclick="incrementQuantity('{{ f.id }}')">+</button>
+                        </div>
+                        </form>
+                    </div>
+                    
+                </div>
+
+        </div>
+        {%endif%}
+        {%endfor%}
+        <button class="button-btn" type="button" onclick="submitForms_modify()">Submit All Forms</button>
+    {%endif%}
+    </div>
+
+
+
+
+      <script>
+        const typeValue = "type1";
+        
+        function submitForms() {
+            const forms = document.querySelectorAll('.add-to-cart-form');
+            const formData = new FormData();
+    
+            forms.forEach(form => {
+                const quantityInput = form.querySelector('input[name="quantity"]');
+                const quantityValue = parseInt(quantityInput.value);
+    
+                if (quantityValue > 0) {
+                    const formInputs = form.querySelectorAll('input');
+                    formInputs.forEach(input => {
+                        formData.append(input.name, input.value);
+                    });
+                }
+            });
+    
+            // Check if there are forms with quantity > 0 before making the request
+            if (formData.has('quantity')) {
+                // Ajax request to submit form data to Django backend
+                fetch('/add-to-cart/' + typeValue + '/', {
+                    method: 'POST',
+                    body: formData,
+                })
+                .then(response => {
+                    if (response.ok) {
+                        const homeURL = "{% url 'view_cart' %}";
+                        window.location.href = homeURL;
+                    }
+                });
+            } else {
+                alert('No forms with quantity greater than 0.');
+            }
+        }
+        const modifyValue = "{{modify}}";
+        function submitForms_modify() {
+            const forms = document.querySelectorAll('.add-to-cart-form');
+            const formData = new FormData();
+
+            forms.forEach(form => {
+                const formInputs = form.querySelectorAll('input');
+                formInputs.forEach(input => {
+                    formData.append(input.name, input.value);
+                });
+            });
+
+            // Ajax request to submit form data to Django backend
+            fetch('/add-to-cart/' + typeValue + '/' + modifyValue + '/', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => {
+                if (response.ok) {
+                    const homeURL = "{% url 'view_cart' %}";
+                    window.location.href = homeURL;
+                }
+            });
+        }
+          function incrementQuantity(productId) {
+            var quantityInput = document.getElementById("id_quantity_" + productId);
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+          }
+    
+          function decrementQuantity(productId) {
+            var quantityInput = document.getElementById("id_quantity_" + productId);
+            var currentQuantity = parseInt(quantityInput.value);
+            quantityInput.value = currentQuantity > 0 ? currentQuantity - 1 : 0;
+          }
+        </script>
+</body>
+</html>

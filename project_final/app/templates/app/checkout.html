@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h2>Checkout</h2>
+    <p>Review your order before completing the checkout process:</p>
+    <h3>Order Items:</h3>
+    <ul>
+      {%if order_item1%}
+      type1
+      {% for item in order_item1 %}
+        <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}</li>
+      {% endfor %}
+      {%endif%}
+    </ul>
+    <ul>
+      {%if order_item2%}
+      type2
+      {% for item in order_item2 %}
+      <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}</li>
+      {% endfor %}
+      {%endif%}
+    </ul>
+    <p>Total Price: {{ order.total_price }}</p>
+    <form method="post" action="/order_confirmation/{{order.ref_code}}/">
+      {% csrf_token %}
+      <button type="submit">Place Order</button>
+    </form>
+    <p><a href="{% url 'view_cart' %}">Go Back to Cart</a></p>
+</body>
+</html>

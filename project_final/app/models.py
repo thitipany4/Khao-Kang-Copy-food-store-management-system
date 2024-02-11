@@ -61,7 +61,7 @@ class Historysale(models.Model):
     food = models.ForeignKey(Food,on_delete=models.CASCADE,null=True,blank=True)
     quantity = models.IntegerField(default=0)
     def __str__(self) -> str:
-        return f'{self.date_field} {self.food}'
+        return f'{self.date_field} {self.food.name}'
     
 class Reviewfood(models.Model):
     food = models.ForeignKey(Food,on_delete=models.CASCADE)
@@ -95,3 +95,38 @@ class Transaction(models.Model):
 
     def __str__(self) -> str:
         return f'{self.name} {self.date}'
+
+class Order(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    ref_code = models.CharField(max_length=100,null=True)
+    checkout = models.BooleanField(default=False)
+    confirm = models.CharField(max_length=20, choices=(
+        ('wait_to_confirm', 'รอยืนยัน'),
+        ('confirmed', 'ยืนยันเเล้ว'),
+        ('cancel', 'ยกเลิก'),
+    ), default='wait_to_confirm') 
+    def __str__(self) -> str:
+        return f'{self.ref_code} corfirm {self.confirm}'
+
+class OrderItemtype1(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    food = models.ForeignKey(Food,on_delete=models.DO_NOTHING)
+    quantity = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self) -> str:
+        return f'{self.food} price {self.price}'
+    
+class OrderItemtype2(models.Model):
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100,null=True)
+    foods = models.ManyToManyField('Food')
+    quantity = models.IntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self) -> str:
+        return f'{self.name} price {self.price}'
