@@ -5,31 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <style>
-        .container-area {
-                 display: grid;
-                 padding: 0.5rem;
-                 margin: 0.5rem;
-                 grid-template-columns: repeat(4,1fr);
-                 grid-gap: 10px;
-                 width: 1140px;
-                 margin: 0 auto;
-                 margin-top: 20px;
-     
+            body {
+                    background-color: #E3E3E3;
+                }
+            .container {
+                display: flex;
+                flex-direction: column;
+                /* border: 1px solid red; */
+                margin: 10px;
+                /* align-items: center; */
+
+            }
+            .head_detail {
+                display: flex;
+                flex-direction: column;
+                /* border: 1px solid red; */
+                width: 1100px;
+                height: 70px;
+                margin-bottom: 40px;
+            }
+            .head_title {
+                font-size: 24px;
+                width: 250px;
+                padding: 7px;
+                text-align: center;
+                /* border: 1px solid red; */
+                box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+                border-radius: 0.3rem;
+                background-color: #F94D4D;
+                margin-bottom: 10px;
+            }
+            .detail {
+                font-size: 24px;
+                margin-bottom: 5px;
+            }
+            .line {
+                border-bottom: 1px solid #212122;
+
+            }
+            .container-show {
+                display: flex;
+                /* border: 1px solid rebeccapurple; */
+
+
+            }
+            .container-area {
+                display: grid;
+                padding: 0.5rem;
+                margin: 0.5rem;
+                grid-template-columns: repeat(3,1fr);
+                grid-gap: 10px;
+                width: 800px;
+                margin-top: 1px;
+                margin-right: 60px;
+                /* border: 1px solid red; */
+                margin-bottom: 30px;
+                background-color: #FDFDFD;
+
+
              }
+
              .boxlistfood {
-                 /* border: 1px solid blue; */
+                 border: 1px solid #E5E5E5;
                  margin-top: 20px;
                  width: 220px;
                  height: 200px;
                  box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
-     
-                 
+
+
              }
              .boxlistfood div {
-     
+
                  text-align: center;
                  margin-bottom: 10px;
-                 
+
              }
              .listitem a {
                  text-decoration: none;
@@ -40,15 +89,15 @@
                  border-radius: 1rem;
                  height: 110px;
                  margin-bottom: 20px;
-     
-     
+
+
              }
              .image-food img {
                  height: 130px; /* Set the height of the image container */
                  width: 99.5%; /* Set the width of the image container */
-     
-                 
-     
+
+
+
              }
              .detail_food {
                  display: flex;
@@ -57,18 +106,11 @@
                  margin-bottom: 0;
                  /* border: 1px solid red; */
              }
-             .review_data {
-                 display: flex;
-                 margin-right: 20px;
-             }
-             .score {
-                 margin-right: 5px;
-             }
              .name {
                  margin-top: 5px;
                  margin-bottom: 0;
              }
-     
+
              .box-detail {
                  display: flex;
                  flex-direction: column;
@@ -78,16 +120,16 @@
                  margin-top: 20px;
                  /* border: 1px solid red; */
                  background-color: #FDFDFD;
-     
+
              }
-     
+
              .overlay {
                  position: absolute;
                  top: 40px;
                  left: 180px;
                  transform: translate(-50%, -50%);
                  padding: 10px;
-                 border-radius: 5px; 
+                 border-radius: 5px;
                  width: 30px;
      }
              .check_box {
@@ -98,168 +140,257 @@
                  height: 20px;
                  border-radius: 0.5rem;
              }
-             .status-sale-red {
-                 background-color: #E84F2F; /* Change the background color and opacity as needed */
-                 display: inline-block;
-                 padding: 6px;
-                 width: 10px;
-                 height: 5px;
-                 border-radius: 0.5rem;
+             .submit_box {
+                display: flex;
+                width: 400px;
+                flex-direction: column;
+                /* border: 1px solid red; */
+                align-items: center;
              }
-             
+             .button_area {
+                display: flex;
+                /* border: 1px solid orange; */
+                background-color: #FDFDFD;
+                box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+                flex-direction: column;
+                width: 80%;
+                height: 200px;
+                margin-top: 20px;
+                /* justify-content: center; */
+                align-items: center;
+             }
+            .checkbox_form {
+                /* border: 1px solid red; */
+                display: flex;
+                width: 250px;
+                margin-top: 20px;
+                margin-bottom: 10px;
+                font-size: 20px;
+
+             }
+            .checkbox-btn {
+                width: 20px;
+            }
+             .quantity-control {
+                display: flex;
+                /* border: 1px solid blue; */
+                width: 250px;
+                align-items: center;
+                margin-bottom: 10px;
+
+
+             }
+             .quantity-label {
+                margin-right: 10px;
+                font-size: 18px;
+
+             }
+             .btn_l,.btn_r {
+                border: 1px solid black;
+                background-color: #FDFDFD;
+                margin-left: 5px;
+                margin-right: 5px;
+                border-radius: 0.2rem;
+             }
+             .btn_l:hover,.btn_r:hover {
+                background-color: #3498db;
+
+             }
+             .quantity_input {
+                width: 50px;
+             }
+             .box-submit {
+                display: flex;
+                /* border: 1px solid tomato; */
+                width: 250px;
+                height: 70px;
+                justify-content: space-between;
+                align-items: center;
+ 
+
+    }
+
+            .button-btn,.cancel-btn{
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100px;
+                height: 40px;
+                border-radius: 4px;
+                text-decoration: none;
+                color: white;
+                margin-left: 10px;
+                margin-right: 10px;
+        }
+            .button-btn {
+                    border: 1px solid #3498db;
+                    background-color: #3498db;
+                }
+
+            .cancel-btn {
+                    border: 1px solid #F94D4D;
+                    background-color: #F94D4D;
+
+                }
 </style>
 </head>
 <body>
     {% include 'app/navbar.html' %}
-    <h2>Product List</h2>
-    <h1>เลือกได้มากที่สุด 2 อย่าง 40 บาท พิเศษ 50 บาท</h1>
+    {%if not selected %}
+        <div class="container">
+            <div class="head_detail">
+                <div class="head_title">สั่งจองรูปแบบกล่อง</div>
+                <div class="detail">เลือกได้มากที่สุด 2 อย่าง 40 บาท พิเศษ 50 บาท</div>
+                <div class="line"></div>
+            </div>
+            <div class="container-show">
+                <div class="container-area">
+                    {%for f in food %}
+                        {%if f.options != 'notchoose'%}
+                        <div class="listitem">
 
+                                <div class="boxlistfood">
+                                    {%if f.image %}
+                                    <div class="image-food">
+                                        <img src="{{f.image.url}}" alt="food-image">
+                                    </div>
+                                    {%endif%}
 
-    <div class="container-area">
-        {%if not selected %}
-        {%for f in food %}
-            {%if f.options != 'notchoose'%}
-            <div class="listitem">
-                <a href="/foodview/{{f.id}}/">
-    
-                    <div class="boxlistfood">
-                        {%if f.image %}
-                        <div class="image-food">
-                            <img src="{{f.image.url}}" alt="food-image">
+                                    <div class="box-detail">
+                                        <div class="overlay">
+                                            <form class="add-to-cart-form" method="post" action="#">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="product_id" value="{{ f.id }}">
+                                                <input class="check_box" type="checkbox" name="add_to_cart">
+                                            </form>
+                                        </div>
+
+                                        <div class="name">{{f.name}}</div>
+                                        <div class="detail_food">
+                                            <div class="food-price">{{f.price}} {{f.unit}}</div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
                         </div>
                         {%endif%}
-    
-                        <div class="box-detail">
-                            <div class="overlay">
-                                <form class="add-to-cart-form" method="post" action="#">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="product_id" value="{{ f.id }}">
-                                    <input class="check_box" type="checkbox" name="add_to_cart">
-                                  </form>
-                            </div>
-                            
-                            <div class="name">{{f.name}}</div> 
-                            <div class="detail_food">
-                                <div class="food-price">{{f.price}} {{f.unit}}</div>
-                                <div class="review_data">
-                                    {%if f.score and f.quantity_review > 5 %}
-                                    <div class="score">{{f.score}}</div>
-                                {%endif%}
-    
-                                {%if f.quantity_review > 5 %}
-                                    <div class="quantity_review">({{f.quantity_review}})</div>
-                                {%endif%}
-                                </div>
-                              
-                            </div>
-                          </a>
-                        </div>
-                        
-                    </div>
-    
-            </div>
-            {%endif%}
-            
-        {%endfor%}
-    </div>
-    <form class="checkbox_form" method="post" action="#">
-        {% csrf_token %}
-        <label>
-            Special:
-            <input type="checkbox" name="special" value="selected">
-        </label>
-    </form>
-      <form class="add-to-cart-form2" method="post" action="#">
-        {% csrf_token %}
-        <div class="quantity-control">
-            <button type="button" onclick="decrementQuantity('{{ f.id }}')">-</button>
-            <input class="quantity_input" type="number" name="quantity" id="id_quantity_{{ product.id }}" value="1" min="0">
-            <button type="button" onclick="incrementQuantity('{{ f.id }}')">+</button>
-          </div>
 
-      </form>
-      
-      <button class="button-btn" type="button" onclick="submitForms()">Submit All Forms</button>
-      {%endif%}
-      {%if selected %}
-      {%for f in food %}
-          {%if f.options != 'notchoose'%}
-          <div class="listitem">
-              <a href="/foodview/{{f.id}}/">
-  
-                  <div class="boxlistfood">
-                      {%if f.image %}
-                      <div class="image-food">
-                          <img src="{{f.image.url}}" alt="food-image">
-                      </div>
-                      {%endif%}
-  
-                      <div class="box-detail">
-                          <div class="overlay">
-                              <form class="add-to-cart-form" method="post" action="#">
-                                  {% csrf_token %}
-                                <input type="hidden" name="product_id" value="{{ f.id }}">
-                                {% if f.id in selected %}
-                                    <input class="check_box" type="checkbox" name="add_to_cart" checked>
-                                {% else %}
-                                    <input class="check_box" type="checkbox" name="add_to_cart">
-                                {% endif %}
-                                </form>
-                          </div>
-                          
-                          <div class="name">{{f.name}}</div> 
-                          <div class="detail_food">
-                              <div class="food-price">{{f.price}} {{f.unit}}</div>
-                              <div class="review_data">
-                                  {%if f.score and f.quantity_review > 5 %}
-                                  <div class="score">{{f.score}}</div>
-                              {%endif%}
-  
-                              {%if f.quantity_review > 5 %}
-                                  <div class="quantity_review">({{f.quantity_review}})</div>
-                              {%endif%}
-                              </div>
+                    {%endfor%}
+                </div>
+
+                <div class="submit_box">
+                    <div class="button_area">
+                        <form class="checkbox_form" method="post" action="#">
+                            {% csrf_token %}
+                            <label class="special">
+                                Special
+                            </label>
+                            <input class="checkbox-btn" type="checkbox" name="special" value="selected">
+                        </form>
+                        <form class="add-to-cart-form2" method="post" action="#">
+                            {% csrf_token %}
                             
-                          </div>
-                        </a>
-                      </div>
-                      
-                  </div>
-  
-          </div>
-          {%endif%}
-          
-      {%endfor%}
-  </div>
-    <form class="checkbox_form" method="post" action="#">
-        {% csrf_token %}
-        {%if special == 'True'%}
-        <label>
-            Special:
-            <input type="checkbox" name="special" value="selected" checked>
-        </label>
-        {%else%}
-        <label>
-            Special:
-            <input type="checkbox" name="special" value="selected">
-        </label>
-        {%endif%}
-    </form>
-    <form class="add-to-cart-form2" method="post" action="#">
-      {% csrf_token %}
-      <div class="quantity-control">
-          <button type="button" onclick="decrementQuantity('{{ f.id }}')">-</button>
-          <input class="quantity_input" type="number" name="quantity" id="id_quantity_{{ product.id }}" value="{{item.quantity}}" min="0">
-          <button type="button" onclick="incrementQuantity('{{ f.id }}')">+</button>
+                            <div class="quantity-control">
+                                <label class="quantity-label">จำนวน</label>
+                                <button class="btn_l" type="button" onclick="decrementQuantity('{{ f.id }}')">-</button>
+                                <input class="quantity_input" type="number" name="quantity" id="id_quantity_{{ product.id }}" value="1" min="0">
+                                <button class="btn_r" type="button" onclick="incrementQuantity('{{ f.id }}')">+</button>
+                            </div>
+
+                        </form>
+                        <div class="box-submit">
+                            <button class="button-btn" type="button" onclick="submitForms()">จองอาหาร</button>
+                            <a class="cancel-btn" href="/view-cart/">cancel</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-    </form>
-    
-    <button class="button-btn" type="button" onclick="submitForms_modify()">Submit All Forms</button>
     {%endif%}
-    </ul>   
-    <p><a href="#">Add a new product</a></p>
-    <p><a href="#">View Cart</a></p>
+
+    {%if selected %}
+      <div class="container">
+        <div class="head_detail">
+            <div class="head_title">สั่งจองรูปแบบกล่อง</div>
+            <div class="detail">เลือกได้มากที่สุด 2 อย่าง 40 บาท พิเศษ 50 บาท</div>
+            <div class="line"></div>
+        </div>
+        <div class="container-show">
+            <div class="container-area">
+                {%for f in food %}
+                    {%if f.options != 'notchoose'%}
+                    <div class="listitem">
+                            <div class="boxlistfood">
+                                {%if f.image %}
+                                <div class="image-food">
+                                    <img src="{{f.image.url}}" alt="food-image">
+                                </div>
+                                {%endif%}
+                                <div class="box-detail">
+                                    <div class="overlay">
+                                        <form class="add-to-cart-form" method="post" action="#">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="product_id" value="{{ f.id }}">
+                                            {% if f.id in selected %}
+                                                <input class="check_box" type="checkbox" name="add_to_cart" checked>
+                                            {% else %}
+                                                <input class="check_box" type="checkbox" name="add_to_cart">
+                                            {% endif %}
+                                            </form>
+                                    </div>
+
+                                    <div class="name">{{f.name}}</div>
+                                    <div class="detail_food">
+                                        <div class="food-price">{{f.price}} {{f.unit}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {%endif%}
+                {%endfor%}
+
+            </div>
+
+            <div class="submit_box">
+                <div class="button_area">
+                    <form class="checkbox_form" method="post" action="#">
+                            {% csrf_token %}
+                            {%if special == 'True'%}
+                            <label class="special">
+                                Special
+                                <input class="checkbox-btn"  type="checkbox" name="special" value="selected" checked>
+                            </label>
+                            {%else%}
+                            <label class="special">
+                                Special
+                                <input class="checkbox-btn"  type="checkbox" name="special" value="selected">
+                            </label>
+                            {%endif%}
+                        </form>
+
+                        <form class="add-to-cart-form2" method="post" action="#">
+                        {% csrf_token %}
+                        <div class="quantity-control">
+                            <label class="quantity-label">จำนวน</label>
+                            <button class="btn_l" type="button" onclick="decrementQuantity('{{ f.id }}')">-</button>
+                            <input class="quantity_input"  class="quantity_input" type="number" name="quantity" id="id_quantity_{{ product.id }}" value="{{item.quantity}}" min="0">
+                            <button class="btn_r" type="button" onclick="incrementQuantity('{{ f.id }}')">+</button>
+                            </div>
+                        </form>
+
+                        <div class="box-submit">
+                            <button class="button-btn" type="button" onclick="submitForms_modify()">จองอาหาร</button>
+                            <a class="cancel-btn" href="/view-cart/">cancel</a>
+                        </div>
+                        
+                </div>
+            </div>
+
+    {%endif%}
+
 
     <script>
         const typeValue = "type2";
@@ -376,15 +507,15 @@
             var quantityInput = document.getElementById("id_quantity_" + productId);
             quantityInput.value = parseInt(quantityInput.value) + 1;
         }
-    
+
         function decrementQuantity(productId) {
             var quantityInput = document.getElementById("id_quantity_" + productId);
             var currentQuantity = parseInt(quantityInput.value);
             quantityInput.value = currentQuantity > 0 ? currentQuantity - 1 : 0;
         }
     </script>
-    
-    
+
+
 
 </body>
 </html>

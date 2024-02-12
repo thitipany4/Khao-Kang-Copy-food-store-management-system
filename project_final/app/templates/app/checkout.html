@@ -4,32 +4,221 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <style>
+        body {
+         background-color: #E3E3E3;
+                }
+      .container {
+        /* border: 1px solid red; */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .head_title {
+        font-size: 24px;
+        width: 120px;
+        padding: 7px;
+        text-align: center;
+        /* border: 1px solid red; */
+        box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+        border-radius: 0.3rem;
+        background-color: #FDFDFD;
+        margin-bottom: 10px;
+        margin-top: 10px;
+
+      }
+      .container-area {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        /* border: 1px solid red; */
+        border-radius: 0.3rem;
+        width: 80%;
+        box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+        background-color: #FDFDFD;
+      }
+      .head_detail_box,.body_detail,.bottom_detail {
+        margin: 5px;
+      }
+      .box_detail {
+        /* border: 1px solid blue; */
+        display: flex;
+        flex-direction: column;
+        width: 95%;
+      }
+      .head_detail_box {
+        display: flex;
+        flex-direction: column;
+        /* border: 1px solid palevioletred; */
+        height: 70px;
+
+      }
+      .top_head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        /* border: 1px solid palevioletred; */
+        height: 50px;
+      }
+      .total_price {
+        font-size: 24px;
+      }
+      .line {
+        border-bottom: 1px solid #212122;
+        margin-bottom: 5px;
+      }
+      .body_detail {
+        display: flex;
+        flex-direction: column;
+        /* border: 1px solid teal; */
+      }
+
+      .list_detail_1,.list_detail_2 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+      }
+      .list_head,.list_tail {
+        display: flex;
+        align-items: center;
+        height: 50px;
+        width: 400px;
+        /* border: 1px solid red; */
+      }
+      .list_tail {
+        justify-content: end;
+      }
+      .name {
+        width: 300px;
+        margin-right: 50px;
+        /* border: 1px solid red; */
+
+      }
+
+      .bottom_detail {
+        display: flex;
+        justify-content: end;
+        /* border: 1px solid orchid; */
+        height: 70px;
+        align-items: center;
+        margin-bottom: 40px;
+        font-size: 26px;
+      }
+      .box-submit {
+        position: absolute;
+        top: 87%;
+        right: 2%;
+        display: flex;
+        /* border: 1px solid tomato; */
+        width: 250px;
+        height: 70px;
+        justify-content: space-between;
+        align-items: center;
+    }
+      .button-btn,.cancel-btn{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100px;
+        height: 40px;
+        border-radius: 4px;
+        text-decoration: none;
+        color: white;
+        margin-left: 10px;
+        margin-right: 10px;
+        }
+      .button-btn {
+        border: 1px solid #3498db;
+        background-color: #3498db;
+                }
+      .button-btn:hover {
+        border: 1px solid #345CDB;
+        background-color: #345CDB;
+      }
+      .cancel-btn {
+        border: 1px solid #F94D4D;
+        background-color: #F94D4D;
+      }
+      .cancel-btn:hover {
+        border: 1px solid #F52C2C;
+        background-color: #F52C2C;
+      }
+    </style>
 </head>
 <body>
-    <h2>Checkout</h2>
-    <p>Review your order before completing the checkout process:</p>
-    <h3>Order Items:</h3>
-    <ul>
-      {%if order_item1%}
-      type1
-      {% for item in order_item1 %}
-        <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}</li>
-      {% endfor %}
-      {%endif%}
-    </ul>
-    <ul>
-      {%if order_item2%}
-      type2
-      {% for item in order_item2 %}
-      <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}</li>
-      {% endfor %}
-      {%endif%}
-    </ul>
-    <p>Total Price: {{ order.total_price }}</p>
-    <form method="post" action="/order_confirmation/{{order.ref_code}}/">
-      {% csrf_token %}
-      <button type="submit">Place Order</button>
-    </form>
-    <p><a href="{% url 'view_cart' %}">Go Back to Cart</a></p>
+  {% include 'app/navbar.html' %}
+  <div class="container">
+    <div class="head_title">
+      <div class="title">เช็คเอ้าค์</div>
+    </div>
+    <div class="container-area">
+      <div class="box_detail">
+        <div class="head_detail_box">
+          <div class="top_head">
+            <div class="head_detail">รายการอาหาที่สั่ง</div>
+            <div class="total_price">฿ {{ order.total_price }}</div>
+          </div>
+          <div class="down_head">
+            <div class="line"></div>
+          </div>
+
+        </div>
+        <div class="body_detail">
+
+          <div class="list_detail_1">
+            {%if order_item1%}
+            {% for item in order_item1 %}
+
+              <div class="list_head">
+                <div class="name">{{ item.food.name }} </div>
+                <div class="quatity">x {{ item.quantity }}</div>
+              </div>
+
+              <div class="list_tail">
+                <div class="price">฿ {{ item.price }}</div>
+              </div>
+
+            {% endfor %}
+            {%endif%}
+          </div>
+
+          <div class="list_detail_2">
+            {%if order_item2%}
+            {% for item in order_item2 %}
+
+            <div class="list_head">
+              <div class="name">{{ item.name }} </div>
+              <div class="quatity">x {{ item.quantity }}</div>
+            </div>
+
+            <div class="list_tail">
+              <div class="price">฿ {{ item.price }}</div>
+            </div>
+
+            {% endfor %}
+            {%endif%}
+          </div>
+
+        </div>
+
+      <div class="bottom_detail">
+          <div class="code">code : {{order.ref_code}}</div>
+      </div>
+      <div class="box-submit">
+          <form method="post" action="{%url 'order_confirm' ref_code=order.ref_code %}">
+            {% csrf_token %}
+            <button class="button-btn" type="submit">ยืนยันการจอง</button>
+          </form>
+          <a class="cancel-btn" href="{% url 'view_cart' %}">ยกเลิก</a>
+      </div>
+
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

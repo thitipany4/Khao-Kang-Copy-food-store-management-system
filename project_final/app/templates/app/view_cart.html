@@ -70,11 +70,11 @@
     margin-bottom: 10px;
   }
   .head_type1 {
-    margin-right: 183px;
+    margin-right: 190px;
   }
   .detail_type1,.detail_type2 {
     display: flex;
-    border: 1px solid green;
+    /* border: 1px solid green; */
     align-items: center;
     height: 40px;
     justify-content: space-between;
@@ -96,14 +96,14 @@
   }
   .price_delete_m1 {
     display: flex;
-    border: 1px solid tomato;
+    /* border: 1px solid tomato; */
     width: 150px;
     justify-content: space-between;
     margin-right: 55px;
   }
   .price_delete_m2 {
     display: flex;
-    border: 1px solid tomato;
+    /* border: 1px solid tomato; */
     width: 220px;
     justify-content: space-between;
     margin-right: 30px;
@@ -180,7 +180,7 @@
         <div class="head_box1">
           <div class="head_type1">รายการสั่งอาหารแบบถุง</div>
           {%if order_item1%}
-          <a class="modify_btn" href="/modify_cart1/">แก้ไข</a>
+          <a class="modify_btn" href="/modify_cart1/{{order.ref_code}}">แก้ไข</a>
           {%endif%}
         </div>
           {%if order_item1%}

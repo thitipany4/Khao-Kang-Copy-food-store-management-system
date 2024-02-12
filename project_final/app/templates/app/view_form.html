@@ -218,9 +218,9 @@
                                 {%csrf_token%}
                                 <input  class="bar-str" type="text" name="name" step="any" required id="id_name" value="{{e.name}}">
 
-                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price" value="{{e.price}}">
+                                <input  class="bar-price" type="number" name="price" step="any" required id="id_price" value="{{e.price}}">
 
-                                <input class="bar-amount" type="text" name="amount" step="any" required id="id_amount" value="{{e.amount}}">
+                                <input class="bar-amount" type="number" name="amount" step="any" required id="id_amount" value="{{e.amount}}">
 
                                 <input  type="hidden" name="transaction" value="{{e.transaction_type}}">
                                 <div class="total">0.00</div>
@@ -233,9 +233,9 @@
 
                                 <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
 
-                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
+                                <input  class="bar-price" type="number" name="price" step="any" required id="id_price">
 
-                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
+                                <input  class="bar-amount" type="number" name="amount" step="any" required id="id_amount">
 
                                 <input type="hidden" name="transaction" value="{{expenses}}">
                                 <button type="button" class="delete-button" onclick="deleteForm(this)">Delete</button>
@@ -265,9 +265,9 @@
 
                             <input  class="bar-str" type="text" name="name" step="any" required id="id_name" value="{{i.name}}">
 
-                            <input  class="bar-price" type="text" name="price" step="any" required id="id_price" value="{{i.price}}">
+                            <input  class="bar-price" type="number" name="price" step="any" required id="id_price" value="{{i.price}}">
 
-                            <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount" value="{{i.amount}}">
+                            <input  class="bar-amount" type="number" name="amount" step="any" required id="id_amount" value="{{i.amount}}">
 
                             <input type="hidden" name="transaction" value="{{i.transaction_type}}">
                             <span class="total">0.00</span>
@@ -280,9 +280,9 @@
 
                                 <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
 
-                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
+                                <input  class="bar-price" type="number" name="price" step="any" required id="id_price">
 
-                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
+                                <input  class="bar-amount" type="number" name="amount" step="any" required id="id_amount">
 
                                 <input type="hidden" name="transaction" value="income">
 
@@ -317,9 +317,9 @@
                                 {%csrf_token%}
                                 <input  class="bar-str" type="text" name="name" step="any" required id="id_name" value="{{l.name}}">
 
-                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price" value="{{l.price}}">
+                                <input  class="bar-price" type="number" name="price" step="any" required id="id_price" value="{{l.price}}">
 
-                                <input class="bar-amount" type="text" name="amount" step="any" required id="id_amount" value="{{l.amount}}">
+                                <input class="bar-amount" type="number" name="amount" step="any" required id="id_amount" value="{{l.amount}}">
 
                                 <input  type="hidden" name="transaction" value="{{e.transaction_type}}">
                                 <span class="total">0.00</span>
@@ -331,9 +331,9 @@
 
                                 <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
 
-                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
+                                <input  class="bar-price" type="number" name="price" step="any" required id="id_price">
 
-                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
+                                <input  class="bar-amount" type="number" name="amount" step="any" required id="id_amount">
 
                                 <input type="hidden" name="transaction" value="leftover">
 

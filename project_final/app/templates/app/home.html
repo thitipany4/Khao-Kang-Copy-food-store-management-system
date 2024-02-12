@@ -88,7 +88,7 @@
 
         .overlay {
             position: absolute;
-            top: 30px;
+            top: 25px;
             left: 200px;
             transform: translate(-50%, -50%);
             padding: 10px;
@@ -144,11 +144,11 @@
                                 <div class="detail_food">
                                     <div class="food-price">{{f.price}} {{f.unit}}</div>
                                     <div class="review_data">
-                                        {%if f.score and f.quantity_review > 5 %}
+                                        {%if f.score and f.quantity_review >= 5 %}
                                         <div class="score">{{f.score}}</div>
                                     {%endif%}
 
-                                    {%if f.quantity_review > 5 %}
+                                    {%if f.quantity_review >= 5 %}
                                         <div class="quantity_review">({{f.quantity_review}})</div>
                                     {%endif%}
                                     </div>

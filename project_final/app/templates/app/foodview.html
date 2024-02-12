@@ -100,11 +100,11 @@
         .rightitem {
             display: flex;
             width: 250px;
-            margin-right: 200px;
+            margin-right: 320px;
             /* border: 1px solid red; */
      
         }
-        .box-profile,.create_cart {
+        .box-profile,.create_cart,.box-history {
             display: flex;
             align-items: center;
             
@@ -119,7 +119,7 @@
             /* border: 1px solid red; */
         }
 
-        .about-us,.profile,.login-btn,.logout-btn,.cart {
+        .about-us,.profile,.login-btn,.logout-btn,.cart,.history-btn {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -129,22 +129,33 @@
             color: #FFFFFF;
             text-align: center;
             padding: 15px;
-            width: 100px;
             height: 15px;
             margin: 5px;
             text-decoration: none;
         }
-        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover {
+        .about-us,.profile,.login-btn,.logout-btn,.cart {
+            width: 100px;
+        }
+        .history-btn {
+            width: 120px;
+            font-size: 14px;
+        }
+        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover,.history-btn:hover {
             border-radius: 4px;
             border: none;
             color: #FFFFFF;
             text-align: center;
             padding: 15px;
-            width: 100px;
             height: 15px;
             transition: all 0.5s;
             cursor: pointer;
             margin: 5px;
+        }
+        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover {
+            width: 100px;
+        }
+        .history-btn:hover {
+            width: 120px;
         }
         .about-us:hover,.profile:hover,.login-btn:hover{
             background-color: #1E8FF4;
@@ -155,6 +166,9 @@
         .logout-btn:hover {
             background-color: #f4511e;
 
+        }
+        .history-btn:hover {
+            background-color: #6A4DF9;
         }
     .container {
         display: grid;
@@ -549,8 +563,11 @@
         
 
         <div class="rightitem">
+            <div class="box-history">
+                <a class="history-btn" href="/profile/{{ user.username }}/">ประวัติการจอง</a>
+            </div>
             <div class="box-profile">
-                <a class="profile" href="/profile/{{user.username}}/">profile</a>
+                <a class="profile" href="/profile/{{user.username}}/">Profile</a>
             </div>
             <div class="create_cart">
                 <a class="cart" href="/create_cart/">Shopping</a>

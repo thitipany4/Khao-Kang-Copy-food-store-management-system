@@ -35,14 +35,12 @@ urlpatterns = [
     path('add-to-cart/<str:type>/', add_to_cart, name='add_to_cart'),
     path('add-to-cart/<str:type>/<str:modify>/', add_to_cart, name='add_to_cart'),
     path('shopping_food_type1/', shopping_food_type1, name='shopping_food1'),
-    path('modify_cart1/', modify_cart1, name='modify_cart1'),
+    path('modify_cart1/<str:ref_code>/', modify_cart1, name='modify_cart1'),
     path('shopping_food_type2/', shopping_food_type2, name='shopping_food2'), 
     path('modify_cart2/<int:id>/', modify_cart2, name='modify_cart2'),
     path('cart/delete/<int:product_id>/<str:type>/', delete_from_cart, name='delete_from_cart'),
     path('checkout/', checkout, name='checkout'), 
-
-    path('order_confirmation/<str:order_id>/', order_confirmation, name='order_confirmation'), 
-    
+    path('order_confirm/<str:ref_code>/', order_confirmation, name='order_confirm'),
     path('confirm_order/', confirm_order, name='confirm_order'),
     path('confirm_order/<str:code>/<str:status>/', confirm_order, name='confirm_order'),
 

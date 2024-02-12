@@ -30,7 +30,9 @@
         width: 70%;
         height: 100%;
         margin-top: 10px;
+
     }
+
     .container-top {
         display: flex;
         border: 1px solid #ECF3F9;
@@ -130,7 +132,7 @@
         align-items: center;
 
     }
-    .button-btn,.cancel-btn {
+    .button-btn,.cancel-btn{
         display: flex;
         justify-content: center;
         align-items: center;
@@ -150,11 +152,14 @@
             background-color: #F94D4D;
 
         }
+        
+
 </style>
 <body>
     {% include 'app/navbar.html' %}
     <div class="container">
         <div class="profile-container">
+            
             <div class="container-top">
                 <div class="box_top">
                     <div class="image-user">
@@ -174,29 +179,41 @@
                 <form action="/profile/{{ user.username }}/" method="post" enctype="multipart/form-data" class="form-data">
                     {% csrf_token %}
                     <div class="form-detail">
-                            <div class="first_name">
-                                <label for="first-name">First Name</label>
+                        <div class="first_name">
+                            <label for="first-name">First Name</label>
+                            {% if not form.instance.first_name %}
+                                <input class="input-btn" type="text" name="first_name" step="any" required id="first-name" value="-">
+                            {% else %}
                                 <input class="input-btn" type="text" name="first_name" step="any" required id="first-name" value="{{ form.instance.first_name }}">
-                            </div>
-                            <div class="last_name">
-                                <label for="last-name">Last Name</label>
+                            {% endif %}
+                        </div>
+                        <div class="last_name">
+                            <label for="last-name">Last Name</label>
+                            {% if not form.instance.last_name %}
+                                <input class="input-btn" type="text" name="last_name" step="any" required id="last-name" value="-">
+                            {% else %}
                                 <input class="input-btn" type="text" name="last_name" step="any" required id="last-name" value="{{ form.instance.last_name }}">
-                            </div>
-                            <div class="phone_number">
-                                <label for="phone-number">Phone Number</label>
+                            {% endif %}
+                        </div>
+                        <div class="phone_number">
+                            <label for="phone-number">Phone Number</label>
+                            {% if not form.instance.phone_number %}
+                                <input class="input-btn" type="text" name="phone_number" step="any" required id="phone-number" value="-">
+                            {% else %}
                                 <input class="input-btn" type="text" name="phone_number" step="any" required id="phone-number" value="{{ form.instance.phone_number }}">
-                            </div>
-
-                            <div class="age-options">
-                                <label for="age">Age</label>
-                                <select name="age" id="age">
-                                    {% for choice in form.fields.age.choices %}
-                                        <option value="{{ choice.0 }}" {% if choice.0 == member.age %}selected{% endif %}>
-                                            {{ choice.1 }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                            {% endif %}
+                        </div>
+                    
+                        <div class="age-options">
+                            <label for="age">Age</label>
+                            <select name="age" id="age">
+                                {% for choice in form.fields.age.choices %}
+                                    <option value="{{ choice.0 }}" {% if choice.0 == member.age %}selected{% endif %}>
+                                        {{ choice.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
                     </div>
                     <div class="button-box">
                         <button class="button-btn" type="submit">Apply</button>

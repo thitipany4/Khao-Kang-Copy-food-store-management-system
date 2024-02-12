@@ -217,11 +217,15 @@ def profile(req,username):
         user =  get_object_or_404(User,username=username)
         member = Member.objects.get(user=user)
         form = MemberForm(instance=member)
-    else:
+        print(form.instance.first_name)
+    elif req.method=='POST':
         user =  get_object_or_404(User,username=username)
         member = Member.objects.get(user=user)
+        name = req.POST.get('first_name')
+        print(name)
         form = MemberForm(req.POST,req.FILES,instance=member)
         if form.is_valid():
+            print('form are valid')
             form.instance.age = req.POST.get('age')
             form.save()
             print(form.instance.age)
@@ -836,9 +840,10 @@ def shopping_food_type1(request):
     foods = Food.objects.all()
     return render(request, 'app/shop_food1.html', {'food': foods,
                                                          })
-def modify_cart1(request):
+def modify_cart1(request,ref_code):
     foods = Food.objects.all()
-    items = OrderItemtype1.objects.all()
+    print(ref_code)
+    items = OrderItemtype1.objects.filter(order__ref_code=ref_code)
     food_item = []
     for food in foods:
         found_item = ''
@@ -911,9 +916,7 @@ def add_to_cart(request,type,modify=None):
                     else:
                         print('not data deleted')
                         continue
-                    
 
-                
                 print(quantity,'ppp')
                 # Check if the product is already in the cart
                 existing_item = next((item for item in cart if item['id'] == product.id), None)
@@ -1130,19 +1133,24 @@ def checkout(request):
 def get_quatity(obj):
     date = getdate()
     food_sale = get_object_or_404(Historysale,food=obj,date_field=date)
-    return food_sale
-def order_confirmation(request, order_id=None):
-    if order_id is None:
+    if food_sale:
+        return food_sale
+    else:
+        return redirect('view_cart')
+def order_confirmation(request, ref_code=None):
+    if ref_code is None:
         order_id = request.session.pop('order', None)
         return redirect('home')
 
-    if order_id:
-        order = get_object_or_404(Order, ref_code=order_id)
+    if ref_code:
+        order = get_object_or_404(Order, ref_code=ref_code)
+        print(order)
         order_item1 = OrderItemtype1.objects.filter(order=order)
         order_item2 = OrderItemtype2.objects.filter(order=order)
         if order_item1:
             for i in order_item1:
                 food = Food.objects.filter(pk=i.food.id).first()
+                print('food',food)
                 food_sale = get_quatity(food)
                 food_sale.quantity -= i.quantity 
                 food_sale.save()
