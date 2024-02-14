@@ -34,7 +34,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        /* border: 1px solid red; */
+        border: 1px solid red;
         border-radius: 0.3rem;
         width: 80%;
         box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
@@ -48,6 +48,7 @@
         display: flex;
         flex-direction: column;
         width: 95%;
+
       }
       .head_detail_box {
         display: flex;
@@ -70,54 +71,86 @@
         border-bottom: 1px solid #212122;
         margin-bottom: 5px;
       }
+
       .body_detail {
         display: flex;
         flex-direction: column;
         /* border: 1px solid teal; */
+
       }
 
-      .list_detail_1,.list_detail_2 {
+      .list_detail_1 {
         display: flex;
+        flex-direction: column;
         justify-content: space-between;
         align-items: center;
+        /* border: 1px solid red; */
+      }
 
+      .box_list1,.box_list2 {
+        display: flex;
+        /* border: 1px solid teal; */
+        width: 95%;
       }
       .list_head,.list_tail {
         display: flex;
         align-items: center;
         height: 50px;
-        width: 400px;
         /* border: 1px solid red; */
+      }
+      .list_head {
+        width: 450px;
       }
       .list_tail {
         justify-content: end;
-      }
-      .name {
-        width: 300px;
-        margin-right: 50px;
+        margin-left: 50px;
+        width: 200px;
         /* border: 1px solid red; */
 
       }
+      .name {
+        width: 370px;
+        margin-right: 20px;
+        /* border: 1px solid red; */
 
+      }
+      .quatity {
+        /* border: 1px solid red; */
+        width: 100px;
+        text-align: center;
+        
+      }
       .bottom_detail {
         display: flex;
-        justify-content: end;
         /* border: 1px solid orchid; */
-        height: 70px;
-        align-items: center;
+        flex-direction: column;
+        align-items: end;
         margin-bottom: 40px;
         font-size: 26px;
+
+      }
+      .box_line_down {
+        display: flex;
+        width: 100%;
+        margin-top: 10px;
+        margin-bottom: 10px;
+
+
+      }
+      .line_down {
+        /* border: 1px solid red; */
+        border-bottom: 1px solid #212122;
+        width: 100%;
       }
       .box-submit {
-        position: absolute;
-        top: 87%;
-        right: 2%;
+        /* position: absolute; */
         display: flex;
         /* border: 1px solid tomato; */
         width: 250px;
         height: 70px;
         justify-content: space-between;
         align-items: center;
+        /* margin-top: 20px; */
     }
       .button-btn,.cancel-btn{
         display: flex;
@@ -130,6 +163,7 @@
         color: white;
         margin-left: 10px;
         margin-right: 10px;
+        font-size: 18px;
         }
       .button-btn {
         border: 1px solid #3498db;
@@ -146,6 +180,92 @@
       .cancel-btn:hover {
         border: 1px solid #F52C2C;
         background-color: #F52C2C;
+      }
+      .popupContainer {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+}
+
+      .popup {
+          background-color: #fefefe;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          padding: 50px;
+          max-width: 90%;
+          text-align: center;
+
+      }
+      
+
+      .head_popup {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+      .form_time {
+        display: flex;
+        flex-direction: column;
+        /* border: 1px solid orchid;  */
+        width: 300px;
+        height: 100px;
+
+      }
+      .form_content {
+        display: flex;
+        flex-direction: column;
+        /* border: 1px solid red;  */
+        align-items: center;
+
+      }
+      .select_time {
+        height: 30px;
+        width: 80%;
+        background-color: #fff;
+        margin-bottom: 20px;
+
+      }
+      .submit-popup {
+        /* border: 1px solid red;  */
+        display: flex;
+        width: 70%;
+        align-items: center;
+        justify-content: space-between;
+
+      }
+      .popupButton,.closeButton {
+          display: flex;
+          color: #fff;
+          border: none;
+          width: 120px;
+          height: 40px;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 14px;
+          align-items: center;
+          justify-content: center;
+      }
+      .popupButton:hover {
+          background-color: #0056b3;
+      }
+      .popupButton {
+        background-color: #007bff;
+        margin-right: 30px;
+      }
+      .closeButton {
+        background-color: #FF4600;
+      }
+      .closeButton:hover {
+        background-color: #B32300;
+
       }
     </style>
 </head>
@@ -168,57 +288,97 @@
 
         </div>
         <div class="body_detail">
+            
+            <div class="list_detail_1">
+              {%if order_item1%}
+              {% for item in order_item1 %}
+            
+              <div class="box_list1">
+                  <div class="list_head">
+                    <div class="name">{{ item.food.name }} </div>
+                    <div class="quatity">x {{ item.quantity }}</div>
+                  </div>
 
-          <div class="list_detail_1">
-            {%if order_item1%}
-            {% for item in order_item1 %}
+                  <div class="list_tail">
+                    <div class="price">฿ {{ item.price }}</div>
+                  </div>
 
-              <div class="list_head">
-                <div class="name">{{ item.food.name }} </div>
-                <div class="quatity">x {{ item.quantity }}</div>
+              </div>
+              {% endfor %}
+              {%endif%}
+              
+              {%if order_item2%}
+              {% for item in order_item2 %}
+              <div class="box_list2">
+                <div class="list_head">
+                  <div class="name">{{ item.name }} </div>
+                  <div class="quatity">x {{ item.quantity }}</div>
+                </div>
+
+                <div class="list_tail">
+                  <div class="price">฿ {{ item.price }}</div>
+                </div>
               </div>
 
-              <div class="list_tail">
-                <div class="price">฿ {{ item.price }}</div>
-              </div>
-
-            {% endfor %}
-            {%endif%}
-          </div>
-
-          <div class="list_detail_2">
-            {%if order_item2%}
-            {% for item in order_item2 %}
-
-            <div class="list_head">
-              <div class="name">{{ item.name }} </div>
-              <div class="quatity">x {{ item.quantity }}</div>
+              {% endfor %}
+              {%endif%}
             </div>
-
-            <div class="list_tail">
-              <div class="price">฿ {{ item.price }}</div>
-            </div>
-
-            {% endfor %}
-            {%endif%}
-          </div>
 
         </div>
+        
+        <div class="bottom_detail">
+            <div class="box_line_down">
+              <div class="line_down"></div>
+            </div>
+            <div class="code">code : {{order.ref_code}}</div>
+            <div class="box_line_down">
+              <div class="line_down"></div>
+            </div>
+            <div class="box-submit">
+              <button class="button-btn">ยืนยัน</button>
+              <a class="cancel-btn" href="{% url 'view_cart' %}">ยกเลิก</a>
+          </div>
+        </div>
 
-      <div class="bottom_detail">
-          <div class="code">code : {{order.ref_code}}</div>
-      </div>
-      <div class="box-submit">
-          <form method="post" action="{%url 'order_confirm' ref_code=order.ref_code %}">
-            {% csrf_token %}
-            <button class="button-btn" type="submit">ยืนยันการจอง</button>
-          </form>
-          <a class="cancel-btn" href="{% url 'view_cart' %}">ยกเลิก</a>
-      </div>
-
+      
       </div>
     </div>
   </div>
 
+  <div class="popupContainer">
+    <div class="popup">
+
+        <div class="head_popup">
+          เลือกเวลาที่ท่านจะมารับอาหาร
+        </div>
+        <form class="form_time" method="post" action="{%url 'order_confirm' ref_code=order.ref_code %}">
+          {% csrf_token %}
+          <div class="form_content">
+            <select class="select_time" name="select_time">
+              {%for e,t in select_time %}
+                <option class="option_time" value="{{e}}" >{{t}}</option>
+              </div>
+              {%endfor%}
+            </select>
+            <div class="submit-popup">
+              <button class="popupButton">ยืนยันการจอง</button>
+              <span class="closeButton">ยกเลิก</span>
+          </div>
+
+        </form>
+
+    </div>
+  </div>
+
+<script>
+  document.querySelector('.button-btn').addEventListener('click', function() {
+      document.querySelector('.popupContainer').style.display = 'block';
+  });
+  
+  document.querySelector('.closeButton').addEventListener('click', function() {
+      document.querySelector('.popupContainer').style.display = 'none';
+  });
+  
+  </script>
 </body>
 </html>

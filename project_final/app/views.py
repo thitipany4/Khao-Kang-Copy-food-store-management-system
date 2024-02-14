@@ -76,13 +76,7 @@ def home(req):
     }
     return render(req,'app/home.html',context)
 def about_us(req):
-    map = folium.Map(location=[15.268875,104.8260654],zoom_start=12)
-    us =(15.279417,104.831893)
-    folium.Marker(us).add_to(map)
-    context = {
-        'map':map._repr_html_()
-    }
-    return render(req,'app/aboutus.html',context)
+    return render(req,'app/aboutus.html')
 def create(req):
     form = FoodForm()
     if req.method =='POST':
@@ -1121,11 +1115,20 @@ def checkout(request):
         order = get_object_or_404(Order, ref_code=order_id)
         order_item1 = OrderItemtype1.objects.filter(order=order)
         order_item2 = OrderItemtype2.objects.filter(order=order)
+        list_time = ['10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '01:00 PM', '01:30 PM']
+        thai_time = ['10:00 น.', '10:30 น.', '11:00 น.', '11:30 น.', '12:00 น.', '12:30 น.', '13:00 น.', '13:30 น.']
+        current_time = timezone.localtime().time()
+        selected_times = []
+        for i in range(len(list_time)):
+            time_obj = datetime.strptime(list_time[i], '%I:%M %p').time()
+            if time_obj > current_time:  
+                selected_times.append((list_time[i],thai_time[i]))
+        print("Selected times:", selected_times)
         context ={
             'order':order,
+            'select_time':selected_times,
             'order_item1':order_item1,
             'order_item2':order_item2,
-
         }
         return render(request, 'app/checkout.html', context)
     else:
@@ -1143,6 +1146,8 @@ def order_confirmation(request, ref_code=None):
         return redirect('home')
 
     if ref_code:
+        time = request.POST.get('select_time')
+        print('new_time',time)
         order = get_object_or_404(Order, ref_code=ref_code)
         print(order)
         order_item1 = OrderItemtype1.objects.filter(order=order)
@@ -1165,10 +1170,11 @@ def order_confirmation(request, ref_code=None):
                     food_sale2.quantity -= item.quantity
                     food_sale.save()
                     print('food_sale2.quantity',food_sale2.quantity)
-        print(order_item2.first().foods.all())
+            print(order_item2.first().foods.all())
         request.session.pop('order', None)
         request.session.pop('cart', None)
         order.checkout = True
+        order.time_receive=time
         order.save()
         print('order has been checkout')
         context ={  
@@ -1203,3 +1209,19 @@ def confirm_order(request,code=None,status=None):
         'cancel':cancel
     }
     return render(request, 'app/confirm_order.html', context)
+
+def test_select_time(req):
+    list_time = ['10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 AM','12:30 AM','01:00 PM','01:30 PM']
+    time_str = '11:00 PM'
+    current_datetime = datetime.now() 
+    current_time = timezone.localtime().time()
+    for i in list_time:
+    # Convert string to time object
+        time_obj = datetime.strptime(i, '%I:%M %p').time()
+        print(time_obj)
+        # print(timezone.localtime().time())
+        if time_obj <= current_time: #เพราะมันวิ่งจากซ้ายไปขวาตัวซ้ายเลยมากกว่า
+            print('work',time_obj)
+        else:
+            print(current_time)
+    print(current_time,current_time.strftime('%p'))

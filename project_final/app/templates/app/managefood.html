@@ -169,11 +169,7 @@
             height: 22px;
 
         }
-        .popup-content {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
+
         .buttonpopup {
             display: flex;
             align-items: center;
@@ -194,13 +190,20 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
             border: 1px solid #000;
             background-color: #fff;
             padding: 20px;
-            z-index: 9999;
+            z-index: 1;
             width: 150px;
             height: 150px;
 }
+        .popup-content {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            
+        }
         .pop_ok {
             background-color: #76FF76;
             margin-right: 20px;
@@ -310,7 +313,7 @@
                 <div class="showdate">{{thai_date}}</div>
                 <div class="rightbar">
                     <a href="/create/" class="addfood">เพิ่มเมนูอาหาร</a>
-                    <a href="#" class="clearfood" onclick="openPopup()">จบวัน</a>
+                    <a href="#" class="clearfood" >จบวัน</a>
                     <div id="popup" class="popup">
                         <div class="popup-content">
                           <form action="/clear_food/" method="post" class="form-popup">
@@ -324,14 +327,13 @@
                           
                           <!-- You can add any content or form elements here -->
                             <script>
-                                function openPopup() {
-                                    var popup = document.getElementById("popup");
-                                    popup.style.display = "block";
-                                }
-                                function closePopup() {
-                                    var popup = document.getElementById("popup");
-                                    popup.style.display = "none";
-                                }
+                                    document.querySelector('.clearfood').addEventListener('click', function() {
+                                        document.querySelector('.popup').style.display = 'block';
+                                    });
+                                    
+                                    document.querySelector('.pop_cancel').addEventListener('click', function() {
+                                        document.querySelector('.popup').style.display = 'none';
+                                    });
                             </script>
                         </div>
                       </div>

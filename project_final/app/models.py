@@ -102,6 +102,17 @@ class Order(models.Model):
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     ref_code = models.CharField(max_length=100,null=True)
     checkout = models.BooleanField(default=False)
+    TIME_CHOICES = [
+        ('10:00 AM', '10:00 น.'),
+        ('10:30 AM', '10:30 น.'),
+        ('11:00 AM', '11:00 น.'),
+        ('11:30 AM', '11:30 น.'),
+        ('12:00 PM', '12:00 น.'),
+        ('12:30 PM', '12:30 น.'),
+        ('01:00 PM', '13:00 น.'),
+        ('01:30 PM', '13:30 น.'),
+    ]
+    time_receive = models.CharField(max_length=20, choices=TIME_CHOICES,null=True)
     confirm = models.CharField(max_length=20, choices=(
         ('wait_to_confirm', 'รอยืนยัน'),
         ('confirmed', 'ยืนยันเเล้ว'),
