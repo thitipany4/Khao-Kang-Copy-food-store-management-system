@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    {% include 'app/navbar.html' %}
+    {% if items %}
+        {% for order,items in items %}
+            <h2>Order: {{ order.ref_code}}</h2>
+            <h3>date: {{ order.created_at}}</h3>
+
+            <ul>
+                {% for item in items %}
+                    {%if item.name %}
+                    <li>{{ item.name }}</li>
+                    <li>{{ item.price }}</li>
+
+                    {%endif%}
+                    {%if item.food.name%}
+                    <li>{{ item.food.name }}</li>
+                    <li>{{ item.price }}</li>
+                    
+                    {%endif%}
+
+                {% endfor %}
+            </ul>
+        {% endfor %}
+    {% else %}
+        <p>No orders found.</p>
+    {% endif %}
+</body>
+</html>

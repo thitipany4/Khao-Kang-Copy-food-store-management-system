@@ -25,9 +25,12 @@ urlpatterns = [
     path('profile/<str:username>/',profile,name='profile'),
     path('calendar/',calendar,name='calendar'),
     path('calendar/<str:date>/<str:mark>/',calendar,name='calendar-date'),
-    path('note/<str:date>/',note,name='note'),
+    path('note/<str:date>/<str:type>/',note,name='note'),
+    path('note/<str:date>/<str:type>/<str:filter>/',note,name='note'),
+    path('delete_note/<str:date>/<str:type>/<int:id>/',delete_note,name='delete_note'),
     path('show_note/<str:date>/',show_note,name='show-note'),
-    path('delete_note/<str:note_id>/<str:date>/',delete_note,name='delete_note'),
+    path('show_note/<str:date>/<str:type>/',show_note,name='show-note'),
+    
 
     path('create_cart/', create_cart, name='create_cart'),
     path('view-cart/', view_cart, name='view_cart'),
@@ -42,8 +45,8 @@ urlpatterns = [
     path('checkout/', checkout, name='checkout'), 
     path('order_confirm/<str:ref_code>/', order_confirmation, name='order_confirm'),
     path('confirm_order/', confirm_order, name='confirm_order'),
-    path('confirm_order/<str:code>/<str:status>/', confirm_order, name='confirm_order'),
-
+    path('confirm_order/<str:code>/<str:status>/', confirm_order, name='confirm_order'),    
+    path('history_order/',history_order,name='my_order')
 
 
 

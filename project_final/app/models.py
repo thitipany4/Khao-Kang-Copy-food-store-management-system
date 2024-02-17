@@ -87,18 +87,20 @@ class Transaction(models.Model):
         ('leftover','Leftover')
     ]
     name = models.CharField(max_length=100)
-    price = models.FloatField(default=0.0)
+    price = models.IntegerField(default=0.0)
     amount = models.IntegerField(default=0)
+    total_price =models.IntegerField(default=0)
     date = models.DateField(null=True,blank=True)
     created = models.DateTimeField(default=timezone.now)
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
+
 
     def __str__(self) -> str:
         return f'{self.name} {self.date}'
 
 class Order(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE,null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateField(null=True)
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     ref_code = models.CharField(max_length=100,null=True)
     checkout = models.BooleanField(default=False)

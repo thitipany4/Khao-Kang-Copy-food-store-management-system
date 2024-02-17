@@ -39,10 +39,61 @@
             display: flex;
             /* border: 1px solid red; */
             justify-content: space-between;
-            width: 440px;
+            width: 220px;
             height: 40px;
         }
-        .change-expenses,.change-income,.change-leftover,.back-calendar {
+        .box-form {
+            display: flex;
+            /* border: 1px solid blue; */
+            height: 40px;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .form-input {
+            display: flex;
+            /* border: 1px solid red; */
+
+        }
+        .label-data {
+            margin-right: 10px;
+        }
+        .input-name {
+            width: 220px;
+            margin-right: 20px;
+        }
+        .input-price,.input-amount {
+            height: 20px;
+            width: 90px;
+            margin-right: 20px;
+        }
+        .box-btn-form {
+            display: flex;
+            /* border: 1px solid red; */
+            width: 130px;
+            justify-content: space-between;
+        }
+        .btn-form {
+            display: flex;
+            background-color: #3498db;
+            /* margin-left: 10px; */
+            cursor: pointer;
+            width: 60px;
+            border: 1px solid black;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .cancel-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-decoration: none;
+            border: 1px solid black;
+            background-color: #F94D4D;
+            width: 60px;
+            color: white;
+        }
+        .back-note,.back-calendar {
             display: flex;
             /* border: 1px solid red; */
             align-items: center;
@@ -54,15 +105,10 @@
             color: #F2F2F2;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
             border-radius: 0.3rem;
+            
         }
-        .change-expenses {
-            background-color: #F94D4D;
-        }
-        .change-income {
-            background-color: #44DE49;
-        }
-        .change-leftover {
-            background-color: #6AD1F8;
+        .back-note {
+            background-color: #DE8544;
         }
         .back-calendar {
             background-color: #BC6AF8;
@@ -72,7 +118,7 @@
             width: 100%;
             border-collapse: collapse;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-            
+
         }
 
         th, td {
@@ -88,7 +134,6 @@
         .head_column {
             text-align: center;
         }
-
         td {
             font-size: 16px;
             text-align: center;
@@ -100,9 +145,6 @@
             background-color: #6AF873;
             width: 90px;
         }
-        .leftover {
-            background-color: #6AD1F8;
-        }
         .name-row {
             width: 300px;
         }
@@ -113,11 +155,28 @@
             width: 70px;
 
         }
+        .delete-btn {
+            width: 5px;
+            /* border: 1px solid red; */
+            background-color: #F94D4D;
+
+        }
+        .delete-btn a {
+            display: flex;
+            justify-content: center;
+            text-decoration: none;
+            color: white;
+
+        }
+        .leftover {
+            background-color: #6AD1F8;
+        }
         .total-all {
             display: flex;
             height: 60px;
-            margin-bottom: 10px;
+            margin-top: 10px;
             text-align: right;
+            justify-content: space-between;
             border: 1px solid #dddddd;
             align-items: center;
             background-color: #f2f2f2;
@@ -131,45 +190,20 @@
             margin-left: 20px;
             margin-right: 30px;
         }
-        .total-expenses, .total-income {
-            display: flex;
-            /* border: 1px solid red; */
-            align-items: center;
-            width: 220px;
-            justify-content: space-between;
-        } 
-        .total-expenses-text, .total-income-text {
-            color: #FFFFFF;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 16px;
-        }
 
-        .total-expenses-text {
-            background-color: #F94D4D;
-        }
-
-        .total-income-text {
-            background-color: #44DE49;
-        }
-
-        .total-expenses-num, .total-income-num {
-            font-size: 20px;
-            font-weight: bold;
-            margin-right: 30px;
-        }
-        .total-expenses-num,.total-all-negative  {
+        .total-all-negative  {
             color: #F94D4D;
         }
-        .total-income-num,.total-all-plus {
+        .total-all-plus {
             color: #44DE49;
         }
         .total-income {
             margin-right: 100px;
-        } 
+        }
         .total-all-plus, .total-all-negative {
             font-size: 26px;
             font-weight: bold;
+            margin-right: 40px;
         }
 
         .button-box {
@@ -183,25 +217,23 @@
             margin-right: 10px;
         }
 
-        .cancel-btn {
-            background-color: #F94D4D;
-            border: 1px solid #F94D4D;
-        }
-        /* Dropdown container */
+
         .dropdown {
             position: relative;
             display: inline-block;
         }
 
-        /* Dropdown button */
+
         .dropbtn {
             background-color: #3498db;
             color: white;
-            padding: 10px 20px;
+            /* padding: 10px 20px; */
             border: none;
             border-radius: 4px;
             cursor: pointer;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            height: 35px;
+            width: 70px;
 
         }
         .dropdown-content {
@@ -240,37 +272,36 @@
         <div class="headline-text">{{ date }}</div>
         <div class="box-btn-top">
             <div class="head-in-box">
-                <a class="change-income" href="/note/{{ date }}/{{income}}/">แก้ไขรายรับ</a>
-                <a class="change-expenses" href="/note/{{ date }}/{{expenses}}/">แก้ไขรายจ่าย</a>
-                <a class="change-leftover" href="/note/{{ date }}/{{leftover}}/">แก้ไขอาหาร</a>
+                <a class="back-note" href="/show_note/{{ date }}/">สมุดบันทึก</a>
                 <a class="back-calendar" href="/calendar/">ปฎิทิน</a>
 
             </div>
             <div class="dropdown">
                 <button class="dropbtn">sort by</button>
                 <div class="dropdown-content">
-                    <a href="/show_note/{{ date }}/{{income}}/">รายรับ</a>
-                    <a href="/show_note/{{ date }}/{{expenses}}/" >รายจ่าย</a>
-                    <a href="/show_note/{{ date }}/{{leftover}}/">อาหารที่เหลือ</a>
+                    <a href="/note/{{ date }}/{{type}}/{{latest}}/">ล่าสุด</a>
+                    <a href="/note/{{ date }}/{{type}}/{{most_price}}/" >ราคามากที่สุด</a>
+                    <a href="/note/{{ date }}/{{type}}/{{most_quatity}}/">จำนวนมากที่สุด</a>
                 </div>
             </div>
         </div>
-        <div class="total-all">
-            <div class="text-total">สรุปยอดรวม</div>
-            <div class="total-expenses">
-                <div class="total-expenses-text">รายจ่าย</div>
-                <div class="total-expenses-num">- {{ sum_expenses|floatformat:2 }} ฿ </div>
-            </div>
-            <div class="total-income">
-                <div class="total-income-text">รายรับ</div>
-                <div class="total-income-num">+ {{ sum_income|floatformat:2 }} ฿ </div>
-            </div>
-            {% if total > 0 %}
-                <div class="total-all-plus">+{{ total }} ฿ </div>
-            {% else %}
-                <div class="total-all-negative">{{ total }} ฿ </div>
-            {% endif %}
+        <div class="box-form">
+            <form class="form-input" action="/note/{{ date }}/{{type}}/" method="post">
+                {% csrf_token %}
+                    <label class="label-data" for="name">ชื่อ:</label><br>
+                    <input class="input-name" type="text" id="name" name="name" required><br>
+                    <input  type="hidden" name="transaction_type" value="{{type}}">
+                    <label class="label-data" for="price">ราคา:</label><br>
+                    <input  class="input-price" type="number" id="price" name="price" required><br>
+                    <label class="label-data" for="amount">จำนวน:</label><br>
+                    <input  class="input-amount" type="number" id="amount" name="amount" required><br>
+                    <div class="box-btn-form">
+                        <input class="btn-form" type="submit" value="บันทึก">
+                        <a class="cancel-btn" href="/note/{{ date }}/{{type}}/">ล้าง</a>
+                    </div>
+            </form>
         </div>
+        
         <table>
             <thead>
                 <tr>
@@ -279,6 +310,8 @@
                     <th class="head_column">ราคา</th>
                     <th class="head_column">จำนวน</th>
                     <th class="head_column">รวม</th>
+                    <th class="head_column">ลบ</th>
+
                 </tr>
             </thead>
             <tbody>
@@ -297,15 +330,25 @@
                         <td class="price-row">{{ e.price }} ฿ </td>
                         <td class="amount-row">{{ e.amount }}</td>
                         <td class="total">{{e.total_price}} ฿ </td>
+                        <td class="delete-btn"><a href="/delete_note/{{date}}/{{type}}/{{e.id}}/">x</a></td>
+
                     </tr>
+
                 {% endfor %}
             </tbody>
         </table>
-
-        <!-- <div class="button-box">
-            <a class="button-btn" href="/note/{{ date }}/">note</a>
-            <a class="cancel-btn" href="/calendar/">Cancel</a>
-        </div> -->
+        {% if type != 'leftover'  %}    
+            <div class="total-all">
+                <div class="text-total">สรุปยอดรวม</div>
+                {% if type == 'income' %}
+                    <div class="total-all-plus">{{sum_income}} ฿ </div>
+                {% endif %}
+                {% if type == 'expenses' %}
+                    <div class="total-all-negative">{{sum_expenses}} ฿ </div>
+                {% endif %}
+                
+            </div>
+        {% endif %}
     </div>
 </body>
 </html>

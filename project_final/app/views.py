@@ -2,6 +2,7 @@ from collections import defaultdict
 from datetime import timedelta
 from decimal import Decimal
 import requests
+from django.db.models import Case, Value, When
 from django.shortcuts import get_object_or_404, redirect, render
 from app.forms import *
 #from linebot import LineBotApi
@@ -71,6 +72,7 @@ def home(req):
         print('tran id',d.id)
     #key = check()
     food = Food.objects.all()
+
     context ={
         'food':food,
     }
@@ -646,148 +648,94 @@ def calendar(req,date=None,mark=None):
                 'sum_income':sum_income,}
     return render(req, 'app/calendar_template.html',context)
 
-def note(req, date=None):
-    print(date)
-    expenses = 'expenses'
-    income ='income'
-    form = FormNote()
-    if req.method =='POST':
-        name_values = req.POST.getlist('name')
-        price_values = req.POST.getlist('price')
-        amount_values = req.POST.getlist('amount')
-        transaction_type_values = req.POST.getlist('transaction')
-        print('namesssss :', name_values)
-        print('namesssss :', price_values)
-        print('namesssss :', amount_values)
-
-
-        for i in range(len(name_values)):
-            if name_values[i] == '':
-                continue
-            else:
-                check = Transaction.objects.filter(name=name_values[i],date=date).first()
-                print('check',check)
-                if check:
-                    if check.name !=name_values[i] or check.price !=price_values[i] or check.amount !=amount_values[i]:
-                        form = FormNote({'name': name_values[i],
-                                         'price': price_values[i],
-                                         'amount': amount_values[i],},
-                                         req.POST,instance=check)
-                        if form.is_valid():
-                            form.save()
-                        print('data are duplicate')
-                else:
-                    print('transaction_type ', [i], transaction_type_values[i])
-                    form = FormNote({
-                        'name': name_values[i],
-                        'price': price_values[i],
-                        'amount': amount_values[i],
-                    }, req.FILES)
-
-                    if form.is_valid():
-                        # Process form data and save to the database
-                        form.instance.date = date
-                        form.instance.transaction_type = transaction_type_values[i]
-                        form.save()
-                        print('form save success')
-            print('save round',[i])
-        print('redirect home')
-        return redirect('calendar')
+def note(req, date=None,type=None,filter=None):
+    if req.method == 'POST':
+        name = req.POST.get('name')
+        price = req.POST.get('price')
+        amount = req.POST.get('amount')
+        transaction = req.POST.get('transaction_type')
+        add_data = Transaction.objects.create(
+            name=name,
+            price=price,
+            amount=amount,
+            transaction_type=transaction,
+            date=date,
+            total_price=(int(price)*int(amount))
+        )
+        print(add_data)
+    if filter:
+        if filter == 'most_quatity':
+            note = Transaction.objects.filter(date=date,transaction_type=type).order_by('-amount')
+        elif filter == 'most_price':
+            note = Transaction.objects.filter(date=date,transaction_type=type).order_by('-total_price')
+        elif filter == 'latest':
+            note = Transaction.objects.filter(date=date,transaction_type=type).order_by('-date')
     else:
-        tran = Transaction.objects.filter(date=date)
-        if tran.exists():
-            print('have tran')
-            list_income = []
-            list_expenses =[]
-            list_leftover =[]
-            for t in tran:
-                if t.transaction_type == 'expenses':
-                    list_expenses.append(t)
-                    print(t,t.transaction_type)
-                    print('list_expenses',list_expenses)
-                elif t.transaction_type == 'income':
-                    list_income.append(t)
-                    print(t,t.transaction_type)
-                    print('list_income',list_income)
-                else:
-                    list_leftover.append(t)
-                    print(t,t.transaction_type)
-                    print('list_leftover',list_leftover)
+        note = Transaction.objects.filter(date=date,transaction_type=type)
+    sum_expenses,sum_income= calculator(note)
+    form = FormNote()
+    most_quatity = 'most_quatity'
+    most_price = 'most_price'
+    latest = 'latest'
+    for i in note:
+        print(i,i.transaction_type)
+    context = {
+        'note':note,
+        'form':form,
+        'date':date,
+        'type':type,
+        'sum_expenses':sum_expenses,
+        'sum_income':sum_income,
+        'most_quatity':most_quatity,
+        'most_price':most_price,
+        'latest':latest
+    }
+    return render(req, 'app/note.html',context)
 
-            tem = '''
-                        <div class="container-add-form" id="forms-container-leftover">
-                            <form method="post" class="add-leftover" action="/note/{{date}}/" enctype="multipart/form-data">
-                                {%csrf_token%}
+   
+def delete_note(req,date,type,id):
+    note = Transaction.objects.get(pk=id)
+    if note:
+        note.delete()
+        return redirect('note', date=date, type=type)
 
-                                <input  class="bar-str" type="text" name="name" step="any" required id="id_name">
+    else:
+        return redirect('note', date=date, type=type)
 
-                                <input  class="bar-price" type="text" name="price" step="any" required id="id_price">
 
-                                <input  class="bar-amount" type="text" name="amount" step="any" required id="id_amount">
+def show_note(req,date=None,type=None):
+    if type:
+        if type == 'expenses':
+            note = Transaction.objects.filter(date=date).annotate(
+            expense_order=Case(When(transaction_type='expenses', then=Value(0)),default=Value(1))).order_by('expense_order')
+        elif type == 'income':
+            note = Transaction.objects.filter(date=date).annotate(
+            income_order=Case(When(transaction_type='income', then=Value(0)),default=Value(1))).order_by('income_order')
+        elif type == 'leftover':
+            note = Transaction.objects.filter(date=date).annotate(
+            leftover_order=Case(When(transaction_type='leftover', then=Value(0)),default=Value(1))).order_by('leftover_order')
+    else:
+        note = Transaction.objects.filter(date=date)    
 
-                                <input type="hidden" name="transaction" value="leftover">
 
-                                <!-- <select name="options" id="transaction_type">
-                                    <option value="expenses">expenses</option>
-                                    <option value="income">income</option>
-                                </select> -->
-
-                                <button type="button" class="delete-button" onclick="deleteForm(this)">Delete</button>
-
-                            </form>
-            
-                        </div>
-                '''
-
-            context ={
-                'form':form,
-                'date':date,
-                'tran':tran,
-                'expenses':expenses,
-                'income':income,
-                'list_expenses':list_expenses,
-                'list_income':list_income,
-                'list_leftover':list_leftover,
-                'tem':tem,
-            }
-            return render(req,'app/view_form.html', context)
-        else:
-            print('dont have tran')
-            context ={
-                'form':form,
-                'date':date,
-                'expenses':expenses,
-                'income':income,
-            }
-            return render(req,'app/view_form.html', context)
-
-     
-def show_note(req,date=None):
-    note = Transaction.objects.filter(date=date)
-    sum_expenses,sum_income,list_expenses,list_income,list_leftover= calculator(note,'show_note')
+    sum_expenses,sum_income= calculator(note)
+    print(note)
     total = sum_income- sum_expenses 
     print(total)
+    expenses= 'expenses'
+    income ='income'
+    leftover ='leftover'
     context = {
-         'list_income':list_income,
-         'list_expenses':list_expenses,
-         'list_leftover':list_leftover,
          'sum_expenses':sum_expenses,
          'sum_income':sum_income,
          'total':total,
          'date':date,
+         'note':note,
+         'expenses':expenses,
+         'income':income,
+         'leftover':leftover,
     }
     return render(req, 'app/show-note.html',context )
-def delete_note(request,note_id,date):
-    note = get_object_or_404(Transaction, pk=note_id,date=date)
-    print(note , 'delete done')
-    if note:
-        note.delete()
-        return redirect('show-note',date=date)
-
-    else:
-        return redirect('show-note',date=date)
-
-
 
 def create_cart(request):
     existing_order = Order.objects.filter(user=request.user,checkout=False).first()
@@ -1140,6 +1088,35 @@ def get_quatity(obj):
         return food_sale
     else:
         return redirect('view_cart')
+
+def create_transaction(obj1,obj2):
+    date = getdate()
+    if obj1:
+        for i in obj1:
+            transaction = Transaction.objects.create(
+                    name=i.food.name + ' (จากระบบ)',
+                    price=i.price,
+                    amount=i.quantity,
+                    transaction_type='income',
+                    date=date,
+                    total_price=(int(i.price)*int(i.quantity))
+
+            )
+            print('transaction',transaction)
+    if obj2:
+        for i in obj2:
+            transaction = Transaction.objects.create(
+                    name=i.name + ' (จากระบบ)',
+                    price=i.price,
+                    amount=i.quantity,
+                    transaction_type='income',
+                    date=date,
+                    total_price=(int(i.price)*int(i.quantity))
+
+            )
+            print('transaction',transaction)
+
+
 def order_confirmation(request, ref_code=None):
     if ref_code is None:
         order_id = request.session.pop('order', None)
@@ -1152,6 +1129,9 @@ def order_confirmation(request, ref_code=None):
         print(order)
         order_item1 = OrderItemtype1.objects.filter(order=order)
         order_item2 = OrderItemtype2.objects.filter(order=order)
+
+        transaction = create_transaction(order_item1,order_item2)
+
         if order_item1:
             for i in order_item1:
                 food = Food.objects.filter(pk=i.food.id).first()
@@ -1173,10 +1153,13 @@ def order_confirmation(request, ref_code=None):
             print(order_item2.first().foods.all())
         request.session.pop('order', None)
         request.session.pop('cart', None)
+        date= getdate()
+        order.created_at = date
         order.checkout = True
         order.time_receive=time
         order.save()
         print('order has been checkout')
+
         context ={  
             'order':order,
             'order_item1':order_item1,
@@ -1225,3 +1208,29 @@ def test_select_time(req):
         else:
             print(current_time)
     print(current_time,current_time.strftime('%p'))
+
+def history_order(req):
+    orders = Order.objects.filter(user=req.user)
+    # orders = Order.objects.filter(user=req.user).order_by('-created_at') ไว้ build sort by
+    items = []
+
+    for order in orders:
+        order_items = []
+
+        order_items_type1 = OrderItemtype1.objects.filter(order=order)
+        for item in order_items_type1:
+            order_items.append(item)
+
+        order_items_type2 = OrderItemtype2.objects.filter(order=order)
+        for item in order_items_type2:
+            order_items.append(item)
+
+        items.append(( order,order_items))
+    print(items)
+    context ={
+            'order':orders,
+            'items':items,
+            # 'order_item1':order_item1,
+            # 'order_item2':order_item2,
+        }
+    return render(req,'app/history_order.html',context)
