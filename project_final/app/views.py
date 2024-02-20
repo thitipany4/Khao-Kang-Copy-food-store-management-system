@@ -738,11 +738,13 @@ def show_note(req,date=None,type=None):
     return render(req, 'app/show-note.html',context )
 
 def create_cart(request):
-    existing_order = Order.objects.filter(user=request.user,checkout=False).first()
-    if existing_order and existing_order.checkout !=True :
-        order = existing_order
-        print(order)
-        return redirect('view_cart')
+    order = Order.objects.filter(user=request.user,checkout=False).first()
+    if order :
+        if (timezone.now() - order.created_at).total_seconds() > 18000:
+            order.delete()
+            return redirect('create_cart')
+        else:
+            return render(request, 'app/view_cart.html', {'order': order})
     else:
         random_code = generate_random_system_code()
         order = Order.objects.create(total_price=Decimal('0.00'), ref_code=random_code,user=request.user)
@@ -862,7 +864,6 @@ def add_to_cart(request,type,modify=None):
                 print(quantity,'ppp')
                 # Check if the product is already in the cart
                 existing_item = next((item for item in cart if item['id'] == product.id), None)
-                print('existing_item', existing_item)
 
                 if existing_item:
                     print('updating existing item')
@@ -885,9 +886,9 @@ def add_to_cart(request,type,modify=None):
                     order = get_object_or_404(Order, ref_code=order_id)
 
                 order_item, created = OrderItemtype1.objects.get_or_create(order=order,user=request.user, food=product,
-                                                                       defaults={'quantity': 0, 'price': product.price})
+                                                                       defaults={'price': product.price})
                 if not modify :
-                    order_item.quantity += quantity
+                    order_item.quantity = quantity
                     order.total_price += (product.price * quantity)
                 else:
                     if order_item.quantity != quantity:
@@ -1148,13 +1149,12 @@ def order_confirmation(request, ref_code=None):
                     foods = get_object_or_404(Food,pk=i.id)
                     food_sale2 = get_quatity(foods)
                     food_sale2.quantity -= item.quantity
-                    food_sale.save()
+                    food_sale2.save()
                     print('food_sale2.quantity',food_sale2.quantity)
             print(order_item2.first().foods.all())
         request.session.pop('order', None)
         request.session.pop('cart', None)
         date= getdate()
-        order.created_at = date
         order.checkout = True
         order.time_receive=time
         order.save()
@@ -1209,28 +1209,134 @@ def test_select_time(req):
             print(current_time)
     print(current_time,current_time.strftime('%p'))
 
-def history_order(req):
-    orders = Order.objects.filter(user=req.user)
-    # orders = Order.objects.filter(user=req.user).order_by('-created_at') ไว้ build sort by
-    items = []
+def my_order(req,filter=None):
+    filters = 'inconfirm'
+    if not filter:
+        orders = Order.objects.filter(user=req.user,completed='incompleted',checkout=True).order_by('-created_at')
+        print('not',orders)
+            
+    else:
+        orders = Order.objects.filter(user=req.user)
+        print('have ')
+        filters =None
+    if orders :
+        time = orders.first().TIME_CHOICES
 
-    for order in orders:
-        order_items = []
+    # orders = Order.objects.filter(user=req.user).order_by('-created_at') ไว้ build sor t by
+        items = []
+        
+        for order in orders:
+            order_items = []
 
-        order_items_type1 = OrderItemtype1.objects.filter(order=order)
-        for item in order_items_type1:
-            order_items.append(item)
+            order_items_type1 = OrderItemtype1.objects.filter(order=order)
+            for item in order_items_type1:
+                order_items.append(item)
 
-        order_items_type2 = OrderItemtype2.objects.filter(order=order)
-        for item in order_items_type2:
-            order_items.append(item)
+            order_items_type2 = OrderItemtype2.objects.filter(order=order)
+            for item in order_items_type2:
+                order_items.append(item)
+            
+            thai_tz = pytz.timezone('Asia/Bangkok')
+            thai_time = timezone.localtime(order.created_at, timezone=thai_tz)
+            # print(thai_time.strftime("%d %B %Y %H:%M"))
+            date_raw = order.created_at.date()
+            date = getdate(None,str(date_raw))
+            # print(f'{date} {thai_time.strftime("%H:%M")}')
+            date = f'{date} เวลา {thai_time.strftime("%H:%M")} น.'
+            items.append(( order,order_items,date))
+        context ={
+                    'order':orders,
+                    'items':items,
+                    'time':time,
+                    'filter':filters,
+                }
+    else:
+        context ={
+                    'order':orders,
+                    # 'items':items,
+                    # 'time':time,
+                    # 'order_item1':order_item1,
+                    # 'order_item2':order_item2,
+                }
 
-        items.append(( order,order_items))
-    print(items)
-    context ={
-            'order':orders,
-            'items':items,
-            # 'order_item1':order_item1,
-            # 'order_item2':order_item2,
-        }
+    return render(req,'app/my_order.html',context)
+
+
+def my_history(req,filter=None):
+    wait = 'wait'
+    receive ='receive'
+    cancel = 'cancel'
+    orders =''
+    if not filter:
+        orders = Order.objects.filter(user=req.user,checkout=True).order_by('-created_at')
+        # orders = Order.objects.filter(user=req.user,checkout=True).annotate(
+        # completed_order=Case(When(completed='incompleted', then=Value(0)),default=Value(1))).order_by('completed_order')
+        # print('not',orders)
+
+    else:
+        if filter =='wait':
+            orders = Order.objects.filter(user=req.user,checkout=True).annotate(
+            wait_order=Case(When(confirm='wait_to_confirm', then=Value(0)),default=Value(1))).order_by('wait_order')
+            if not orders:
+                orders=None
+            print('wait ')
+
+        elif filter =='receive':
+            orders = Order.objects.filter(user=req.user,checkout=True).annotate(
+            confirmed_order=Case(When(confirm='confirmed', then=Value(0)),default=Value(1))).order_by('confirmed_order')
+            if not orders:
+                orders=None
+            print('receive ')
+        elif filter =='cancel':
+            orders = Order.objects.filter(user=req.user,checkout=True).annotate(
+            cancel_order=Case(When(confirm='cancel', then=Value(0)),default=Value(1))).order_by('cancel_order')
+            print(orders)
+            if not orders:
+                orders=None
+            print('cancel ')
+
+    if orders :
+        time = orders.first().TIME_CHOICES
+
+    # orders = Order.objects.filter(user=req.user).order_by('-created_at') ไว้ build sor t by
+        items = []
+        
+        for order in orders:
+            order_items = []
+
+            order_items_type1 = OrderItemtype1.objects.filter(order=order)
+            for item in order_items_type1:
+                order_items.append(item)
+
+            order_items_type2 = OrderItemtype2.objects.filter(order=order)
+            for item in order_items_type2:
+                order_items.append(item)
+            
+            thai_tz = pytz.timezone('Asia/Bangkok')
+            thai_time = timezone.localtime(order.created_at, timezone=thai_tz)
+            # print(thai_time.strftime("%d %B %Y %H:%M"))
+            date_raw = order.created_at.date()
+            date = getdate(None,str(date_raw))
+            # print(f'{date} {thai_time.strftime("%H:%M")}')
+            date = f'{date} เวลา {thai_time.strftime("%H:%M")} น.'
+            items.append(( order,order_items,date))
+        context ={
+                    'order':orders,
+                    'items':items,
+                    'time':time,
+                    'receive':receive,
+                    'wait':wait,
+                    'cancel':cancel
+                }
+    else:
+        context ={
+                    'order':orders,
+                    'receive':receive,
+                    'wait':wait,
+                    'cancel':cancel
+
+                }
+
+
     return render(req,'app/history_order.html',context)
+    

@@ -46,7 +46,9 @@ urlpatterns = [
     path('order_confirm/<str:ref_code>/', order_confirmation, name='order_confirm'),
     path('confirm_order/', confirm_order, name='confirm_order'),
     path('confirm_order/<str:code>/<str:status>/', confirm_order, name='confirm_order'),    
-    path('history_order/',history_order,name='my_order')
+    path('my_order/',my_order,name='my_order'),
+    path('history_order/',my_history,name='my_order'),
+    path('history_order/<str:filter>/',my_history,name='my_order'),
 
 
 

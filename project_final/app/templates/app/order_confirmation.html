@@ -1,11 +1,84 @@
-<h2>Order Confirmation</h2>
-<p>Thank you for your order!</p>
-<p>Order ID: {{ order.ref_code }}</p>
-<p>Total Price: {{ order.total_price }}</p>
-<h3>Order Items:</h3>
-<ul>
-  {% for item in order_items %}
-    <li>{{ item.product.name }} - Quantity: {{ item.quantity }} - Price: {{ item.price }}</li>
-  {% endfor %}
-</ul>
-<p><a href="{% url 'home' %}">Continue Shopping</a></p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    body {
+            background-color: #f5f5f7;
+        }
+    .container {
+      display: flex;
+      /* border: 1px solid red; */
+      margin: 5px;
+      justify-content: center;
+    }
+    .box-container {
+      display: flex;
+      /* border: 1px solid blue;  */
+      height: 200px;
+      width: 500px;
+      justify-content: center;
+      align-items: center;
+      background-color: #FDFDFD;
+      box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+      margin-top: 40px;
+
+    }
+    .thank-text {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+    .box-signal {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+    .signal-thank {
+      height: 60px;
+      width: 60px;
+      color: red;
+    }
+    .box-btn {
+      display: flex;
+      justify-content: center;
+    }
+    .btn-back-home {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100px;
+      height: 40px;
+      border-radius: 4px;
+      text-decoration: none;
+      color: white;
+      border: 1px solid #F94D4D;
+      background-color: #F94D4D;
+    }
+  </style>
+</head>
+<body>
+  {% include 'app/navbar.html' %}
+  <div class="container">
+    <div class="box-container">
+      <div class="box-content">
+        <div class="thank-text">
+          Thank you for your order
+        </div>
+        <div class="box-signal">
+          <div class="signal-thank">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>          
+          </div>
+        </div>
+        <div class="box-btn">
+          <a class="btn-back-home" href="{% url 'home' %}">back to home</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

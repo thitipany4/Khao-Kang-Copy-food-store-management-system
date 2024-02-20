@@ -3,6 +3,7 @@ from django.db import models
 from PIL import Image
 from django.contrib.auth.models import User
 from django.utils import timezone
+import pytz
 
 class Member(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -99,10 +100,10 @@ class Transaction(models.Model):
         return f'{self.name} {self.date}'
 
 class Order(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE,null=True)
-    created_at = models.DateField(null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    created_at = models.DateTimeField(null=True)  # Remove auto_now_add=True
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    ref_code = models.CharField(max_length=100,null=True)
+    ref_code = models.CharField(max_length=100, null=True)
     checkout = models.BooleanField(default=False)
     TIME_CHOICES = [
         ('10:00 AM', '10:00 น.'),
@@ -114,20 +115,30 @@ class Order(models.Model):
         ('01:00 PM', '13:00 น.'),
         ('01:30 PM', '13:30 น.'),
     ]
-    time_receive = models.CharField(max_length=20, choices=TIME_CHOICES,null=True)
+    time_receive = models.CharField(max_length=20, choices=TIME_CHOICES, null=True)
     confirm = models.CharField(max_length=20, choices=(
         ('wait_to_confirm', 'รอยืนยัน'),
         ('confirmed', 'ยืนยันเเล้ว'),
         ('cancel', 'ยกเลิก'),
-    ), default='wait_to_confirm') 
+    ), default='wait_to_confirm')
+    completed = models.CharField(max_length=20, choices=(
+        ('incompleted', 'ยังไม่สมบุรณ์'),
+        ('completed', 'สมบุรณ์'),
+    ), default='incompleted')
+    def save(self, *args, **kwargs):
+        if not self.created_at:
+            thai_tz = pytz.timezone('Asia/Bangkok')
+            utc_now = timezone.now()
+            self.created_at = utc_now.astimezone(thai_tz)
+        super().save(*args, **kwargs)
+        
     def __str__(self) -> str:
-        return f'{self.ref_code} corfirm {self.confirm}'
-
+        return f'{self.ref_code} confirm {self.confirm}'
 class OrderItemtype1(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     food = models.ForeignKey(Food,on_delete=models.DO_NOTHING)
-    quantity = models.IntegerField()
+    quantity = models.IntegerField(default=0)
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
     def __str__(self) -> str:
