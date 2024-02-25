@@ -99,10 +99,18 @@
             display: flex;
             width: 95%;
             /* border: 1px solid red; */
-            justify-content: end;
+            justify-content: space-between;
             height: 50px;
             align-items: center;
             margin-bottom: 10px;
+        }
+        .select-month {
+            height: 80%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* border: 1px solid red; */
+            margin-left: 10px;
         }
         .history-button {
             width: 160px;
@@ -291,6 +299,53 @@
         flex-direction: column;
         /* border: 1px solid red;  */
       }
+      .dropdown {
+            position: relative;
+            display: inline-block;
+            margin-right: 40px;
+
+        }
+
+        .dropbtn{
+            background-color: #3498db;
+            color: white;
+            width: 120px;
+            height: 40px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            font-size: 16px;
+
+        }
+        .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #f9f9f9;
+                min-width: 160px;
+                box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+                z-index: 1;
+                font-size: 18px;
+            }
+
+        .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+
+        .dropdown-content a:hover {
+                background-color: #ddd;
+            }
+
+        .dropdown:hover .dropdown-content {
+                display: block;
+            }
+
+        .dropdown:hover .dropbtn {
+                background-color: #2980b9;
+            }
     </style>
 </head>
 <body>
@@ -324,7 +379,29 @@
             </div>
         </div>
         <div class="history-order">
-            <a class="history-button" href="/history_confirm_order/">ประวัติออเดอร์ทั้งหมด</a>
+            <div class="select-month">
+                <div class="move-content">
+                        <form method="post" action="/history_confirm_order/" class="move-to-month-form">
+                            {%csrf_token%}
+                            <label for="id_move_to_month">เลือกเดือน:</label>
+                            <input type="month" name="move_to_month" id="id_move_to_month" value="{{ current_year }}-{{ current_month|date:'m' }}" required>
+                            <button class="go-month" type="submit">ไป</button>
+                            <button class="cancel-month" id="closePopup">ยกเลิก</button>
+                        </form>
+            
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="dropbtn">sort by</button>
+                <div class="dropdown-content">
+                        <a href="/history_confirm_order/{{date_filter}}/{{receive_text}}/">รับอาหารเเล้ว</a>
+                        <a href="/history_confirm_order/{{date_filter}}/{{wait_confirm_text}}/" >รอการยืนยัน</a>
+                        <a href="/history_confirm_order/{{date_filter}}/{{wait_receive_text}}/">รอดำเนินการ</a>
+                        <a href="/history_confirm_order/{{date_filter}}/{{cancel_num_text}}/">ถูกยกเลิก</a>
+
+                </div>
+          </div>
+
         </div>
         <div class="box-table">
             <table>
@@ -336,7 +413,6 @@
                         <th class="head_column">ราคา</th>
                         <th class="head_column">code</th>
                         <th class="head_column">status</th>
-                        <th class="head_column">confirmed</th>
                     </tr>
     
                 </thead>
@@ -374,42 +450,8 @@
                         {%elif status == 'รอดำเนินการ' %}
                         <td class="confirm_body_wait-p">{{status}}</td>
                         {%endif%}
-                        <td class="status_body">
-                            {%if status == 'รอการยืนยัน' %}
-                            <div class="button_confirm">
-                                <a class="confirm_btn" href="/confirm_order/{{order.ref_code}}/{{confirm}}/">confirm</a>
-                                <button class="cancle_btn">cancel</button>
-                            </div>
-                            {%elif status == 'รอดำเนินการ' %}
-                            <div class="button_confirm">
-                                <button class="cancle_btn">cancel</button>
-                            </div>
-                            {%endif%}
-                        </td>
                     </tr>
-                    <div id="popupContainer" class="popupContainer">
-                        <div class="popup">
-                            <div class="head_popup">
-                              เลือกเหตุผลในการยกเลิก
-                            </div>
-                            <form class="form_reason" method="post" action="/confirm_order/{{order.ref_code}}/{{cancel}}/">
-                              {% csrf_token %}
-                              <div class="form_content">
-                                <select class="select_reason" name="select_time">
-                                  {%for e,t in reason %}
-                                    <option class="option_reason" value="{{e}}" >{{t}}</option>
-                                  </div>
-                                  {%endfor%}
-                                </select>
-                                <div class="submit-popup">
-                                  <button class="popupButton">ยืนยันการจอง</button>
-                                  <span class="closeButton">ยกเลิก</span>
-                              </div>
-                    
-                            </form>
-                    
-                        </div>
-                      </div>
+                  
                     {% endfor %}
                 </tbody>
             </table>
@@ -417,20 +459,15 @@
        
     </div>
     <script>
-        const cancelButtons = document.querySelectorAll('.cancle_btn');
-        const popupContainer = document.getElementById('popupContainer');
-        const closeButton = popupContainer.querySelector('.closeButton');
-        cancelButtons.forEach(cancelButton => {
-            cancelButton.addEventListener('click', function() {
-                popupContainer.style.display = 'block';
-            });
-        });
-        
-        closeButton.addEventListener('click', function() {
-            popupContainer.style.display = 'none';
+
+                // JavaScript to handle the pop-up functionality
+        document.getElementById('openPopup').addEventListener('click', function() {
+            document.getElementById('popupOverlay').style.display = 'flex';
         });
 
-        
+        document.getElementById('closePopup').addEventListener('click', function() {
+            document.getElementById('popupOverlay').style.display = 'none';
+        });
         </script>
 </body>
 </html>

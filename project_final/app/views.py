@@ -1,7 +1,7 @@
 from collections import defaultdict
 from datetime import timedelta
 from decimal import Decimal
-import requests
+
 from django.db.models import Case, Value, When
 from django.shortcuts import get_object_or_404, redirect, render
 from app.forms import *
@@ -10,8 +10,6 @@ from app.forms import *
 from app.models import *
 from django.contrib.auth.models import User
 from django.db import transaction
-import folium
-from itertools import zip_longest
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from .generate_code import generate_random_system_code
 from .clear_session import *
@@ -1170,12 +1168,27 @@ def order_confirmation(request, ref_code=None):
     else:
         return redirect('product_list')
 
+
 def confirm_order(request,code=None,status=None):
     # order = Order.objects.get(pk=order_id)
     if request.method == 'GET':
-        orders = Order.objects.all().order_by('-created_at')
+        current_date = getdate()
+        thai_date = getdate(None,current_date)
+        print(thai_date)
+        current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
+        print(current_date,'f')
+        orders = Order.objects.filter(created_at__contains=current_date)
+        reason = orders.first().REASON
+        print(reason)
+        time = orders.first().TIME_CHOICES
         confirm ='confirmed'
         cancel = 'cancel'
+        receive =0
+        wait_confirm=0
+        wait_receive =0
+        cancel_num=0
+        all_item =[]
+        
         if status:
             print(code)
             print(status)   
@@ -1185,14 +1198,173 @@ def confirm_order(request,code=None,status=None):
                 order.save()
                 print(order.confirm,'save done')
                 return redirect('confirm_order')
+            
+        for order in orders:
+            print(len(orders))
+            list_item=[]
+            list_status=''
+            if order.confirm == 'wait_to_confirm':
+                wait_confirm +=1
+                list_status='รอการยืนยัน'
+            elif order.confirm == 'confirmed' and order.completed == 'incompleted':
+                wait_receive +=1
+                list_status='รอดำเนินการ'
+            elif order.completed =='completed':
+                receive +=1
+                list_status='รับอาหารเเล้ว'
+            elif order.confirm == 'cancel':
+                cancel_num +=1
+                list_status='ยกเลิก'
 
+            order_items_type1 = OrderItemtype1.objects.filter(order=order)
+
+            for item in order_items_type1:
+                list_item.append(item)
+
+            order_items_type2 = OrderItemtype2.objects.filter(order=order)
+            for item in order_items_type2:
+                list_item.append(item)
+
+            all_item.append((order,time,list_item,list_status))
+            print(list_item)
+        print('receive',receive,'wait_confirm',wait_confirm,'wait_receive',wait_receive,'cancel_num',cancel_num)
+    else:
+        if status:
+            print(code)
+            print(status)   
+            order = Order.objects.get(ref_code=code)
+            if order:
+                order.confirm = status 
+                order.save()
+                print(order.confirm,'save done')
+                return redirect('confirm_order')
     context={
         'order':orders,
         'confirm':confirm,
-        'cancel':cancel
+        'cancel':cancel,
+        'all_item':all_item,
+        'len_order':len(orders),
+        'receive':receive,
+        'wait_confirm':wait_confirm,
+        'wait_receive':wait_receive,
+        'cancel_num':cancel_num,
+        'thai_date':thai_date,
+        'current_date':current_date,
+        'reason':reason
     }
     return render(request, 'app/confirm_order.html', context)
+def filter_history_confirm(orders,filter):
+        if filter =='receive':
+            sort = orders.annotate(
+            receive=Case(When(completed='completed', then=Value(0)),default=Value(1))).order_by('receive')
+        elif filter =='wait_confirm':
+            sort = orders.annotate(
+            wait_confirm=Case(When(confirm='wait_to_confirm', then=Value(0)),default=Value(1))).order_by('wait_confirm')
+        elif filter =='wait_receive':
+            sort = orders.annotate(
+            wait_receive=Case(When(confirm='confirmed',completed='incompleted', then=Value(0)),default=Value(1))).order_by('wait_receive')
+        elif filter =='cancel_num':
+            sort = orders.annotate(
+            cancel_num=Case(When(confirm='cancel', then=Value(0)),default=Value(1))).order_by('cancel_num')
+        return sort
 
+def history_confirm_order(request,date=None,filter=None):
+    # order = Order.objects.get(pk=order_id)
+        if not date:
+            print('not date')
+            current_date = getdate()
+            current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
+            date_filter = f'{current_date.year}-0{current_date.month}'
+        else:
+            date_filter =date
+        orders = Order.objects.filter(created_at__contains=date_filter)
+        if filter :
+            orders = filter_history_confirm(orders,filter)
+
+        date_raw = f'{date_filter}-01'
+        thai_date = getdate(None,date_raw)
+        print(thai_date[2:])
+        confirm ='confirmed'
+        cancel = 'cancel'
+
+        receive_text ='receive'
+        wait_confirm_text='wait_confirm'
+        wait_receive_text ='wait_receive'
+        cancel_num_text='cancel_num'
+
+        receive =0
+        wait_confirm=0
+        wait_receive =0
+        cancel_num=0
+
+        all_item =[]
+        if orders.exists():
+            time = orders.first().TIME_CHOICES
+            for order in orders:
+                print(len(orders))
+                list_item=[]
+                list_status=''
+                if order.confirm == 'wait_to_confirm':
+                    wait_confirm +=1
+                    list_status='รอการยืนยัน'
+                elif order.confirm == 'confirmed' and order.completed == 'incompleted':
+                    wait_receive +=1
+                    list_status='รอดำเนินการ'
+                elif order.completed =='completed' and order.confirm !='cancel':
+                    receive +=1
+                    list_status='รับอาหารเเล้ว'
+                elif order.confirm == 'cancel':
+                    cancel_num +=1
+                    list_status='ยกเลิก'
+
+                order_items_type1 = OrderItemtype1.objects.filter(order=order)
+
+                for item in order_items_type1:
+                    list_item.append(item)
+
+                order_items_type2 = OrderItemtype2.objects.filter(order=order)
+                for item in order_items_type2:
+                    list_item.append(item)
+
+                all_item.append((order,time,list_item,list_status))
+                print(list_item)
+            print('receive',receive,'wait_confirm',wait_confirm,'wait_receive',wait_receive,'cancel_num',cancel_num)
+            print(date_filter)
+
+        if request.method=='POST':
+            date = request.POST.get('move_to_month') + '-01'
+            print('date ==',date)
+            if date:
+                d = datetime.strptime(date, '%Y-%m-%d').date()
+                print('move to',d)
+                year = d.year
+                month = d.month
+                if month >9:
+                    date = f'{year}-{month}'
+                else:
+                    date = f'{year}-0{month}'
+
+                print(date)
+                return redirect('confirm_order_admin', date=date)
+
+        context={
+                'order':orders,
+                'confirm':confirm,
+                'cancel':cancel,
+                'all_item':all_item,
+                'len_order':len(orders),
+                'receive':receive,
+                'wait_confirm':wait_confirm,
+                'wait_receive':wait_receive,
+                'cancel_num':cancel_num,
+                'thai_date':thai_date[2:],
+                'date_filter':date_filter,
+                'receive_text' :receive_text,
+                'wait_confirm_text':wait_confirm_text,
+                'wait_receive_text' :wait_receive_text,
+                'cancel_num_text':cancel_num_text,
+        }
+        return render(request, 'app/history_confirm_order.html', context)
 def test_select_time(req):
     list_time = ['10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 AM','12:30 AM','01:00 PM','01:30 PM']
     time_str = '11:00 PM'

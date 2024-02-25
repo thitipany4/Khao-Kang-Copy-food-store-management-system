@@ -45,10 +45,13 @@ urlpatterns = [
     path('checkout/', checkout, name='checkout'), 
     path('order_confirm/<str:ref_code>/', order_confirmation, name='order_confirm'),
     path('confirm_order/', confirm_order, name='confirm_order'),
-    path('confirm_order/<str:code>/<str:status>/', confirm_order, name='confirm_order'),    
+    path('confirm_order/<str:code>/<str:status>/', confirm_order, name='confirm_order'), 
+    path('history_confirm_order/',history_confirm_order,name='history_confirm_order'),
+    path('history_confirm_order/<str:date>/',history_confirm_order,name='confirm_order_admin'),
+    path('history_confirm_order/<str:date>/<str:filter>/',history_confirm_order,name='confirm_order_admin'),
     path('my_order/',my_order,name='my_order'),
-    path('history_order/',my_history,name='my_order'),
-    path('history_order/<str:filter>/',my_history,name='my_order'),
+    path('history_order/',my_history,name='my_history'),
+    path('history_order/<str:filter>/',my_history,name='my_history'),
 
 
 

@@ -115,6 +115,13 @@ class Order(models.Model):
         ('01:00 PM', '13:00 น.'),
         ('01:30 PM', '13:30 น.'),
     ]
+    REASON = [
+        ('soldout','สินค้าหมด'),
+        ('cant-call-user','ไม่สามารถติดต่อลูกค้าได้'),
+        ('user-dont-receive','ลูกค้าไม่มารับอาหาร'),
+        ('user-cancel','ลูกค้าเปลี่ยนใจ/ยกเลิกการจอง'),
+        ('cant-receive','ไม่สามารถไปรับอาหารได้'),
+    ]
     time_receive = models.CharField(max_length=20, choices=TIME_CHOICES, null=True)
     confirm = models.CharField(max_length=20, choices=(
         ('wait_to_confirm', 'รอยืนยัน'),
@@ -125,6 +132,8 @@ class Order(models.Model):
         ('incompleted', 'ยังไม่สมบุรณ์'),
         ('completed', 'สมบุรณ์'),
     ), default='incompleted')
+    cancel_reason = models.CharField(max_length=40, choices=REASON,null=True,blank=True)
+
     def save(self, *args, **kwargs):
         if not self.created_at:
             thai_tz = pytz.timezone('Asia/Bangkok')
