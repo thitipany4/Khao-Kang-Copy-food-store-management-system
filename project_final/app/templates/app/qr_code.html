@@ -1,0 +1,97 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            background-color: #f5f5f7;
+            
+            
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            /* border: 1px solid red; */
+            margin: 10px;
+            height: 400px;
+        }
+        .head-text {
+            display: flex;
+            /* border: 1px solid red; */
+            margin-bottom: 20px;
+            height: 30px;
+            width: 80%;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+        }
+        .qr_code-container {
+            display: flex;
+            /* border: 1px solid red; */
+            width: 80%;
+            justify-content: center;
+            align-items: center;
+            width: 80%;
+        }
+        .qr_code-body {
+            display: flex;
+            /* border: 1px solid blue; */
+            justify-content: center;
+            align-items: center;
+            width: 267px;
+            height: 250px;
+            
+        }
+        .qr_code-body img {
+            width: 100%;
+            height: 100%;
+        }
+        .box-button {
+            display: flex;
+            /* border: 1px solid red; */
+            justify-content: end;
+            align-items: center;
+            width: 80%;
+            height: 60px;
+
+        }
+        .button-skip {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100px;
+            height: 40px;
+            border-radius: 4px;
+            text-decoration: none;
+            color: white;
+            border: 1px solid #3498db;
+            background-color: #3498db;
+            margin-right: 30px;
+        }
+    </style>
+</head>
+<body>
+    {% include 'app/navbar.html' %}
+    <div class="container">
+        <div class="head-text">
+            <div class="body-text">สแกนเป็นเพื่อนกับเราเพื่อได้รับการเเจ้งเตือนการสั่งจองอาหาร</div>
+        </div>
+        <div class="qr_code-container">
+            <div class="qr_code-body">
+                <img src="{% static '\images\qr_code_line messages.PNG' %}" alt="none-qr">
+            </div>
+        </div>
+        {%if check %}
+        <div class="box-button">
+            <a class="button-skip" href="{%url 'next_qr_code' %}">Next</a>
+        </div>
+        {%endif%}
+    </div>
+    
+</body>
+</html>

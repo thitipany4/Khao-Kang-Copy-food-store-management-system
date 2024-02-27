@@ -1,7 +1,7 @@
 from collections import defaultdict
 from datetime import timedelta
 from decimal import Decimal
-
+from django.contrib import messages
 from django.db.models import Case, Value, When
 from django.shortcuts import get_object_or_404, redirect, render
 from app.forms import *
@@ -219,14 +219,19 @@ def profile(req,username):
         print(name)
         form = MemberForm(req.POST,req.FILES,instance=member)
         if form.is_valid():
+            phone_number = form.cleaned_data['phone_number']
+            if len(phone_number) != 10 or not phone_number.isdigit():
+                messages.error(req, 'รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง')
+                return redirect('profile',username=username)
             print('form are valid')
             form.instance.age = req.POST.get('age')
             form.save()
             print(form.instance.age)
-            return redirect('home')
+            messages.success(req, 'บันทึกข้อมูลสำเร็จ')
+            return redirect('profile',username=username)
         else:
+            messages.error(req, 'ข้อมูลภายในฟอร์มไม่ถูกต้อง')
             print(form.errors)
-            print(form.non_field_errors)
     context ={
         'member':member,
         'form':form,
@@ -423,7 +428,7 @@ def login(req):
 
 def line_login(request):
     line = LineLogin()
-    auth_link = line.get_link()  # Get the authorization link
+    auth_link = line.get_link()  
 
     return redirect(auth_link)
  
@@ -436,16 +441,14 @@ def line_callback(request):
         token = line.token(code, state)
 
         if token.get('error'):
-            return redirect('managefood')
+            # return redirect('managefood')
+            pass
 
         if token.get('id_token'):
             profile = line.profile_from_id_token(token)
             request.session['profile'] = profile
 
-            # Retrieve user information or create a new user
-            # Replace this logic with your Django User and Member models
-
-            user_id = profile.get('name')  # Assuming 'email' is used as user_id
+            user_id = profile.get('name')  
             user = User.objects.filter(username=user_id).first()
             print(user)
             print('user_id',user_id)
@@ -461,19 +464,16 @@ def line_callback(request):
                     user=line_user,
                     email=profile['email'],
                     picture=profile['picture'],
-                    # Add other fields you want to populate in Member model
+
                 )
                 print('register success')
-                # Optionally redirect to home or another page
-            user = authenticate(request, username=user_id, password=None)
-            print('user:',user)
-            if user is not None:
-                    # Log the user in
-                    auth_login(request, user)
-                    return redirect('home') 
+                auth_login(request, line_user_profile.user)
+                print('user:',line_user_profile.user)
+                check='check'
+                return redirect('qr_code',check=check) 
 
-    # Handle cases where 'code' or 'state' is not in the request.GET
-    return redirect('home')  # Redirect to a suitable page
+
+    return redirect('home')  
 
 def logout(req):
     auth_logout(req)
@@ -736,6 +736,11 @@ def show_note(req,date=None,type=None):
     return render(req, 'app/show-note.html',context )
 
 def create_cart(request):
+    user = request.user
+    member = Member.objects.filter(user=user).first()
+    if not member.first_name or not member.last_name or not member.phone_number:
+        messages.error(request,'ข้อความกรุณากรอบข้อมูลส่วนตัวให้ครบถ้วน')
+        return redirect('profile',username=user)
     order = Order.objects.filter(user=request.user,checkout=False).first()
     if order :
         if (timezone.now() - order.created_at).total_seconds() > 18000:
@@ -1511,4 +1516,13 @@ def my_history(req,filter=None):
 
 
     return render(req,'app/history_order.html',context)
-    
+
+def qr_code(req,check=None):
+    if check:
+        return render(req,'app/qr_code.html',context={'check':check})
+    return render(req,'app/qr_code.html')
+
+def next_qr_code(req):
+    user = req.user
+    messages.error(req,'ข้อความกรุณากรอบข้อมูลส่วนตัวให้ครบถ้วน')
+    return redirect('profile',username=user)

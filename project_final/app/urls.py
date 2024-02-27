@@ -52,6 +52,9 @@ urlpatterns = [
     path('my_order/',my_order,name='my_order'),
     path('history_order/',my_history,name='my_history'),
     path('history_order/<str:filter>/',my_history,name='my_history'),
+    path('qr_code/',qr_code,name='qr_code'),
+    path('qr_code/<str:check>/',qr_code,name='qr_code'),
+    path('next_qr_code/',next_qr_code,name='next_qr_code'),
 
 
 
