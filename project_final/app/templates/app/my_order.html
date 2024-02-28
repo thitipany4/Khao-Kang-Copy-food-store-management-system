@@ -232,6 +232,7 @@
       .button-btn3 {
         border: 1px solid #DB34A3;
         background-color: #DB34A3;
+        margin-left: 120px
                 }
       .cancel-btn {
         border: 1px solid #F94D4D;
@@ -240,6 +241,106 @@
       .cancel-btn:hover {
         border: 1px solid #F52C2C;
         background-color: #F52C2C;
+      }
+      .popupContainer {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1;
+}
+
+      .popup {
+          background-color: #fefefe;
+          border-radius: 5px;
+          box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          padding: 50px;
+          max-width: 90%;
+          text-align: center;
+
+      }
+      
+
+      .head_popup {
+        font-size: 18px;
+        margin-bottom: 20px;
+    }
+      .form_reason {
+        display: flex;
+        flex-direction: column;
+        /* border: 1px solid orchid;  */
+        width: 300px;
+
+      }
+      .form_content {
+        display: flex;
+        flex-direction: column;
+        /* border: 1px solid red;  */
+        align-items: center;
+
+      }
+      .select_reason {
+        height: 30px;
+        width: 80%;
+        background-color: #fff;
+        margin-bottom: 20px;
+
+      }
+      .submit-popup {
+        /* border: 1px solid red;  */
+        display: flex;
+        width: 70%;
+        align-items: center;
+        justify-content: space-between;
+
+      }
+      .popupButton,.closeButton,.confirm_btn,.cancle_btn,.history-button {
+          display: flex;
+          color: #fff;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 14px;
+          align-items: center;
+          justify-content: center;
+      }
+      .popupButton,.closeButton {
+        width: 120px;
+        height: 40px;
+      }
+      .confirm_btn,.cancle_btn {
+        width: 80%;
+        height: 30px;
+      }
+      .confirm_btn {
+        margin-bottom: 5px;
+        background-color: #0056b3;
+        text-decoration: none;
+      }
+      .cancle_btn {
+        background-color: #FF4600;
+
+      }
+      .popupButton:hover {
+          background-color: #0056b3;
+      }
+      .popupButton {
+        background-color: #007bff;
+        margin-right: 30px;
+      }
+      .closeButton {
+        background-color: #FF4600;
+      }
+      .closeButton:hover {
+        background-color: #B32300;
+
       }
     </style>
 </head>
@@ -327,12 +428,14 @@
                             <div class="box-submit">
                                 {%if order.confirm == 'wait_to_confirm'%}
                                     <div class="button-btn" >รอการยืนยัน</div>
+                                    <button class="cancel-btn">ยกเลิก</button>
                                 {%elif order.confirm == 'confirmed'%}
                                     <div class="button-btn2">ยืนยันแล้ว</div>
+                                    <button class="cancel-btn">ยกเลิก</button>
                                 {%else%}
                                     <div class="button-btn3">ถูกยกเลิก</div>
                                 {%endif%}
-                                <a class="cancel-btn" href="{% url 'view_cart' %}">ยกเลิก</a>
+                                
                             </div>
 
                         </div>
@@ -341,12 +444,54 @@
                 
                 </div>
               </div>
+              <div class="item-popup">
+                <div id="popupContainer" class="popupContainer">
+                  <div class="popup">
+                      <div class="head_popup">
+                        เลือกเหตุผลในการยกเลิก
+                      </div>
+                      <form class="form_reason" method="post" action="/cancel_my_order/{{order.ref_code}}/">
+                        {% csrf_token %}
+                        <div class="form_content">
+                          <select class="select_reason" name="select_reason">
+                            {%for e,t in reason %}
+                              <option class="option_reason" value="{{e}}" >{{t}}</option>
+                            </div>
+                            {%endfor%}
+                          </select>
+                          <div class="submit-popup">
+                            <button class="popupButton">ยืนยันการจอง</button>
+                            <span class="closeButton">ยกเลิก</span>
+                        </div>
+              
+                      </form>
+              
+                  </div>
+                </div>
+              </div>
+              
             {% endfor %}
         </div>
-
+      
         
     </div>
 
-
+    <script>
+      const cancelButtons = document.querySelectorAll('.cancel-btn');
+      const popupContainer = document.getElementById('popupContainer'); // Corrected
+      const closeButton = popupContainer.querySelector('.closeButton');
+  
+      cancelButtons.forEach(cancelButton => {
+          cancelButton.addEventListener('click', function() {
+              popupContainer.style.display = 'block';
+          });
+      });
+  
+      closeButton.addEventListener('click', function() {
+          popupContainer.style.display = 'none';
+      });
+  
+  </script>
+  
 </body>
 </html>

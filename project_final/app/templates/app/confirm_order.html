@@ -382,6 +382,7 @@
                             </div>
                             {%elif status == 'รอดำเนินการ' %}
                             <div class="button_confirm">
+                                <a class="confirm_btn" href="/complete_order/{{order.ref_code}}/">completed</a>
                                 <button class="cancle_btn">cancel</button>
                             </div>
                             {%endif%}
@@ -395,7 +396,7 @@
                             <form class="form_reason" method="post" action="/confirm_order/{{order.ref_code}}/{{cancel}}/">
                               {% csrf_token %}
                               <div class="form_content">
-                                <select class="select_reason" name="select_time">
+                                <select class="select_reason" name="select_reason">
                                   {%for e,t in reason %}
                                     <option class="option_reason" value="{{e}}" >{{t}}</option>
                                   </div>

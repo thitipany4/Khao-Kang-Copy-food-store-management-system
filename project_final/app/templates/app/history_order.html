@@ -247,7 +247,7 @@
         align-items: center;
         /* margin-top: 20px; */
     }
-      .button-btn,.button-btn2,.button-btn3,.cancel-btn{
+      .button-btn,.button-btn2,.button-btn3,.button-btn4,.cancel-btn{
         display: flex;
         justify-content: center;
         align-items: center;
@@ -259,6 +259,7 @@
         margin-left: 10px;
         margin-right: 10px;
         font-size: 18px;
+        margin-left: 120px;
         }
       .button-btn {
         border: 1px solid #3498db;
@@ -269,8 +270,13 @@
         background-color: #DBB834;
                 }
       .button-btn3 {
+        border: 1px solid #34DB4D;
+        background-color: #34DB4D;
+                }
+      .button-btn4 {
         border: 1px solid #DB34A3;
         background-color: #DB34A3;
+
                 }
       .cancel-btn {
         border: 1px solid #F94D4D;
@@ -293,6 +299,8 @@
                           <a href="/history_order/{{wait}}/">รอการยืนยัน</a>
                           <a href="/history_order/{{receive}}/" >ยืนยันแล้ว</a>
                           <a href="/history_order/{{cancel}}/">ถูกยกเลิก</a>
+                          <a href="/history_order/{{completed}}/">รับอาหารแล้ว</a>
+
                   </div>
             </div>
 
@@ -372,12 +380,16 @@
                             <div class="box-submit">
                                 {%if order.confirm == 'wait_to_confirm'%}
                                     <div class="button-btn" >รอการยืนยัน</div>
+  
                                 {%elif order.confirm == 'confirmed'%}
                                     <div class="button-btn2">ยืนยันแล้ว</div>
+        
+                                {%elif order.completed == 'completed'%}
+                                    <div class="button-btn3">รับอาหารเเล้ว</div>
                                 {%else%}
-                                    <div class="button-btn3">ถูกยกเลิก</div>
+                                    <div class="button-btn4">ถูกยกเลิก</div>
                                 {%endif%}
-                                <a class="cancel-btn" href="{% url 'view_cart' %}">ยกเลิก</a>
+                                
                             </div>
 
                         </div>
@@ -386,6 +398,7 @@
                 
                 </div>
               </div>
+              
             {% endfor %}
         </div>
 

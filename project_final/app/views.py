@@ -11,6 +11,7 @@ from app.models import *
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
+from .message_admin import message_to_admin
 from .generate_code import generate_random_system_code
 from .clear_session import *
 from .line_login import LineLogin
@@ -1162,7 +1163,7 @@ def order_confirmation(request, ref_code=None):
         order.time_receive=time
         order.save()
         print('order has been checkout')
-
+        message_to_admin(order)
         context ={  
             'order':order,
             'order_item1':order_item1,
@@ -1183,9 +1184,13 @@ def confirm_order(request,code=None,status=None):
         current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
         print(current_date,'f')
         orders = Order.objects.filter(created_at__contains=current_date)
-        reason = orders.first().REASON
-        print(reason)
-        time = orders.first().TIME_CHOICES
+        reason =None
+        time =None
+        if orders:
+            reason = orders.first().REASON
+            print(reason)
+            time = orders.first().TIME_CHOICES
+        
         confirm ='confirmed'
         cancel = 'cancel'
         receive =0
@@ -1193,7 +1198,7 @@ def confirm_order(request,code=None,status=None):
         wait_receive =0
         cancel_num=0
         all_item =[]
-        
+        print(status)
         if status:
             print(code)
             print(status)   
@@ -1237,9 +1242,12 @@ def confirm_order(request,code=None,status=None):
         if status:
             print(code)
             print(status)   
+            reason = request.POST.get('select_reason')
+            print(reason)
             order = Order.objects.get(ref_code=code)
             if order:
                 order.confirm = status 
+                order.cancel_reason = reason
                 order.save()
                 print(order.confirm,'save done')
                 return redirect('confirm_order')
@@ -1258,6 +1266,14 @@ def confirm_order(request,code=None,status=None):
         'reason':reason
     }
     return render(request, 'app/confirm_order.html', context)
+
+def complete_order(req,ref_code):
+    order = Order.objects.get(ref_code=ref_code)
+    order.completed = 'completed'
+    order.save()
+    print(order)
+    return redirect('confirm_order')
+
 def filter_history_confirm(orders,filter):
         if filter =='receive':
             sort = orders.annotate(
@@ -1272,6 +1288,7 @@ def filter_history_confirm(orders,filter):
             sort = orders.annotate(
             cancel_num=Case(When(confirm='cancel', then=Value(0)),default=Value(1))).order_by('cancel_num')
         return sort
+
 
 def history_confirm_order(request,date=None,filter=None):
     # order = Order.objects.get(pk=order_id)
@@ -1386,19 +1403,21 @@ def test_select_time(req):
             print(current_time)
     print(current_time,current_time.strftime('%p'))
 
-def my_order(req,filter=None):
-    filters = 'inconfirm'
-    if not filter:
-        orders = Order.objects.filter(user=req.user,completed='incompleted',checkout=True).order_by('-created_at')
-        print('not',orders)
-            
+def my_order(req):
+    current_date = getdate()
+    current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
+    if current_date.month >9:
+            date_filter = f'{current_date.year}-{current_date.month}-{current_date.day}'
     else:
-        orders = Order.objects.filter(user=req.user)
-        print('have ')
-        filters =None
+            date_filter = f'{current_date.year}-0{current_date.month}-{current_date.day}'
+    orders = Order.objects.filter(created_at__contains=date_filter,completed='incompleted',checkout=True).order_by('-created_at')
+    print('not',orders)
+            
     if orders :
         time = orders.first().TIME_CHOICES
-
+        reason =[('user-cancel','ลูกค้าเปลี่ยนใจ/ยกเลิกการจอง'),
+                ('cant-receive','ไม่สามารถไปรับอาหารได้'),]
+        print(reason)
     # orders = Order.objects.filter(user=req.user).order_by('-created_at') ไว้ build sor t by
         items = []
         
@@ -1425,7 +1444,7 @@ def my_order(req,filter=None):
                     'order':orders,
                     'items':items,
                     'time':time,
-                    'filter':filters,
+                    'reason':reason,
                 }
     else:
         context ={
@@ -1438,40 +1457,54 @@ def my_order(req,filter=None):
 
     return render(req,'app/my_order.html',context)
 
+def cancel_my_order(req,ref_code):
+    order = Order.objects.get(ref_code=ref_code)
+    reason = req.POST.get('select_reason')
+    order.confirm = 'cancel'
+    order.cancel_reason = reason
+    order.save()
+    print(order)
+    return redirect('my_order')
+
 
 def my_history(req,filter=None):
     wait = 'wait'
     receive ='receive'
     cancel = 'cancel'
+    completed = 'completed'
     orders =''
     if not filter:
         orders = Order.objects.filter(user=req.user,checkout=True).order_by('-created_at')
-        # orders = Order.objects.filter(user=req.user,checkout=True).annotate(
-        # completed_order=Case(When(completed='incompleted', then=Value(0)),default=Value(1))).order_by('completed_order')
-        # print('not',orders)
 
     else:
         if filter =='wait':
-            orders = Order.objects.filter(user=req.user,checkout=True).annotate(
-            wait_order=Case(When(confirm='wait_to_confirm', then=Value(0)),default=Value(1))).order_by('wait_order')
+            orders = Order.objects.filter(user=req.user, checkout=True).annotate(wait_order=Case(
+                When(confirm='wait_to_confirm', then=Value(0)),default=Value(1))).order_by('wait_order', '-created_at')
+
             if not orders:
                 orders=None
             print('wait ')
 
         elif filter =='receive':
             orders = Order.objects.filter(user=req.user,checkout=True).annotate(
-            confirmed_order=Case(When(confirm='confirmed', then=Value(0)),default=Value(1))).order_by('confirmed_order')
+            confirmed_order=Case(When(confirm='confirmed', then=Value(0)),default=Value(1))).order_by('confirmed_order','-created_at')
             if not orders:
                 orders=None
             print('receive ')
         elif filter =='cancel':
             orders = Order.objects.filter(user=req.user,checkout=True).annotate(
-            cancel_order=Case(When(confirm='cancel', then=Value(0)),default=Value(1))).order_by('cancel_order')
+            cancel_order=Case(When(confirm='cancel', then=Value(0)),default=Value(1))).order_by('cancel_order','-created_at')
             print(orders)
             if not orders:
                 orders=None
             print('cancel ')
-
+        elif filter == 'completed':
+            orders = Order.objects.filter(user=req.user,checkout=True).annotate(
+            completed_order=Case(When(completed='completed', then=Value(0)),default=Value(1))).order_by('completed_order','-created_at')
+            print(orders)
+            if not orders:
+                orders=None
+            print('completed ')
     if orders :
         time = orders.first().TIME_CHOICES
 
@@ -1503,7 +1536,8 @@ def my_history(req,filter=None):
                     'time':time,
                     'receive':receive,
                     'wait':wait,
-                    'cancel':cancel
+                    'cancel':cancel,
+                    'completed':completed,
                 }
     else:
         context ={
