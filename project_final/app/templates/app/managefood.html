@@ -142,7 +142,14 @@
             margin: 10px;
 
         }
+        .food-quantity {
+            margin-right: 10px;
 
+            }
+        .food-quantity2 {
+            margin-right: 10px;
+            color: #F95221;
+            }
         .foodname {
             text-align: center;
             margin-top: 0px;
@@ -391,12 +398,12 @@
                             <div class="detail_food">
                             <div>{{f.price}} {{f.unit}}</div>
                             {%if h.quantity%}
-                                <div>{{h.quantity}}</div>
+                                <div class="food-quantity">คงเหลือ : {{h.quantity}}</div>
+                            {%elif h.quantity == 0 %}
+                                <div class="food-quantity2">อาหารหมด</div>
+
                             {%endif%}
 
-                            {%if f.quantity_review >= 10%}
-                                <div>({{f.quantity_review}})</div>
-                            {%endif%}
                             </div>
 
                             

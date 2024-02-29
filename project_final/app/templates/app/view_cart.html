@@ -164,16 +164,49 @@
       background-color: #62DB34;
       margin-left: 20px;
     }
+    .message-alerts {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            /* border: 1px solid green;  */
+            margin-top: 10px;
+        }
+        .error {   
+            display: flex;
+            width: 100%;  
+            height: 40px;
+            align-items: center;
+            justify-content: center; 
+            color: #000000; /* Dark red text color */
+            /* border: 1px solid green; */
+            font-weight: bold;
+            font-size: 18px;
+            background-color: #F97979;
+            border: 1px solid #F97979;
+            
+}
 </style>
 <body>
   {% include 'app/navbar.html' %}
-
+  {% if messages %}
+  <div class="message-alerts">
+      {% for message in messages %}
+          {% if message.tags == 'error' %}
+              <div class="error">{{ message }}</div>
+          {% elif message.tags == 'success' %}
+              <div class="success">{{ message }}</div>
+          {% endif %}
+      {% endfor %}
+  </div>
+  {% endif %}
   <div class="container">
     <div class="area_container">
     <h2>Shopping Cart</h2>
     <div class="box_container">
       <div class="total_price">
-        Total Price: {{ order.total_price }}
+        Total Price: {{ total_price }}
       </div>
      
       <div class="type1_box">
@@ -192,7 +225,8 @@
               <div class="quantity_food">x {{ item.quantity }}</div>
             </div>
             <div class="price_delete_m1">
-              <div class="price">{{ item.price }}</div>
+              <div class="price">{{ item.food.price }}</div>
+              <div>{{ item.total_price }}</div>
               <div class="delete_modify">
                 <a class="delete_food" href="{% url 'delete_from_cart' product_id=item.id type=type_1 %}">Delete</a>
               </div>
@@ -225,9 +259,12 @@
               
               {%endif%}
               <div class="quantity_food">x {{ item.quantity }}</div>
+              
             </div>
             <div class="price_delete_m2">
               <div class="price">{{ item.price }}</div>
+              <div>{{ item.total_price }}</div>
+
               <div class="delete_modify">
                 <a class="delete_food" href="{% url 'delete_from_cart' product_id=item.id type=type_2 %}">Delete</a>
                 <a class="modify_btn" href="/modify_cart2/{{item.id}}/">แก้ไข</a>
@@ -246,7 +283,7 @@
       <div class="btn_box">
 
           <a class="delete_cart" href="/delete_cart/{{order.ref_code}}/">ลบตระกร้า</a>
-          <a class="checkout" href="{% url 'checkout' %}">checkout</a>
+          <a class="checkout" href="/checkout/{{order.ref_code}}/{{total_price}}/">checkout</a>
   
       </div>
 

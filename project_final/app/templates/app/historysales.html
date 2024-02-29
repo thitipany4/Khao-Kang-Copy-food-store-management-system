@@ -299,10 +299,10 @@
                             <div class="detail_food">
                             <div>{{f.price}} {{f.unit}}</div>
                             {%if f.score%}
-                                <div>{{f.score}}</div>
+                            <div class="score">{{f.food.score|floatformat:2 }}</div>
                             {%endif%}
 
-                            {%if f.quantity_review >= 10%}
+                            {%if f.quantity_review >= 5%}
                                 <div>({{f.quantity_review}})</div>
                             {%endif%}
                             </div>

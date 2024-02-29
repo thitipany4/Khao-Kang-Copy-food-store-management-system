@@ -53,4 +53,4 @@ class FormNote(forms.ModelForm):
 class OrderItemtype1Form(forms.ModelForm):
     class Meta:
         model = OrderItemtype1
-        fields = [ 'order', 'food', 'quantity', 'price']
+        fields = [ 'order', 'food', 'quantity', 'total_price']

@@ -106,6 +106,9 @@
                  margin-bottom: 0;
                  /* border: 1px solid red; */
              }
+             .food-quantity {
+            margin-right: 20px;
+        }
              .name {
                  margin-top: 5px;
                  margin-bottom: 0;
@@ -125,8 +128,8 @@
 
              .overlay {
                  position: absolute;
-                 top: 40px;
-                 left: 180px;
+                 top: 17px;
+                 left: 182px;
                  transform: translate(-50%, -50%);
                  padding: 10px;
                  border-radius: 5px;
@@ -246,13 +249,13 @@
             <div class="container-show">
                 <div class="container-area">
                     {%for f in food %}
-                        {%if f.options != 'notchoose'%}
+                        {%if f.food.options != 'notchoose'%}
                         <div class="listitem">
 
                                 <div class="boxlistfood">
-                                    {%if f.image %}
+                                    {%if f.food.image %}
                                     <div class="image-food">
-                                        <img src="{{f.image.url}}" alt="food-image">
+                                        <img src="{{f.food.image.url}}" alt="food-image">
                                     </div>
                                     {%endif%}
 
@@ -260,14 +263,16 @@
                                         <div class="overlay">
                                             <form class="add-to-cart-form" method="post" action="#">
                                                 {% csrf_token %}
-                                                <input type="hidden" name="product_id" value="{{ f.id }}">
+                                                <input type="hidden" name="product_id" value="{{ f.food.id }}">
                                                 <input class="check_box" type="checkbox" name="add_to_cart">
                                             </form>
                                         </div>
 
-                                        <div class="name">{{f.name}}</div>
+                                        <div class="name">{{f.food.name}}</div>
                                         <div class="detail_food">
-                                            <div class="food-price">{{f.price}} {{f.unit}}</div>
+                                            <div class="food-price">{{f.food.price}} {{f.food.unit}}</div>
+                                            <div class="food-quantity">คงเหลือ : {{f.quantity}}</div>
+
                                         </div>
 
                                     </div>
@@ -321,20 +326,20 @@
         <div class="container-show">
             <div class="container-area">
                 {%for f in food %}
-                    {%if f.options != 'notchoose'%}
+                    {%if f.food.options != 'notchoose'%}
                     <div class="listitem">
                             <div class="boxlistfood">
-                                {%if f.image %}
+                                {%if f.food.image %}
                                 <div class="image-food">
-                                    <img src="{{f.image.url}}" alt="food-image">
+                                    <img src="{{f.food.image.url}}" alt="food-image">
                                 </div>
                                 {%endif%}
                                 <div class="box-detail">
                                     <div class="overlay">
                                         <form class="add-to-cart-form" method="post" action="#">
                                             {% csrf_token %}
-                                            <input type="hidden" name="product_id" value="{{ f.id }}">
-                                            {% if f.id in selected %}
+                                            <input type="hidden" name="product_id" value="{{ f.food.id }}">
+                                            {% if f.food.id in selected %}
                                                 <input class="check_box" type="checkbox" name="add_to_cart" checked>
                                             {% else %}
                                                 <input class="check_box" type="checkbox" name="add_to_cart">
@@ -342,9 +347,11 @@
                                             </form>
                                     </div>
 
-                                    <div class="name">{{f.name}}</div>
+                                    <div class="name">{{f.food.name}}</div>
                                     <div class="detail_food">
-                                        <div class="food-price">{{f.price}} {{f.unit}}</div>
+                                        <div class="food-price">{{f.food.price}} {{f.food.unit}}</div>
+                                        <div class="food-quantity">คงเหลือ : {{f.quantity}}</div>
+
                                     </div>
                                 </div>
                             </div>

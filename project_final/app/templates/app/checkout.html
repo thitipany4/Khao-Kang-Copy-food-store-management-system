@@ -280,7 +280,7 @@
         <div class="head_detail_box">
           <div class="top_head">
             <div class="head_detail">รายการอาหาที่สั่ง</div>
-            <div class="total_price">฿ {{ order.total_price }}</div>
+            <div class="total_price">฿ {{ total_price }}</div>
           </div>
           <div class="down_head">
             <div class="line"></div>
@@ -300,7 +300,7 @@
                   </div>
 
                   <div class="list_tail">
-                    <div class="price">฿ {{ item.price }}</div>
+                    <div class="price">฿ {{ item.total_price }}</div>
                   </div>
 
               </div>
@@ -316,7 +316,7 @@
                 </div>
 
                 <div class="list_tail">
-                  <div class="price">฿ {{ item.price }}</div>
+                  <div class="price">฿ {{ item.total_price }}</div>
                 </div>
               </div>
 
@@ -354,7 +354,7 @@
         <form class="form_time" method="post" action="{%url 'order_confirm' ref_code=order.ref_code %}">
           {% csrf_token %}
           <div class="form_content">
-            <select class="select_time" name="select_time">
+            <select class="select_time" name="select_time" >
               {%for e,t in select_time %}
                 <option class="option_time" value="{{e}}" >{{t}}</option>
               </div>

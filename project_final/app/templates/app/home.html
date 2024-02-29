@@ -119,37 +119,37 @@
         {% include 'app/navbar.html' %}
         <div class="container-area">
             {%for f in food %}
-                {%if f.options != 'notchoose'%}
+                {%if f.food.options != 'notchoose'%}
                 <div class="listitem">
-                    <a href="/foodview/{{f.id}}/">
+                    <a href="/foodview/{{f.food.id}}/">
 
                         <div class="boxlistfood">
-                            {%if f.image %}
+                            {%if f.food.image %}
                             <div class="image-food">
-                                <img src="{{f.image.url}}" alt="food-image">
+                                <img src="{{f.food.image.url}}" alt="food-image">
                             </div>
                             {%endif%}
 
                             <div class="box-detail">
                                 <div class="overlay">
-                                    {%if f.options == 'onsale' %}
+                                    {%if f.food.options == 'onsale' %}
                                     <div class="status-sale-green"></div>
                                     {%endif%}
-                                    {%if f.options == 'soldout'%}
+                                    {%if f.food.options == 'soldout'%}
                                     <div class="status-sale-red"></div>
                                     {%endif%}
                                 </div>
                                 
-                                <div class="name">{{f.name}}</div> 
+                                <div class="name">{{f.food.name}}</div> 
                                 <div class="detail_food">
-                                    <div class="food-price">{{f.price}} {{f.unit}}</div>
+                                    <div class="food-price">{{f.food.price}} {{f.food.unit}}</div>
                                     <div class="review_data">
-                                        {%if f.score and f.quantity_review >= 5 %}
-                                        <div class="score">{{f.score}}</div>
+                                        {%if f.food.score and f.food.quantity_review >= 5 %}
+                                        <div class="score">{{f.food.score|floatformat:2 }}</div>
                                     {%endif%}
 
-                                    {%if f.quantity_review >= 5 %}
-                                        <div class="quantity_review">({{f.quantity_review}})</div>
+                                    {%if f.food.quantity_review >= 5 %}
+                                        <div class="quantity_review">({{f.food.quantity_review}})</div>
                                     {%endif%}
                                     </div>
                                   

@@ -98,7 +98,9 @@
             margin-bottom: 0;
             /* border: 1px solid red; */
         }
-
+        .food-quantity {
+            margin-right: 10px;
+        }
         .box-detail {
             display: flex;
             flex-direction: column;
@@ -161,26 +163,26 @@
         
             {%for f in food %}
                 {{modify}}
-                {%if f.options != 'notchoose'%}
+                {%if f.food.options != 'notchoose'%}
                     <div class="listitem">
 
                             <div class="boxlistfood">
-                                {%if f.image %}
+                                {%if f.food.image %}
                                 <div class="image-food">
-                                    <img src="{{f.image.url}}" alt="food-image">
+                                    <img src="{{f.food.image.url}}" alt="food-image">
                                 </div>
                                 {%endif%}
 
                                 <div class="box-detail">
                                     
-                                    <div class="name">{{f.name}}</div> 
+                                    <div class="name">{{f.food.name}}</div> 
                                     <div class="detail_food">
-                                        <div class="food-price">{{f.price}} {{f.unit}}</div>
-                                    
+                                        <div class="food-price">{{f.food.price}} {{f.food.unit}}</div>
+                                        <div class="food-quantity">คงเหลือ : {{f.quantity}}</div>
                                     </div>
                                     <form class="add-to-cart-form" method="post" action="{% url 'add_to_cart' 'type1' %}">
                                     {% csrf_token %}
-                                    <input type="hidden" name="product_id" value="{{ f.id }}">
+                                    <input type="hidden" name="product_id" value="{{ f.food.id }}">
                                     <div class="quantity-control">
                                         <button class="left_de" type="button" onclick="decrementQuantity('{{ f.id }}')">-</button>
                                         <input class="cen_num" type="number" name="quantity" id="id_quantity_{{ f.id }}" value="0" min="0">
@@ -211,7 +213,7 @@
         <div class="line"></div>
     </div>
     <div class="container-area">
-        {% for f, i in food_item %}
+        {% for f, i,q in food_item %}
             {% if f.options != 'notchoose' %}
                 <div class="listitem">
                     <div class="boxlistfood">
@@ -224,6 +226,7 @@
                             <div class="name">{{ f.name }}</div> 
                             <div class="detail_food">
                                 <div class="food-price">{{ f.price }} {{ f.unit }}</div>
+                                <div class="food-quantity">{{q.quantity}}</div>
                             </div>
                             <form class="add-to-cart-form" method="post" action="{% url 'add_to_cart' 'type1' %}">
                                 {% csrf_token %}

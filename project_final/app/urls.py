@@ -42,7 +42,8 @@ urlpatterns = [
     path('shopping_food_type2/', shopping_food_type2, name='shopping_food2'), 
     path('modify_cart2/<int:id>/', modify_cart2, name='modify_cart2'),
     path('cart/delete/<int:product_id>/<str:type>/', delete_from_cart, name='delete_from_cart'),
-    path('checkout/', checkout, name='checkout'), 
+    path('checkout/<str:ref_code>/<str:total_price>/', checkout, name='checkout'), 
+
     path('order_confirm/<str:ref_code>/', order_confirmation, name='order_confirm'),
     path('confirm_order/', confirm_order, name='confirm_order'),
     path('confirm_order/<str:code>/<str:status>/', confirm_order, name='confirm_order'), 

@@ -10,6 +10,7 @@ class Member(models.Model):
     email =models.EmailField(blank=True,null=True)
     first_name = models.CharField(max_length=100,blank=True,null=True)
     last_name = models.CharField(max_length=100,blank=True,null=True)
+    line_id = models.CharField(max_length=100,blank=True,null=True)
     phone_number = models.CharField(max_length=100)
     picture = models.URLField(blank=True, null=True)
     age = models.CharField(max_length=20, choices=(
@@ -148,10 +149,10 @@ class OrderItemtype1(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     food = models.ForeignKey(Food,on_delete=models.DO_NOTHING)
     quantity = models.IntegerField(default=0)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.IntegerField(default=0)
 
     def __str__(self) -> str:
-        return f'{self.food} price {self.price}'
+        return f'{self.food} price {self.total_price}'
     
 class OrderItemtype2(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE)
@@ -159,7 +160,8 @@ class OrderItemtype2(models.Model):
     name = models.CharField(max_length=100,null=True)
     foods = models.ManyToManyField('Food')
     quantity = models.IntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    price = models.IntegerField(default=0)
+    total_price = models.IntegerField(default=0)
 
     def __str__(self) -> str:
-        return f'{self.name} price {self.price}'
+        return f'{self.name} price {self.total_price}'

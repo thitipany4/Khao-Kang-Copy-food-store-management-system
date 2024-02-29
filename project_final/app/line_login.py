@@ -69,27 +69,6 @@ class LineLogin:
         print(datas)
         return datas
 
-    '''
-    def profile(self, token):
-        header = {'Authorization': f'Bearer {token}'}
-        response = self.send_curl(self.PROFILE_URL, header, 'GET')
-        return json.loads(response)
-    def verify(self, token):
-        url = f"{self.VERIFYTOKEN_URL}?access_token={token}"
-        response = self.send_curl(url, None, 'GET')
-        return response
-
-    def revoke(self, token):
-        header = {'Content-Type': 'application/x-www-form-urlencoded'}
-        data = {
-            "access_token": token,
-            "client_id": self.CLIENT_ID,
-            "client_secret": self.CLIENT_SECRET
-        }
-        response = self.send_curl(self.REVOKE_URL, header, 'POST', data)
-        return response
-    '''
-
     def send_curl(self, url, header, type, data=None):
         if header is not None:
             headers = header
