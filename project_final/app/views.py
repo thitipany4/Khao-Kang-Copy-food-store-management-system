@@ -18,7 +18,6 @@ from .line_login import LineLogin
 from .calculator import calculator
 from .forms import FormNote
 from .utils import EventCalendar
-
 def getdate(x=None,th=None):
     '''
     get_month = thai_month_dict[current_date.month]
@@ -68,12 +67,14 @@ def getdate(x=None,th=None):
 def home(req):
     t = Transaction.objects.all()
     #key = check()
-    foods = Food.objects.all()
+    date = getdate()
+    food_sale = Historysale.objects.filter(date_field=date)
+    print(food_sale)
     list_food = []
-    for food in foods:
-        if food.options != 'notchoose':
-            history = get_quatity(food)
-            list_food.append(history)
+    for food in food_sale:
+        if food.options != None and food.options != 'ไม่ได้เลือก':
+            print(food)
+            list_food.append(food)
     context ={
         'food':list_food,
     }
@@ -98,7 +99,7 @@ def search(req):
         if text:
             food = Food.objects.filter(name__contains=text)
             if food:
-                return render(req,'app/search.html',{'food':food})
+                return render(req,'app/search.html',{'food':food,'text':text})
             else:
                 return render(req,'app/search.html',{'text':'ไม่พบเมนูอาหารที่ท่านค้นหา'}) 
         else:
@@ -127,7 +128,7 @@ def select_date(req):
                     foods = []
                     for history in food_history:
                         if history.food:
-                            foods.append(history.food)
+                            foods.append(history)
                     print(foods)
                     form_date = DateForm()
                     thai_date = getdate(None,get_date)
@@ -145,7 +146,7 @@ def select_date(req):
                     foods = []
                     for history in food_history:
                         if history.food:
-                            foods.append(history.food)
+                            foods.append(history)
                     print(foods)
                     form_date = DateForm()
                     thai_date = getdate(None,get_date)
@@ -183,12 +184,13 @@ def select_date(req):
 def clearfood(req):
     if req.method=='POST':
         #Food.objects.exclude(options='notchoose').update(options='notchoose')
-        food = Food.objects.all()
-        for f in food:
-            if f.options != 'notchoose':
+        date = getdate()
+        foods = Historysale.objects.filter( date_field=date)
+        for f in foods:
+            if f.options != None:
                 print('setsetset')
                 print(f)
-                f.options = 'notchoose'
+                f.options = None
                 f.save()
         return redirect('managefood')
     else:
@@ -347,46 +349,59 @@ def managefood(req, date=None):
         quantity = req.POST.getlist('input_quantity')
         print(quantity)
         food_ids = req.POST.getlist('food_id')
-        print(food_ids)
+        # print(food_ids)
         options = req.POST.getlist('options')
-        print(options)
+        # print(options)
         if len(food_ids) == len(options):
             for id, option,quantity in zip(food_ids, options,quantity):
+               
                 food_item = Food.objects.get(pk=id)
                 print(food_item, f'pass {option}')
-                if option == 'notchoose':
-                    found = Historysale.objects.filter(food_id=food_item.id, date_field=date)
+                if option == 'ไม่ได้เลือก':
+                    found = Historysale.objects.filter(food_id=food_item.id, date_field=date).first()
                     print(found)
-                    if found.exists():
-                        food_item.options = option
-                        food_item.save()
+                    if found:
+                        found.options = option
                         found.delete()
                         print('ลบสำเร็จ (Deletion successful)')
                     else:
                         print('ไม่พบข้อมูลในฐานข้อมูล (Data not found in the database)')
 
-                elif option in ['onsale', 'soldout']:
+                elif option in ['วางขาย', 'ขายหมดแล้ว']:
                     found = Historysale.objects.filter(food_id=food_item.id, date_field=date).first()
+                    if not found and quantity == '':
+                        food = Food.objects.get(pk=id)
+                        messages.error(req,f'เมนู {food} ไม่ได้เพิ่มจำนวนที่ต้องการขาย')
+                        return redirect('managefood')
                     if found:
-                        if food_item.options != option:
-                            food_item.options = option
-                            found.quantity = quantity
-                            food_item.quantity_sale = quantity
-                            found.save()
-                            food_item.save()
-                            print('เปลี่ยนแปลงข้อมูลสำเร็จ (Data changed successfully)')
+                        if found.options != option:
+                            if option == 'ขายหมดแล้ว':
+                                found.options = option
+                                # found.quantity = quantity
+                                found.save()
+                          
+                                print('เปลี่ยนแปลงข้อมูลสำเร็จ (Data changed successfully)')
+                            else:
+                                found.quantity = quantity
+                                found.options = option
+                                # food_item.quantity_sale = quantity
+                                found.save()
+                                # food_item.save()
+                                print('เปลี่ยนแปลงข้อมูลสำเร็จ (Data changed successfully)')
                         else:
                             print('ไม่มีการเปลี่ยนแปลง (No changes made)')
                             if quantity:
-                                found.quantity = quantity
-                                food_item.quantity_sale = quantity
-                                found.save()
-                                food_item.save()
+                                if option == 'ขายหมดแล้ว':
+                                    pass
+                                else:
+                                    found.quantity = quantity
+                                    found.save()
+                                    # food_item.save()
                     else:
-                        food_item.options = option
-                        food_item.quantity_sale = quantity
-                        food_item.save()
-                        history_sale = Historysale.objects.create(food=food_item, date_field=date,quantity=quantity)
+                        # food_item.options = option
+                        # food_item.quantity_sale = quantity
+                        # food_item.save()
+                        history_sale = Historysale.objects.create(food=food_item, date_field=date,quantity=quantity,options='วางขาย')
 
                         print('เซฟข้อมูลลงฐานข้อมูลได้ (Saved data to the database)')
                 
@@ -398,6 +413,11 @@ def managefood(req, date=None):
         get_date = getdate()
         thai_date = getdate(None,get_date)
         history = Historysale.objects.filter(date_field=get_date)
+        list_options = []
+        options = Historysale.OPTIONS
+        for o in options:
+            list_options.append(o[0])
+        print(options)
         list_food =[]
 
         for food in food:
@@ -419,10 +439,9 @@ def managefood(req, date=None):
             'food':food,
             'form':form_date,
             'list_food':list_food,
+            'options':list_options,
         }
         return render(req,'app/managefood.html',context)
-
-
 
 def login(req):
       if req.user.is_authenticated:
@@ -794,31 +813,33 @@ def delete_cart(request,code):
 
 def shopping_food_type1(request):
     item = []
-    foods = Food.objects.all()
-    for f in foods:
-        if f.options == 'onsale':
-            history = get_quatity(f)
-            print(history)
-            item.append(history)
+    date = getdate()
+    food_sale = Historysale.objects.filter(date_field=date)
+    print()
+    for f in food_sale:
+        date = getdate()
+        if f.options == 'วางขาย':
+            print(f)
+            item.append(f)
     return render(request, 'app/shop_food1.html', {'food': item,
                                                          })
 def modify_cart1(request,ref_code):
-    foods = Food.objects.filter(options='onsale')
+    date = getdate()
+    foods = Historysale.objects.filter(date_field=date,options='วางขาย')
     print(ref_code)
     items = OrderItemtype1.objects.filter(order__ref_code=ref_code)
     food_item = []
     for food in foods:
         found_item = ''
         print(food)
-        quantity = get_quatity(food)
         for item in items:
-            if food == item.food:
+            if food.food == item.food:
                 found_item = item
                 break
         if found_item:
-            food_item.append((food,found_item,quantity))
+            food_item.append((food,found_item,food.quantity))
         else:
-            food_item.append((food,0,quantity))
+            food_item.append((food,0,food.quantity))
     modify = 'True'
         
     return render(request, 'app/shop_food1.html', {'food_item': food_item, 'modify':modify
@@ -826,21 +847,19 @@ def modify_cart1(request,ref_code):
 
 def shopping_food_type2(request):
     item = []
-    foods = Food.objects.all()
-    for f in foods:
-        if f.options == 'onsale':
-            history = get_quatity(f)
-            item.append(history)
+    date = getdate()
+    food_sale = Historysale.objects.filter(date_field=date)
+    for f in food_sale:
+        date = getdate()
+        if f.options == 'วางขาย':
+            print(f)
+            item.append(f)
     return render(request, 'app/shop_food2.html', {'food': item,
                                                          })
 def modify_cart2(request,id):
     special = 'False'
-    foods = Food.objects.all()
-    list_food = []
-    for food in foods:
-        if food.options == 'onsale':
-            history = get_quatity(food)
-            list_food.append(history)
+    date = getdate()
+    food_sale = Historysale.objects.filter(date_field=date,options='วางขาย')
     item = OrderItemtype2.objects.get(pk=id)
     if item.price == 50:
         special = 'True'
@@ -850,7 +869,7 @@ def modify_cart2(request,id):
     for i in item.foods.all():
         selected.append(i.id)
     print(selected)
-    return render(request, 'app/shop_food2.html', {'food': list_food, 'selected':selected,'modify':modify,'special':special,'item':item,
+    return render(request, 'app/shop_food2.html', {'food': food_sale, 'selected':selected,'modify':modify,'special':special,'item':item,
                                                          })
 def add_to_cart(request,type,modify=None):
     if request.method == 'POST':
@@ -1122,7 +1141,7 @@ def order_confirmation(request, ref_code=None):
         order_item1 = OrderItemtype1.objects.filter(order=order)
         order_item2 = OrderItemtype2.objects.filter(order=order)
 
-        transaction = create_transaction(order_item1,order_item2)
+        # transaction = create_transaction(order_item1,order_item2)
         total_price = 0
         if order_item1:
             for i in order_item1:
@@ -1134,11 +1153,14 @@ def order_confirmation(request, ref_code=None):
                     return redirect('view_cart')
                 elif food_sale.quantity - i.quantity == 0 :
                     food_sale.quantity -= i.quantity 
-                    food.options = 'soldout'
+                    food_sale.options = 'ขายหมดแล้ว'
                     food.save()
                 else:
                     food_sale.quantity -= i.quantity 
+                order.total_price += i.total_price
+                order.save()
                 food_sale.save()
+
                 print(i.quantity)
                 print(food_sale.quantity)
         if order_item2:
@@ -1153,12 +1175,15 @@ def order_confirmation(request, ref_code=None):
                         return redirect('view_cart')
                     elif food_sale2.quantity - item.quantity == 0 :
                         food_sale2.quantity -= item.quantity 
-                        foods.options = 'soldout'
-                        foods.save()
+                        food_sale2.options = 'ขายหมดแล้ว'
+                        food_sale2.save()
                     else:
                         food_sale2.quantity -= item.quantity 
-                    food_sale2.save()
+                        food_sale2.save()
                     print('food_sale2.quantity',food_sale2.quantity)
+                if item.total_price != 0:
+                    order.total_price += item.total_price
+                    order.save()
             print(order_item2.first().foods.all())
         request.session.pop('order', None)
         date= getdate()
@@ -1178,7 +1203,7 @@ def order_confirmation(request, ref_code=None):
         return redirect('product_list')
 
 
-def confirm_order(request,code=None,status=None):
+def confirm_order(request,code=None,status=None,filter=None):
     # order = Order.objects.get(pk=order_id)
     if request.method == 'GET':
         current_date = getdate()
@@ -1186,14 +1211,23 @@ def confirm_order(request,code=None,status=None):
         print(thai_date)
         current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
         print(current_date,'f')
-        orders = Order.objects.filter(created_at__contains=current_date)
+        orders = Order.objects.filter(created_at__contains=current_date,checkout=True)
+        if filter:
+            orders = filter_history_confirm(orders,filter)
+        else:
+            orders = orders
         reason =None
         time =None
         if orders:
             reason = orders.first().REASON
             print(reason)
             time = orders.first().TIME_CHOICES
-        
+
+        receive_text ='receive'
+        wait_confirm_text='wait_confirm'
+        wait_receive_text ='wait_receive'
+        cancel_num_text='cancel_num'
+
         confirm ='confirmed'
         cancel = 'cancel'
         receive =0
@@ -1266,12 +1300,20 @@ def confirm_order(request,code=None,status=None):
         'cancel_num':cancel_num,
         'thai_date':thai_date,
         'current_date':current_date,
-        'reason':reason
+        'reason':reason,
+        'receive_filter':receive_text,
+        'wait_confirm_filter':wait_confirm_text,
+        'wait_receive_filter':wait_receive_text,
+        'cancel_filter':cancel_num_text,
     }
     return render(request, 'app/confirm_order.html', context)
 
+
 def complete_order(req,ref_code):
     order = Order.objects.get(ref_code=ref_code)
+    order_item1 = OrderItemtype1.objects.filter(order=order)
+    order_item2 = OrderItemtype2.objects.filter(order=order)
+    transaction = create_transaction(order_item1,order_item2)
     order.completed = 'completed'
     order.save()
     print(order)
@@ -1412,7 +1454,7 @@ def my_order(req):
     if current_date.month >9:
             date_filter = f'{current_date.year}-{current_date.month}-{current_date.day}'
     else:
-            date_filter = f'{current_date.year}-0{current_date.month}-{current_date.day}'
+            date_filter = f'{current_date.year}-0{current_date.month}-0{current_date.day}'
     orders = Order.objects.filter(created_at__contains=date_filter,completed='incompleted',checkout=True).order_by('-created_at')
     print('not',orders)
     total_price = 0 
@@ -1464,6 +1506,20 @@ def my_order(req):
 
 def cancel_my_order(req,ref_code):
     order = Order.objects.get(ref_code=ref_code)
+    item1 = OrderItemtype1.objects.filter(order=order)
+    item2 = OrderItemtype2.objects.filter(order=order)
+    for item in item1:
+        quatity1 = item.quantity
+        his = get_quatity(item.food)
+        his.quantity += quatity1
+        his.save()
+    for item in item2:
+        quatity1 = item.quantity
+        for i in item.foods.all():
+            his = get_quatity(i)
+            his.quantity += quatity1
+            his.save()
+
     reason = req.POST.get('select_reason')
     order.confirm = 'cancel'
     order.cancel_reason = reason

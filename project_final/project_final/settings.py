@@ -40,7 +40,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'app',
     'mapbox_location_field',
-    
+
 
 ]
 
@@ -57,6 +57,9 @@ MIDDLEWARE = [
 
 
 ]
+
+#สามารถดำเนินการโชกราฟได้
+
 
 ROOT_URLCONF = "project_final.urls"
 

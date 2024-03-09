@@ -5,26 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Search</title>
     <style>
-    body {
+        body {
             background-color: #f5f5f7;
         }
-    h1 {
-        text-align: center;
-    }
-    .container-area {
-        display: flex;
-        padding: 0.5rem;
-        margin: 0.5rem auto;
-        /* border: 1px solid red; */
-        margin-top: 20px;
-        justify-content: center;
-        align-items: center;
 
-    }
-    .boxlistfood {
+        .container-area {
+            display: grid;
+            padding: 0.5rem;
+            margin: 0.5rem;
+            grid-template-columns: repeat(4,1fr);
+            grid-gap: 10px;
+            width: 1140px;
+       
+            margin: 0 auto;
+            margin-top: 20px;
+
+        }
+        .boxlistfood {
             /* border: 1px solid blue; */
             margin-top: 20px;
-            margin-right: 40px;
             width: 220px;
             height: 200px;
             box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
@@ -34,7 +33,7 @@
         .boxlistfood div {
 
             text-align: center;
-            margin-bottom: 3px;
+            margin-bottom: 10px;
             
         }
         .listitem a {
@@ -50,7 +49,7 @@
 
         }
         .image-food img {
-            height: 130px; /* Set the height of the image container */
+            height: 160px; /* Set the height of the image container */
             width: 99.5%; /* Set the width of the image container */
 
             
@@ -59,9 +58,16 @@
         .detail_food {
             display: flex;
             justify-content: space-between;
-            align-items: center;
             margin-left: 10px;
             margin-bottom: 0;
+            /* border: 1px solid red; */
+        }
+        .review_data {
+            display: flex;
+            margin-right: 20px;
+        }
+        .score {
+            margin-right: 5px;
         }
         .name {
             margin-top: 5px;
@@ -80,6 +86,40 @@
 
         }
 
+        .overlay {
+            position: absolute;
+            top: 25px;
+            left: 200px;
+            transform: translate(-50%, -50%);
+            padding: 10px;
+            border-radius: 5px; 
+            width: 30px;
+}
+        .status-sale-green {
+            background-color: greenyellow; /* Change the background color and opacity as needed */
+            display: inline-block;
+            padding: 6px;
+            width: 5px;
+            height: 5px;
+            border-radius: 0.5rem;
+        }
+        .status-sale-red {
+            background-color: #E84F2F; /* Change the background color and opacity as needed */
+            display: inline-block;
+            padding: 6px;
+            width: 5px;
+            height: 5px;
+            border-radius: 0.5rem;
+        }
+        .line-between {
+            border-bottom: 1px solid #89898B;
+            margin-left: 40px;
+            margin-right: 30px;
+
+        }
+        .head-text {
+            margin-left: 40px;
+        }
 </style>
 </head>
 <body>
@@ -87,52 +127,54 @@
     <div class="container">
         <div class="areatext">
             {%if text%}
-                <h1>{{text}}</h1>
+                <h2 class="head-text">สิ่งที่ท่านค้นหาคือ " {{text}} "</h2>
             {%endif%}
+        <div class="line-between"></div>
             <div class="container-area">
-                {%if food%}
                 {%for f in food %}
-                <div class="listitem">
-                    <a href="/foodview/{{f.id}}/">
-
-                        <div class="boxlistfood">
-                            {%if f.image %}
-                            <div class="image-food">
-                                <img src="{{f.image.url}}" alt="food-image">
-                            </div>
-                            {%endif%}
-
-                            <div class="box-detail">
-                                <div class="overlay">
-                                    {%if f.options == 'onsale' %}
-                                    <div class="status-sale-green"></div>
-                                    {%endif%}
-                                    {%if f.options == 'soldout'%}
-                                    <div class="status-sale-red"></div>
-                                    {%endif%}
+                    <div class="listitem">
+                        <a href="/foodview/{{f.id}}/">
+    
+                            <div class="boxlistfood">
+                                {%if f.image %}
+                                <div class="image-food">
+                                    <img src="{{f.image.url}}" alt="food-image">
+                                </div>
+                                {%endif%}
+    
+                                <div class="box-detail">
+                                    <div class="overlay">
+                                        {%if f.options == 'onsale' %}
+                                        <div class="status-sale-green"></div>
+                                        {%endif%}
+                                        {%if f.options == 'soldout'%}
+                                        <div class="status-sale-red"></div>
+                                        {%endif%}
+                                    </div>
+                                    
+                                    <div class="name">{{f.name}}</div> 
+                                    <div class="detail_food">
+                                        <div class="food-price">{{f.price}} {{f.unit}}</div>
+                                        <div class="review_data">
+                                            {%if f.score and f.quantity_review >= 5 %}
+                                            <div class="score">{{f.score|floatformat:2 }}</div>
+                                        {%endif%}
+    
+                                        {%if f.quantity_review >= 5 %}
+                                            <div class="quantity_review">({{f.quantity_review}})</div>
+                                        {%endif%}
+                                        </div>
+                                      
+                                    </div>
                                 </div>
                                 
-                                <div class="name">{{f.name}}</div> 
-                                <div class="detail_food">
-                                    <div class="food-price">{{f.price}} {{f.unit}}</div>
-                                    {%if f.score%}
-                                        <div class="score">{{f.score}}</div>
-                                    {%endif%}
-
-                                    {%if f.quantity_review >= 10%}
-                                        <div class="quantity_review">({{f.quantity_review}})</div>
-                                    {%endif%}
-                                </div>
                             </div>
-                            
-                        </div>
-
-                    </a>
-
-                </div>
+    
+                        </a>
+    
+                    </div>
                     
                 {%endfor%}
-                {%endif%}
                 </div>
         </div>
     </div>

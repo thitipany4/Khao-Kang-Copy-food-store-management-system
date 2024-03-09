@@ -53,6 +53,9 @@
   .head_box1 {
     display: flex;
     align-items: center;
+    /* border: 1px solid tomato;  */
+    justify-content: space-between;
+    width: 80%;
 
   }
   .line {
@@ -82,15 +85,15 @@
     
   }
   .detail_type1 {
-    width: 73%;
+    width: 90%;
   }
   .detail_type2 {
-    width: 80%;
+    width: 90%;
   }
   .name_quantity {
     display: flex;
     /* border: 1px solid green; */
-    width: 200px;
+    width: 500px;
     justify-content: space-between;
     margin-right: 20px;
   }
@@ -98,15 +101,17 @@
     display: flex;
     /* border: 1px solid tomato; */
     width: 150px;
+    align-items: center;
     justify-content: space-between;
-    margin-right: 55px;
+    margin-right: 35px;
   }
   .price_delete_m2 {
     display: flex;
     /* border: 1px solid tomato; */
     width: 220px;
     justify-content: space-between;
-    margin-right: 30px;
+    align-items: center;
+    margin-right: 10px;
   }
   .delete_modify {
     display: flex;
@@ -206,7 +211,7 @@
     <h2>Shopping Cart</h2>
     <div class="box_container">
       <div class="total_price">
-        Total Price: {{ total_price }}
+        Total Price:฿ {{ total_price }}
       </div>
      
       <div class="type1_box">
@@ -225,8 +230,8 @@
               <div class="quantity_food">x {{ item.quantity }}</div>
             </div>
             <div class="price_delete_m1">
-              <div class="price">{{ item.food.price }}</div>
-              <div>{{ item.total_price }}</div>
+              <div class="price">฿ {{ item.food.price }}</div>
+              <!-- <div>{{ item.total_price }}</div> -->
               <div class="delete_modify">
                 <a class="delete_food" href="{% url 'delete_from_cart' product_id=item.id type=type_1 %}">Delete</a>
               </div>
@@ -262,8 +267,8 @@
               
             </div>
             <div class="price_delete_m2">
-              <div class="price">{{ item.price }}</div>
-              <div>{{ item.total_price }}</div>
+              <div class="price">฿ {{ item.price }}</div>
+              <!-- <div>{{ item.total_price }}</div> -->
 
               <div class="delete_modify">
                 <a class="delete_food" href="{% url 'delete_from_cart' product_id=item.id type=type_2 %}">Delete</a>

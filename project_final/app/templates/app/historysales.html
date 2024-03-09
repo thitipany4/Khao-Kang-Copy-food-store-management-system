@@ -105,7 +105,7 @@
 
         }
         .image-food img {
-            height: 120px; /* Set the height of the image container */
+            height: 170px; /* Set the height of the image container */
             width: 90%; /* Set the width of the image container */
             
         }
@@ -154,85 +154,8 @@
             /* border: 1px solid #333; */
         
         }
-        .box-button {
-            display: flex;
-            justify-content: center;
-
-        }
-        .button-submit {
-            display: flex;
-            width: 20%;
-            margin-top: 10px;
-            justify-content: center;
-
-        }
-        .btn-ok {
-
-            margin-right: 10px;
-            align-items: center;
-            background-color:#21F9F9;
-            border-radius: 12px;
-            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
-            box-sizing: border-box;
-            color: #121212;
-            cursor: pointer;
-            display: inline-flex;
-            flex: 1 1 auto;
-            font-family: Inter,sans-serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            justify-content: center;
-            line-height: 1;
-            margin: 0;
-            outline: none;
-            padding: 1rem 1.2rem;
-            text-align: center;
-            text-decoration: none;
-            transition: box-shadow .2s,-webkit-box-shadow .2s;
-            white-space: nowrap;
-            border: 0;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            height: auto;
-            width: auto;
-            margin-right: 5px;
-        }
-
-        .btn-ok:hover,.btn-cancel:hover {
-        box-shadow: #121212 0 0 0 3px, transparent 0 0 0 0;
-        }
-        .btn-cancel {
-            width: 10px;
-            align-items: center;
-            background-color: #F95221;
-            border-radius: 12px;
-            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
-            box-sizing: border-box;
-            color: #121212;
-            cursor: pointer;
-            display: inline-flex;
-            flex: 1 1 auto;
-            font-family: Inter,sans-serif;
-            font-size: 1.2rem;
-            font-weight: 700;
-            justify-content: center;
-            line-height: 1;
-            margin: 0;
-            outline: none;
-            padding: 1rem 1.2rem;
-            text-align: center;
-            text-decoration: none;
-            transition: box-shadow .2s,-webkit-box-shadow .2s;
-            white-space: nowrap;
-            border: 0;
-            user-select: none;
-            -webkit-user-select: none;
-            touch-action: manipulation;
-            height: auto;
-            width: auto;
-            margin-left: 5px;
-        }
+    
+      
         .box-dont-food {
 
             width: 100%;
@@ -254,6 +177,12 @@
         }
         .text-display {
             font-size: 26px;
+        }
+        .food-quantity ,.food-quantity2 {
+            margin-right: 10px;
+        }
+        .food-quantity2 {
+            color:  red;
         }
     </style>
 </head>
@@ -289,21 +218,20 @@
         <div class="container-area">
             {%for f in food %}
                         <div class="boxlistfood">
-                            {%if f.image %}
+                            {%if f.food.image %}
                             <div class="image-food">
-                                <img src="{{f.image.url}}" alt="food-image">
+                                <img src="{{f.food.image.url}}" alt="food-image">
                             </div>
                             {%endif%}
 
-                            <div class="foodname">{{f.name}}</div> 
+                            <div class="foodname">{{f.food.name}}</div> 
                             <div class="detail_food">
-                            <div>{{f.price}} {{f.unit}}</div>
-                            {%if f.score%}
-                            <div class="score">{{f.food.score|floatformat:2 }}</div>
-                            {%endif%}
+                            <div>{{f.food.price}} {{f.food.unit}}</div>
+                            {%if f.quantity != 0 %}
+                            <div class="food-quantity">คงเหลือ : {{f.quantity}}</div>
+                            {%elif f.quantity == 0 %}
+                            <div class="food-quantity2">อาหารหมด</div>
 
-                            {%if f.quantity_review >= 5%}
-                                <div>({{f.quantity_review}})</div>
                             {%endif%}
                             </div>
 
@@ -320,12 +248,6 @@
                 </div>
             </div>
         {%endif%}
-        </div>
-        <div class="box-button">
-            <div class="button-submit">
-                <button class="btn-ok" type="submit">OK</button>
-                <a class="btn-cancel" href="/managefood/">cancel</a>
-            </div>
         </div>
 
 

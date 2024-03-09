@@ -29,10 +29,6 @@ class DateForm(forms.ModelForm):
             'date_field': forms.DateInput(attrs={'type': 'date'})
         }
 
-class OptionForm(forms.ModelForm):
-    class Meta:
-        model = Food
-        fields =['options']
 
 class ReviewFood(forms.ModelForm):
     class Meta:

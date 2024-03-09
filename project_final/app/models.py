@@ -3,6 +3,7 @@ from django.db import models
 from PIL import Image
 from django.contrib.auth.models import User
 from django.utils import timezone
+from datetime import time
 import pytz
 
 class Member(models.Model):
@@ -36,17 +37,12 @@ class Food(models.Model):
     unit = models.CharField(max_length=100,default='บาทต่อถุง')
     score = models.FloatField(default=0,blank=True,null=True)
     quantity_review = models.IntegerField(default=0,blank=True,null=True)
-    quantity_sale = models.IntegerField(default=0)
+    # quantity_sale = models.IntegerField(default=0)
     image = models.ImageField(upload_to='media/image/',blank=True,null=True)
-    options = models.CharField(max_length=20, choices=(
-        ('notchoose', 'ไม่ได้เลือก'),
-        ('onsale', 'วางขาย'),
-        ('soldout', 'ขายหมดแล้ว'),
-    ), default='notchoose') 
-
 
     def __str__(self) -> str:
-        return f'เมนู {self.name} ราคา {self.price} บาท status : {self.options}'
+        return f'เมนู {self.name} ราคา {self.price} บาท '
+    
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         if self.image:
@@ -62,9 +58,22 @@ class Historysale(models.Model):
     date_field = models.DateField()
     food = models.ForeignKey(Food,on_delete=models.CASCADE,null=True,blank=True)
     quantity = models.IntegerField(default=0)
+    OPTIONS = [
+        ('ไม่ได้เลือก', 'ไม่ได้เลือก'),
+        ('วางขาย', 'วางขาย'),
+        ('ขายหมดแล้ว', 'ขายหมดแล้ว'),
+    ]
+    options = models.CharField(max_length=20, choices=OPTIONS,null=True) 
     def __str__(self) -> str:
         return f'{self.date_field} {self.food.name}'
     
+    @classmethod
+    def update_options_at_2pm(cls):
+        current_time = timezone.now().time()
+        if current_time == time(12, 0):  # 14:00 is 2 pm
+            
+            cls.objects.update(options=None)
+
 class Reviewfood(models.Model):
     food = models.ForeignKey(Food,on_delete=models.CASCADE)
     owner = models.ForeignKey(Member,on_delete=models.CASCADE,null=True)

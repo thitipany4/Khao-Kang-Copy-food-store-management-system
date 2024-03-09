@@ -46,6 +46,7 @@ urlpatterns = [
 
     path('order_confirm/<str:ref_code>/', order_confirmation, name='order_confirm'),
     path('confirm_order/', confirm_order, name='confirm_order'),
+    path('confirm_order/<str:filter>/',confirm_order,name='sort_confirm_order'),
     path('confirm_order/<str:code>/<str:status>/', confirm_order, name='confirm_order'), 
     path('complete_order/<str:ref_code>/',complete_order,name='complete_order'),
     path('history_confirm_order/',history_confirm_order,name='history_confirm_order'),
@@ -58,6 +59,7 @@ urlpatterns = [
     path('qr_code/',qr_code,name='qr_code'),
     path('qr_code/<str:check>/',qr_code,name='qr_code'),
     path('next_qr_code/',next_qr_code,name='next_qr_code'),
+
 
 
 

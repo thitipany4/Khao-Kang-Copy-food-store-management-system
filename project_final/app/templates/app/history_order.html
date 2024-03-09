@@ -381,7 +381,7 @@
                                 {%if order.confirm == 'wait_to_confirm'%}
                                     <div class="button-btn" >รอการยืนยัน</div>
   
-                                {%elif order.confirm == 'confirmed'%}
+                                {%elif order.confirm == 'confirmed' and order.completed == 'incompleted' %}
                                     <div class="button-btn2">ยืนยันแล้ว</div>
         
                                 {%elif order.completed == 'completed'%}
