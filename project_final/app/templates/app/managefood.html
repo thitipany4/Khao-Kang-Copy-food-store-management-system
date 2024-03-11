@@ -105,7 +105,7 @@
 
         }
         .image-food img {
-            height: 120px; /* Set the height of the image container */
+            height: 170px; /* Set the height of the image container */
             width: 90%; /* Set the width of the image container */
             
         }
@@ -300,7 +300,29 @@
             width: auto;
             margin-left: 5px;
         }
-
+        .message-alerts {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: center;
+            align-items: center;
+            /* border: 1px solid green;  */
+            margin-top: 10px;
+        }
+        .error {   
+            display: flex;
+            width: 100%;  
+            height: 40px;
+            align-items: center;
+            justify-content: center; 
+            color: #000000; /* Dark red text color */
+            /* border: 1px solid green; */
+            font-weight: bold;
+            font-size: 18px;
+            background-color: #F97979;
+            border: 1px solid #F97979;
+            
+}
     </style>
 </head>
 <body>
@@ -348,7 +370,17 @@
             </div>
         </div>
     </div>
-    
+    {% if messages %}
+    <div class="message-alerts">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+                <div class="error">{{ message }}</div>
+            {% elif message.tags == 'success' %}
+                <div class="success">{{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
     <form class="submit_sales" method="post" action="/managefood/{{date}}/">
         {%csrf_token%}
         <div class="container-area">
@@ -366,9 +398,28 @@
                             <div class="options_sale">
                                 <div class="input_q">
                                     <label class="label_input" for="input_button">จำนวน</label>
-                                    <input class="input_button" name="input_quantity" type="number" value='{{f.quantity_sale}}'>
+                                    <input class="input_button" name="input_quantity" type="number" value='{{f.quantity_sale}}' min=0 >
                                 </div>
-                                {%if f.options == 'onsale'%}
+                                {%if not h.options %}
+                                    <label  for="option_{{f.id}}"></label>
+                                    <select class="select_button" name="options" id="option_{{f.id}}">
+                                        {%for o in options%}
+                                        <option value="{{o}}">{{o}}</option>
+                                        {%endfor%}
+                                    </select>
+                                {%else%}
+                                    <select class="select_button" name="options" id="option_{{ f.id }}">
+                                        {% if h.options %}
+                                            <option value="{{ h.options }}">{{ h.options }}</option>
+                                        {% endif %}
+                                        {% for o in options %}
+                                            {% if o != h.options %}
+                                                <option value="{{ o }}">{{ o }}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </select>
+                                {% endif %}
+                                <!-- {%if f.options == 'onsale'%}
                                     <label  for="option_{{f.id}}"></label>
                                     <select class="select_button" name="options" id="option_{{f.id}}">
                                         <option value="onsale">วางขาย</option>
@@ -391,7 +442,7 @@
                                     <option value="onsale">วางขาย</option>
                                     <option value="soldout">ขายหมดเเล้ว</option>
                                 </select>
-                                {%endif%}
+                                {%endif%} -->
                             </div>
 
                             <div class="foodname">{{f.name}}</div> 

@@ -56,6 +56,9 @@ MIDDLEWARE = [
 
 ]
 
+#สามารถดำเนินการโชกราฟได้
+
+
 ROOT_URLCONF = "project_final.urls"
 
 TEMPLATES = [
