@@ -40,11 +40,9 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'app',
     'mapbox_location_field',
-    
+
 
 ]
-
-
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
