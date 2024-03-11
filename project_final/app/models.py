@@ -15,12 +15,12 @@ class Member(models.Model):
     phone_number = models.CharField(max_length=100)
     picture = models.URLField(blank=True, null=True)
     age = models.CharField(max_length=20, choices=(
-        ('11-20', '11-20 ปี'),
-        ('21-30', '21-30 ปี'),
-        ('31-40', '31-40 ปี'),
-        ('41-50', '41-50 ปี'),
-        ('51-60', '51-60 ปี'),
-        ('60+', '60 ปีขึ้น'),
+        ('11-20 ปี', '11-20 ปี'),
+        ('21-30 ปี', '21-30 ปี'),
+        ('31-40 ปี', '31-40 ปี'),
+        ('41-50 ปี', '41-50 ปี'),
+        ('51-60 ปี', '51-60 ปี'),
+        ('60 ปีขึ้น', '60 ปีขึ้น'),
     ), default='11-20') 
     gender = models.CharField(max_length=20, choices=(
         ('Male', 'ผู้ชาย'),

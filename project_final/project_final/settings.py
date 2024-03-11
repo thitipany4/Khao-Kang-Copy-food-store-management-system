@@ -40,8 +40,19 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     'app',
     'mapbox_location_field',
+    'dashboard',
+    'django_plotly_dash.apps.DjangoPlotlyDashConfig',
+]
 
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+STATICFILES_FINDERS = [
 
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+
+    'django_plotly_dash.finders.DashAssetFinder',
+    'django_plotly_dash.finders.DashComponentFinder',
+    'django_plotly_dash.finders.DashAppDirectoryFinder',
 ]
 
 MIDDLEWARE = [

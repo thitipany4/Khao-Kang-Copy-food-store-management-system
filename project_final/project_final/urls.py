@@ -22,6 +22,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path('',include('app.urls')),
+    path('dashboard/',include('dashboard.urls')),
+    path('django_plotly_dash/', include('django_plotly_dash.urls')),
 
 ] 
 if settings.DEBUG:
