@@ -17,6 +17,7 @@
 }
 body {
     min-height: 100vh;
+    background-color: #f5f5f7;
 }
 .header {
     color: red;
@@ -76,6 +77,10 @@ td {
     text-align: left;
     padding: 8px;
 }
+.page-container {
+    display: flex;
+    height: 3000px;
+}
 .side-menu {
     position: fixed;
     background: #f05462;
@@ -83,6 +88,7 @@ td {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+
 }
 .side-menu .brand-name {
     height: 10vh;
@@ -106,9 +112,10 @@ td {
 .container {
     position: absolute;
     right: 0;
-    width: 80vw;
-    height: 100vh;
-    background: #f1f1f1;
+    width: 1290px;
+    height: 2000px;
+
+
 }
 
 
@@ -178,38 +185,178 @@ td {
 }
 .dash-container {
   border: 2px solid blue;
-  height: 200px;
+  height: 1200px;
+  background-color: white;
+}
+.show_month {
+    display: flex;
+    border: 1px solid blue;
+    height: 60px;
+    margin-top: 40px;
+    align-items: center;
+    justify-content: end;
+    
+}
+.compare-data {
+    display: flex;
+
+    border: 2px solid turquoise;
+    margin-bottom: 20px;
+
+}
+.income_data,.expenses_data {
+    display: flex;
+    /* border: 1px solid red; */
+    width: 530px;
+    height: 110px;
+    justify-content: center;
+    align-items: center;
+
+}
+.income_box,.success_box,.expenses_box,.cancel_box {
+    display: flex;
+    border: 1px solid #444444;
+    box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+
+    flex-direction: column;
+    width: 250px;
+    height: 90%;
+    justify-content: center;
+    align-items: center;
+}
+.success_box ,.cancel_box {
+    width: 190px;
+    margin-left: 10px;
+
+}
+.income_str,.success_str,.expenses_str,.cancel_str {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+.success_str,.cancel_str {
+    font-size: 18px;
+}
+.box_compare {
+    display: flex;
+    /* border: 1px solid red; */
+    height: 30px;
+    align-items: center;
+}
+.income_num,.success_num,.expenses_num,.cancel_num {
+    display: flex;
+    width: 90%;
+    justify-content: center;
+    align-items: center;
+    /* border: 1px solid red; */
+    height: 50px;
+}
+.income_num_data,.success_num_data,.expenses_num_data,.cancel_num_data {
+    display: flex;
+    margin-right: 10px;
+    font-size: 18px;
+    /* border: 1px solid red; */
+    height: 30px;
+    align-items: center;
+}
+.success_num_data ,.cancel_num_data {
+    font-size: 36px;
+}
+.compare_income_data,.compare_success_data,.compare_expenses_data,.compare_cancel_data {
+    font-size: 14px;
+
+}
+.income_num_data,.compare_income_data,.success_num_data,.compare_success_data {
+    color: #59F14A;
+}
+.expenses_num_data,.cancel_num_data,.compare_expenses_data,.compare_cancel_data {
+    color: #F14A4A;
 }
 </style>
 
 </head>
 
 <body>
-    <div class="side-menu">
-        <div class="brand-name">
-            <h1>Brand</h1>
+    <div class="page-container">
+        <div class="side-menu">
+            <div class="brand-name">
+                <h1>Brand</h1>
+            </div>
+            <div class="left_bar">
+              <div class="son_left_bar">Dashboard</div>
+              <div class="son_left_bar">Students</div>
+              <div class="son_left_bar">Teachers</div>
+              <div class="son_left_bar">Schools</div>
+              <div class="son_left_bar">Income</div>
+              <div class="son_left_bar">Help</div>
+              <div class="son_left_bar">Settings</div>
+            </div>
         </div>
-        <div class="left_bar">
-          <div class="son_left_bar">Dashboard</div>
-          <div class="son_left_bar">Students</div>
-          <div class="son_left_bar">Teachers</div>
-          <div class="son_left_bar">Schools</div>
-          <div class="son_left_bar">Income</div>
-          <div class="son_left_bar">Help</div>
-          <div class="son_left_bar">Settings</div>
+        
+        <div class="container">
+            <div class="show_month">
+                <div class="str_month">all</div>
+                
+            </div>
+            <div class="compare-data">
+                <div class="income_data">
+                    <div class="income_box">
+                        <div class="income_str">รายรับ</div>
+                        <div class="income_num">
+                            <div class="income_num_data">฿{{income}}</div>
+                            <div class="box_compare">
+                                <div class="compare_income_data">{{income_compare}}%</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="success_box">
+                        <div class="success_str">ออเดอร์ที่สำเร็จ</div>
+                        <div class="success_num">
+                            <div class="success_num_data">{{success}}</div>
+                            <div class="box_compare">
+                                <div class="compare_success_data">{{success_compare}}%</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="expenses_data">
+                    <div class="expenses_box">
+                        <div class="expenses_str">รายรับ</div>
+                        <div class="expenses_num">
+                            <div class="expenses_num_data">฿{{expenses}}</div>
+                            <div class="box_compare">
+                                <div class="compare_expenses_data">{{expenses_compare}}%</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="cancel_box">
+                        <div class="cancel_str">ออเดอร์ที่ถูกยกเลิก</div>
+                        <div class="cancel_num">
+                            <div class="cancel_num_data">{{cancel}}</div>
+                            <div class="box_compare">
+                                <div class="compare_cancel_data">{{cancel_compare}}%</div>
+                            </div>
+                            
+                        </div>
+                    </div>
+            
+                </div>  
+                <a href="{% url 'download_excel' %}">
+                    <button>Download Excel</button>
+                </a>
+            </div>
+            <div class="dash-container">
+                <div class="{%plotly_class name='SimpleExample' %} ">
+                    {% plotly_app name='SimpleExample' ratio=1 %}
+                </div>
+            </div>
+            
         </div>
     </div>
-    <div class="container">
-      <a href="/dash/">
-        <button>refresh</button>
-      </a>
-      <div class="dash-container">
-        <div class="{%plotly_class name='SimpleExample' %} ">
-          {% plotly_app name='SimpleExample' ratio=1 %}
-        </div>
-      </div>
-
-    </div>
+   
 </body>
 
 </html>

@@ -59,6 +59,10 @@ urlpatterns = [
     path('qr_code/',qr_code,name='qr_code'),
     path('qr_code/<str:check>/',qr_code,name='qr_code'),
     path('next_qr_code/',next_qr_code,name='next_qr_code'),
+    path('recommend_us/',recommend_us,name='recommend_us'),
+    path('show_recommend_us/',show_recommend,name='show_recommend'),
+    path('show_full_recommend/<str:id>/',full_recommend,name='full_recommend'),
+
 
 
 

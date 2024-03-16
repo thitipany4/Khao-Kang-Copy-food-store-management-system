@@ -50,3 +50,8 @@ class OrderItemtype1Form(forms.ModelForm):
     class Meta:
         model = OrderItemtype1
         fields = [ 'order', 'food', 'quantity', 'total_price']
+
+class RecommendForm(forms.ModelForm):
+    class Meta:
+        model = RecommendUs
+        fields = ['text']

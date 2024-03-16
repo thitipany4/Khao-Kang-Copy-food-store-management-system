@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+            body {
+            background-color: #f5f5f7;
+            
+        }
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: start;
+        margin-top: 10px;
+    }
+    .text_head {
+        display: flex;
+        border: 1px solid red;
+        align-items: center;
+        height: 70px;
+        width: 100%;
+    }
+    .box_str {
+        display: flex;
+        height: 80%;
+        width: 250px;
+        border: 1px solid #444444;
+        box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+        background-color: #FFFCFC;
+        margin-left: 30px;
+        justify-content: center;
+        align-items: center;
+
+    }
+    .box_rec {
+        display: flex;
+        flex-direction: column;
+        width: 70%;
+    }
+    .each_rec {
+        display: flex;
+        border: 1px solid #444444;
+        box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+        height: 100px;
+        align-items: center;
+        margin-left: 40px;
+        margin-top: 10px;
+        background-color: #FFFCFC;
+        border-radius: 0.3rem;
+    }
+    .image {
+        width: 75px;
+        height: 75px;
+        margin-right: 20px;
+        margin-left: 10px;
+    }
+    .image img {
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    .body_rec {
+        display: flex;
+        flex-direction: column;
+        /* border: 1px solid blue; */
+        height: 80%;
+        width: 90%;
+    }
+    .box_username ,.box_text {
+        display: flex;
+        /* border: 1px solid blue; */
+        align-items: center;
+        width: 90%;
+        margin-left: 10px;
+    
+    }
+    .box_username {
+        height: 30px;
+        margin-bottom: 5px;
+    }
+    .box_text {
+        height: 45px;
+        overflow: hidden;
+        
+    }
+    .user_name {
+        font-size: 18px;
+
+    }
+    a {
+        text-decoration: none;
+        color: #333333;
+    }
+    </style>
+</head>
+<body>
+    {% include 'app/navbar.html' %}
+    <div class="container">
+        <div class="text_head">
+            <div class="box_str">
+                <div class="str_head">รายการข้อเสนอแนะจากผู้ใช้งาน</div>
+            </div>
+            
+        </div>
+        <div class="box_rec">
+            {%for rec in recomend%}
+            <a href="/show_full_recommend/{{rec.id}}/">
+                <div class="each_rec">
+                    <div class="image">
+                        <img src="{{rec.user.picture}}" alt="None">
+                    </div>
+                    <div class="body_rec">
+                        <div class="box_username">
+                            <div class="user_name">{{rec.user.user}}</div>
+                        </div>
+                        <div class="box_text">
+                            <div class="text_rec">{{rec.text}}</div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+            </a>
+            {%endfor%}
+        </div>
+    </div>
+    
+
+   
+</body>
+</html>

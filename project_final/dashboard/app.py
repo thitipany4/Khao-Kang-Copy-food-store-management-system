@@ -16,34 +16,31 @@ list_dropdown = {food_name: food_name for food_name in foods}
 
 # Initial layout with data
 app.layout = html.Div([
-    html.Div(children='My First App with Data and a Graph', className='header',style={'color':'blue'}),
     dcc.Graph(id='live-update-graph1'),
-    dcc.Graph(id='live-update-graph2'),
-    dcc.Graph(id='live-update-graph3',className='g3',style={'width':'700px'}),
-    dcc.Graph(id='live-update-graph4'),
+    dcc.Graph(id='live-update-graph2',className='g3',style={'width':'700px'}),
+    dcc.Graph(id='live-update-graph3'),
     html.Div([
         dcc.Dropdown(
                         options=list_dropdown,
                         value=foods[0] ,
                         id='dropdown-column'
                     ),
-            dcc.Graph(id='live-update-graph5'),
+            dcc.Graph(id='live-update-graph4'),
     ]),
-    dcc.Graph(id='live-update-graph6'),
+    dcc.Graph(id='live-update-graph5'),
     dcc.Interval(
         id='interval-component',
         interval=60 * 1000,  # in milliseconds
         n_intervals=0
     ),
 ],className='container_dash',style={'padding': '20px','display':'grid','grid-template-columns': 'repeat(2,1fr)',
-                                    'grid-gap': '10px','background': 'red','height':'1500px','padding': '0.5rem','margin':' 0.5rem'})
+                                    'grid-gap': '10px','background': 'red','height':'1000px','padding': '0.5rem','margin':' 0.5rem'})
 @app.callback(
              Output('live-update-graph1', 'figure'),
              Output('live-update-graph2', 'figure'),
              Output('live-update-graph3', 'figure'),
              Output('live-update-graph4', 'figure'),
              Output('live-update-graph5', 'figure'),
-             Output('live-update-graph6', 'figure'),
              Input('dropdown-column', 'value'),
              Input('interval-component', 'n_intervals'),)
 
@@ -62,7 +59,6 @@ def update_graph(value,n_intervals):
         for food in item.foods.all():
             list_item.append(food.name)
     count = Counter(list_item)
-    # print(count)
 
     member = Member.objects.all()
     all_age = [m.age for m in member]
@@ -90,13 +86,21 @@ def update_graph(value,n_intervals):
 
 
     df_order_sale = pd.DataFrame({'age': age_list, 'status': status_list})
-    print(df_order_sale)
-
-    date = [s.created_at for s in sale]
+    date = [str(s.created_at).split(' ')[0] for s in sale]
     total_price = [s.total_price for s in sale]
-    date_tran = [t.created for t in transaction]
+    df_complete = pd.DataFrame({'date':date,'price':total_price})
+    sort_df_complete = df_complete.groupby('date')['price'].sum().reset_index()
+    sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
+
+    date_tran = [str(t.created).split(' ')[0] for t in transaction]
+    print(date_tran)
     price_tran = [t.total_price for t in transaction]
     type_tran = [t.transaction_type for t in transaction]
+
+    price_df = pd.DataFrame({'date':date_tran,'price':price_tran,'type':type_tran})
+    price_df['year'] = pd.to_datetime(price_df['date']).dt.year
+    price_test = price_df.groupby(['year','type'])['price'].sum().reset_index()
+    print(price_df)
     food = [f.name for f in foods]
     rating_dic = {'1':0,'2':0,'3':0,'4':0,'5':0}
     for r in review:
@@ -109,21 +113,22 @@ def update_graph(value,n_intervals):
     print(rating)
     
     figure1 = px.pie(names=all_age)
-    figure2 = px.line(x=date, y=total_price,markers=True)
+    figure1.update_layout(title='กราฟแสดงเพศของผู้ใช้งาน')
+    figure2 = px.line(price_test,x='year', y='price',color='type',markers=True)
+
     figure2.update_layout(
-        xaxis_title="Date",  
-        yaxis_title="Total Price"  
-    )
-    figure3 = px.line(x=date_tran, y=price_tran,color=type_tran,markers=True)
-    figure3.update_layout(
         xaxis_title="วันที่",  
-        yaxis_title="ราคา"  
+        yaxis_title="ราคา"  ,
+        xaxis=dict(
+        tickmode='linear', 
+        tickvals=price_test['year'].unique() 
     )
-    figure4 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'})
-    figure5 = px.bar(x=list(rating_dic.values()), y=list(rating_dic.keys()),color=list(rating_dic.keys()), labels={'y': f'คะแนน ({value})', 'x': 'จำนวนที่ขายได้'})
+    )
+    figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'})
+    figure4 = px.bar(x=list(rating_dic.values()), y=list(rating_dic.keys()),color=list(rating_dic.keys()), labels={'y': f'คะแนน ({value})', 'x': 'จำนวนที่ขายได้'})
     df_count = df_order_sale.groupby(['age', 'status']).size().reset_index(name='count')
-    figure6 = px.bar(df_count, x='age', y='count', color='status', barmode='group')
-    return figure1,figure2,figure3,figure4,figure5,figure6
+    figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group')
+    return figure1,figure2,figure3,figure4,figure5
     
 '''
 กราฟที่คิดจะทำได้ 

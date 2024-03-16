@@ -1341,6 +1341,7 @@ def history_confirm_order(request,date=None,filter=None):
             print('not date')
             current_date = getdate()
             current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
+
             date_filter = f'{current_date.year}-0{current_date.month}'
         else:
             date_filter =date
@@ -1626,3 +1627,31 @@ def next_qr_code(req):
     user = req.user
     messages.error(req,'กรุณากรอบข้อมูลส่วนตัวให้ครบถ้วน')
     return redirect('profile',username=user)
+
+def recommend_us(req):
+    if req.method == 'POST':
+        form = RecommendForm(req.POST, req.FILES)
+        text = req.POST.get('text')
+        form.instance.text = text
+        if form.is_valid():
+            member = Member.objects.get(user=req.user)
+            form.instance.user = member
+            form.save()  
+            return redirect('home')
+    else:
+        form = RecommendForm() 
+
+    context = {
+        'form': form
+    }
+    return render(req, 'app/recommend.html', context)
+def show_recommend(req):
+    rec = RecommendUs.objects.all()
+    return render(req,'app/show_recom.html',context={
+        'recomend':rec
+    })
+def full_recommend(req,id):
+    rec = RecommendUs.objects.get(pk=id)
+    return render(req,'app/show_full_rec.html',context={
+        'recomend':rec
+    })
