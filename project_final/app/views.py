@@ -11,64 +11,26 @@ from app.models import *
 from django.contrib.auth.models import User
 from django.db import transaction
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from .message_admin import message_to_admin
+from .getdate import getdate
+from .message_admin import *
 from .generate_code import generate_random_system_code
 from .clear_session import *
 from .line_login import LineLogin
 from .calculator import calculator
 from .forms import FormNote
 from .utils import EventCalendar
-def getdate(x=None,th=None):
-    '''
-    get_month = thai_month_dict[current_date.month]
-    formatted_date = f"{current_date.year}-{get_month}-{current_date.day}"
-    date = datetime.strptime(formatted_date, '%Y-%m-%d').date()
-    '''
-    #เพื่อ เอาวันที่แบบตัวหนังสือ ปี-เดือน-วัน
-    if x:
-        current_date = x
-        print(current_date,'xxxxxxxxxx')
-        return f'{current_date.year}-{current_date.month}-{current_date.day}'
-    
 
-    
-    #เพื่อ เอาวันที่แบบตัวหนังสือ แบบไทย 4 ธันวาคม 2023
-    else:
-        if th:
-            date = th
-            current_date = datetime.strptime(date, '%Y-%m-%d').date()
-            print(current_date,'yyyyyyyyyyyyyy')
-    
-        else:
-            current_date = datetime.now()
-            print(current_date,'ppppppppppppppppp')
-            return f'{current_date.year}-{current_date.month}-{current_date.day}'
-
-        thai_month_dict = {
-        1:"มกราคม",
-        2:"กุมภาพันธ์",
-        3:"มีนาคม",
-        4:"เมษายน",
-        5:"พฤษภาคม",
-        6:"มิถุนายน",
-        7:"กรกฎาคม",
-        8:"สิงหาคม",
-        9:"กันยายน",
-        10:"ตุลาคม",
-        11:"พฤศจิกายน",
-        12:"ธันวาคม",}
-        get_month = thai_month_dict[current_date.month]
-        return f'{current_date.day} {get_month} {current_date.year}'
 
 #------------------------------------------------------------------
 
 # Create your views here.
 
 def home(req):
-    t = Transaction.objects.all()
     #key = check()
+
     date = getdate()
     food_sale = Historysale.objects.filter(date_field=date)
+    foods = Food.objects.all()
     print(food_sale)
     list_food = []
     for food in food_sale:
@@ -77,6 +39,7 @@ def home(req):
             list_food.append(food)
     context ={
         'food':list_food,
+        'food_list':foods
     }
     return render(req,'app/home.html',context)
 def about_us(req):
@@ -164,7 +127,7 @@ def select_date(req):
                 # present
                 else:
                    print('44444444444444')
-                   return redirect('/managefood/')
+                   return redirect('managefood')
     else:
             food = Food.objects.all()
             form_date = DateForm()
@@ -765,22 +728,28 @@ def create_cart(request):
         messages.error(request,'ข้อความกรุณากรอบข้อมูลส่วนตัวให้ครบถ้วน')
         return redirect('profile',username=user)
     order = Order.objects.filter(user=request.user,checkout=False).first()
+    print(order)
     if order :
-        if (timezone.now() - order.created_at).total_seconds() > 18000:
+        print('in order condition ')
+        if (timezone.now() - order.created_at).total_seconds() > 1800:
             order.delete()
             return redirect('create_cart')
         else:
-            return render(request, 'app/view_cart.html', {'order': order})
+            return redirect('view_cart')
+
     else:
         random_code = generate_random_system_code()
         order = Order.objects.create(total_price=Decimal('0.00'), ref_code=random_code,user=request.user)
         request.session['order'] = order.ref_code  # Use ref_code for session
         print(order, 'create cart done')
-    return render(request, 'app/view_cart.html', {'order': order})
+    return redirect('view_cart')
+
 
 def view_cart(request):
     order_id = request.session.get('order')
+    print('view cart',order_id)
     total_price = 0
+    context={}
     if order_id:
         order = get_object_or_404(Order, ref_code=order_id)
         order_item1 = OrderItemtype1.objects.filter(order=order)
@@ -890,11 +859,11 @@ def add_to_cart(request,type,modify=None):
                 # print('quantity',quantity)
                 product = get_object_or_404(Food, pk=product_id)
                 print('product', product)
-                quantity = int(quantity)  # Convert quantity to an integer
-    
-                if quantity < 1:  # Check if the current quantity is 'delete'
-                    product = OrderItemtype1.objects.filter(food=product,user=request.user).first()
+                quantity = int(quantity)  
+
+                if quantity == 0:  
                     order = get_object_or_404(Order, ref_code=order_id)
+                    product = OrderItemtype1.objects.filter(food=product,user=request.user,order=order).first()
                     if product:
                         # if order:
                         #     item = product.first()
@@ -918,7 +887,8 @@ def add_to_cart(request,type,modify=None):
                     request.session['order'] = random_code
                 else:
                     print('using existing order')
-                    order = get_object_or_404(Order, ref_code=order_id)
+                    order = Order.objects.get(ref_code=order_id)
+                    print(order)
 
                 order_item = OrderItemtype1.objects.filter(order=order,user=request.user, food=product).first()
                 if order_item:
@@ -960,13 +930,16 @@ def add_to_cart(request,type,modify=None):
             total_quantity = sum(int(quantity) for quantity in quantities)
             print(total_quantity)
             if selected_products:
-                with transaction.atomic():
+                    print('in if')
                     if not order_id:
                         random_code = generate_random_system_code()
                         order = Order.objects.create(total_price=Decimal('0.00'), ref_code=random_code,user=request.user)
-                        request.session['order'] = order.id
+                        print('order',order)
+                        request.session['order'] = order.ref_code
+                        print('order',order)
                     else:
                         order = get_object_or_404(Order, ref_code=order_id)
+                        print(order)
                     if modify:
                         id =int(modify)
                         order_item = OrderItemtype2.objects.get(pk=id)
@@ -974,12 +947,7 @@ def add_to_cart(request,type,modify=None):
                     else:
                         order_item = OrderItemtype2.objects.create(order=order, user=request.user, quantity=total_quantity)
                     if total_quantity == 0 :
-                        # print('order price',order.total_price)
-                        # print((order_item.price))
-                        # print((order_item.quantity))
 
-                        # order.total_price -= (order_item.price*order_item.quantity)
-                        # print('order price',order.total_price)
                         order_item.delete()
                         # order.save()
                         print('orderitem2 have been delete')
@@ -1055,7 +1023,9 @@ def add_to_cart(request,type,modify=None):
 
                         # Include order_item data in the cart
             
-                return redirect('view_cart')
+                    return redirect('view_cart')
+            else:
+                print('faile')
             
 def delete_from_cart(request, product_id,type):
     if type == 'type1':
@@ -1068,20 +1038,29 @@ def delete_from_cart(request, product_id,type):
         print(product , 'delete done')
         product.delete()
     return redirect('view_cart')
-
+#แก้ไข time checkout 
 def checkout(request,ref_code,total_price):
     order = get_object_or_404(Order, ref_code=ref_code)
     total_price = int(total_price)
     order_item1 = OrderItemtype1.objects.filter(order=order)
     order_item2 = OrderItemtype2.objects.filter(order=order)
-    list_time = ['10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM', '01:00 PM', '01:30 PM']
-    thai_time = ['10:00 น.', '10:30 น.', '11:00 น.', '11:30 น.', '12:00 น.', '12:30 น.', '13:00 น.', '13:30 น.']
-    current_time = timezone.localtime().time()
+    if not order_item1 and not order_item2:
+        messages.error(request, 'ตะกร้าของท่านไม่มีเมนูอาหาร')
+        return redirect('view_cart')
+    db_time = TimeReceive.objects.all()
+
+
     selected_times = []
-    for i in range(len(list_time)):
-        time_obj = datetime.strptime(list_time[i], '%I:%M %p').time()
-        if time_obj > current_time:  
-                selected_times.append((list_time[i],thai_time[i]))
+    bangkok_tz = pytz.timezone('Asia/Bangkok')
+    current_time_bangkok = datetime.now(bangkok_tz)
+    for time_slot in db_time:
+        slot_time = datetime.strptime(time_slot.time_receive.split()[0], "%H:%M")
+        slot_datetime = bangkok_tz.localize(datetime.combine(current_time_bangkok.date(), slot_time.time()))
+    
+        if slot_datetime > current_time_bangkok:
+            selected_times.append(time_slot)
+    current_time = timezone.localtime().time()
+ 
     print("Selected times:", selected_times)
     context ={
             'order':order,
@@ -1219,9 +1198,10 @@ def confirm_order(request,code=None,status=None,filter=None):
         reason =None
         time =None
         if orders:
-            reason = orders.first().REASON
+            reason = CancelReason.objects.filter(use_with='admin')
+
             print(reason)
-            time = orders.first().TIME_CHOICES
+            time = TimeReceive.objects.all()
 
         receive_text ='receive'
         wait_confirm_text='wait_confirm'
@@ -1243,6 +1223,9 @@ def confirm_order(request,code=None,status=None,filter=None):
             if order:
                 order.confirm = status 
                 order.save()
+                if status =='confirmed':
+                    user = request.user
+                    message_confirmed(order,user)
                 print(order.confirm,'save done')
                 return redirect('confirm_order')
             
@@ -1367,7 +1350,7 @@ def history_confirm_order(request,date=None,filter=None):
 
         all_item =[]
         if orders.exists():
-            time = orders.first().TIME_CHOICES
+            time = TimeReceive.objects.all()
             for order in orders:
                 print(len(orders))
                 list_item=[]
@@ -1455,11 +1438,21 @@ def my_order(req):
     if current_date.month >9:
             date_filter = f'{current_date.year}-{current_date.month}-{current_date.day}'
     else:
-            date_filter = f'{current_date.year}-0{current_date.month}-0{current_date.day}'
+            date_filter = f'{current_date.year}-0{current_date.month}-{current_date.day}'
+    if current_date.day <10:
+            date_filter = f'{current_date.year}-{current_date.month}-0{current_date.day}'
+    print(date_filter)
     orders = Order.objects.filter(created_at__contains=date_filter,completed='incompleted',checkout=True).order_by('-created_at')
     print('not',orders)
     total_price = 0 
     if orders :
+        time_test = TimeReceive.objects.all()
+        for t in time_test:
+            print(t)
+        print(orders.first().time_receive,'time_receive')
+        reason_test = CancelReason.objects.filter(use_with='user')
+        for r in reason_test:
+            print(r)
         time = orders.first().TIME_CHOICES
         reason =[('user-cancel','ลูกค้าเปลี่ยนใจ/ยกเลิกการจอง'),
                 ('cant-receive','ไม่สามารถไปรับอาหารได้'),]
@@ -1490,8 +1483,8 @@ def my_order(req):
         context ={
                     'order':orders,
                     'items':items,
-                    'time':time,
-                    'reason':reason,
+                    'time':time_test,
+                    'reason':reason_test,
                     'total_price':total_price,
                 }
     else:
@@ -1512,19 +1505,22 @@ def cancel_my_order(req,ref_code):
     for item in item1:
         quatity1 = item.quantity
         his = get_quatity(item.food)
-        his.quantity += quatity1
+        # his.quantity += quatity1
         his.save()
     for item in item2:
         quatity1 = item.quantity
         for i in item.foods.all():
             his = get_quatity(i)
-            his.quantity += quatity1
+            # his.quantity += quatity1
             his.save()
 
     reason = req.POST.get('select_reason')
     order.confirm = 'cancel'
     order.cancel_reason = reason
     order.save()
+    user = req.user
+    print(user)
+    message_cancel(order,user)
     print(order)
     return redirect('my_order')
 
@@ -1570,7 +1566,7 @@ def my_history(req,filter=None):
             print('completed ')
     
     if orders :
-        time = orders.first().TIME_CHOICES
+        time = TimeReceive.objects.all()
     # orders = Order.objects.filter(user=req.user).order_by('-created_at') ไว้ build sor t by
         items = []
         

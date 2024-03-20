@@ -433,9 +433,9 @@
                             {%endfor%}
                         </td>
                         <td class="time_body">
-                            {%for e,t in time%}
-                            {%if order.time_receive  == e %}
-                                <div class="time-text">{{t}}</div>
+                            {%for t in time%}
+                            {%if order.time_receive  == t.time_receive %}
+                                <div class="time-text">{{t.time_receive}}</div>
                             {%endif%}
                         {%endfor%}
                         </td>

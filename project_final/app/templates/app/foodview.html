@@ -45,10 +45,13 @@
         .logoitem {
             margin-left: 20px;
             display: flex;
-            width: 200px;
-            margin-right: 10px;
+            width: 170px;
+            margin-right: 20px;
             /* border: 1px solid palegreen; */
 
+        }
+        .res_name a {
+            font-size: 20px;
         }
         .search-btn-about {
             display: flex;
@@ -119,7 +122,7 @@
             /* border: 1px solid red; */
         }
 
-        .about-us,.profile,.login-btn,.logout-btn,.cart,.history-btn {
+        .about-us,.profile,.login-btn,.logout-btn,.cart,.history-btn,.recommend-us {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -133,14 +136,17 @@
             margin: 5px;
             text-decoration: none;
         }
-        .about-us,.profile,.login-btn,.logout-btn,.cart {
+        .recommend-us {
+            font-size: 14px;
+        }
+        .about-us,.profile,.login-btn,.logout-btn,.cart,.recommend-us {
             width: 100px;
         }
         .history-btn {
             width: 120px;
             font-size: 14px;
         }
-        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover,.history-btn:hover {
+        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover,.history-btn:hover,.recommend-us:hover {
             border-radius: 4px;
             border: none;
             color: #FFFFFF;
@@ -151,7 +157,7 @@
             cursor: pointer;
             margin: 5px;
         }
-        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover {
+        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover,.recommend-us:hover {
             width: 100px;
         }
         .history-btn:hover {
@@ -163,6 +169,10 @@
         .cart:hover {
             background-color: #F4891E;
         }
+        .recommend-us:hover {
+            background-color: #F41E96;
+
+    }
         .logout-btn:hover {
             background-color: #f4511e;
 
@@ -557,6 +567,7 @@
                     </div>
                 </form>
                 <a class="about-us" href="/about_us/">about us</a>
+                <a class="recommend-us" href="/recommend_us/">ข้อเสอแนะ</a>
             </div>
         </div>
 
@@ -564,7 +575,7 @@
 
         <div class="rightitem">
             <div class="box-history">
-                <a class="history-btn" href="/profile/{{ user.username }}/">ประวัติการจอง</a>
+                <a class="history-btn" href="/my_order/">ออเดอร์ของฉัน</a>
             </div>
             <div class="box-profile">
                 <a class="profile" href="/profile/{{user.username}}/">Profile</a>

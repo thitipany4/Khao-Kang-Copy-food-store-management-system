@@ -410,9 +410,9 @@
                         </div>
                         <div class="create-code">
                             <div class="box-time_receive">
-                                {%for e,t in time%}
-                                    {%if order.time_receive  == e %}
-                                        <div class="createtime_receive">เวลานัดรับ {{t}} </div>
+                                {%for t in time%}
+                                    {%if order.time_receive  == t.time_receive %}
+                                        <div class="createtime_receive">เวลานัดรับ {{t.time_receive}} </div>
                                     {%endif%}
                                 {%endfor%}
 
@@ -454,8 +454,8 @@
                         {% csrf_token %}
                         <div class="form_content">
                           <select class="select_reason" name="select_reason">
-                            {%for e,t in reason %}
-                              <option class="option_reason" value="{{e}}" >{{t}}</option>
+                            {%for r in reason %}
+                              <option class="option_reason" value="{{e}}" >{{r.reason}}</option>
                             </div>
                             {%endfor%}
                           </select>

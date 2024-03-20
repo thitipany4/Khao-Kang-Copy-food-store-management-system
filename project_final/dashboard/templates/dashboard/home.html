@@ -9,6 +9,7 @@
   <title>Admin Panel</title>
 </head> 
 <style>
+
  * {
     margin: 0;
     padding: 0;
@@ -37,19 +38,8 @@ body {
     border-radius: 5px;
     margin-bottom: 20px;
 }
-a {
-    text-decoration: none;
-}
-li {
-    list-style: none;
-}
-h1,
-h2 {
-    color: #444;
-}
-h3 {
-    color: #999;
-}
+
+
 .btn {
     background: #f05462;
     color: white;
@@ -84,7 +74,7 @@ td {
 .side-menu {
     position: fixed;
     background: #f05462;
-    width: 200px;
+    width: 190px;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
@@ -100,7 +90,7 @@ td {
     display: flex;
     justify-content: center;
     font-size: 24px;
-    padding: 10px 40px;
+    padding: 20px 80px;
     color: white;
     display: flex;
     align-items: center;
@@ -112,7 +102,7 @@ td {
 .container {
     position: absolute;
     right: 0;
-    width: 1290px;
+    width: 1160px;
     height: 2000px;
 
 
@@ -207,7 +197,7 @@ td {
 .income_data,.expenses_data {
     display: flex;
     /* border: 1px solid red; */
-    width: 530px;
+    width: 470px;
     height: 110px;
     justify-content: center;
     align-items: center;
@@ -219,7 +209,7 @@ td {
     box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
 
     flex-direction: column;
-    width: 250px;
+    width: 220px;
     height: 90%;
     justify-content: center;
     align-items: center;
@@ -271,6 +261,126 @@ td {
 .expenses_num_data,.cancel_num_data,.compare_expenses_data,.compare_cancel_data {
     color: #F14A4A;
 }
+.head_title {
+    display: flex;
+    border: 1px solid red;
+    width: 700px;
+    height: 90%;
+    justify-content: end;
+    align-items: center;
+    margin-right: 60px;
+
+}
+.str_month {
+    margin-right: 30px;
+}
+.select-month {
+    display: flex;
+    border: 1px solid red;
+    padding: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+.go-month,.go-quarter {
+    width: 40px;
+}
+.dropdown {
+            position: relative;
+            display: inline-block;
+            margin-right: 40px;
+        }
+
+        .dropbtn{
+            background-color: #3498db;
+            color: white;
+            width: 90px;
+            height: 30px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            font-size: 14px;
+
+        }
+        .dropdown-content {
+                display: none;
+                position: absolute;
+                background-color: #f9f9f9;
+                min-width: 160px;
+                box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+                z-index: 1;
+                font-size: 18px;
+            }
+
+        .dropdown-content a {
+                color: black;
+                padding: 12px 16px;
+                text-decoration: none;
+                display: block;
+            }
+
+        .dropdown-content a:hover {
+                background-color: #ddd;
+            }
+
+        .dropdown:hover .dropdown-content {
+                display: block;
+            }
+
+        .dropdown:hover .dropbtn {
+                background-color: #2980b9;
+            }
+        .box_select_quarter {
+            display: flex;
+            margin-right: 20px;
+        }
+        .select_quarter {
+            width: 40px;
+            margin-right: 10px;
+        }
+        .input_year {
+            width: 70px;
+        }
+        .box_downlaod {
+            display: flex;
+            flex-direction: column;
+            /* border: 1px solid red; */
+            width: 180px;
+            justify-content: center;
+            align-items: center;
+        }
+        .donwload_all,.select_range_download {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 95%;
+            /* border: 1px solid red; */
+
+        }
+        .btn-all,.btn-range {
+            width: 100%;
+            margin-bottom: 10px;
+        }
+        .buttton_download {
+            width: 100%;
+            background-color:#F1A34A ;
+            border: 1px solid #F1934A;
+            height: 30px;
+        }
+        .buttton_download:hover {
+            width: 100%;
+            background-color:#F1634A ;
+            border: 1px solid #F15E4A;
+        }
+        .a_btn {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .a_btn:hover {
+            background: white;
+            color: #f05462;
+        }
 </style>
 
 </head>
@@ -288,13 +398,65 @@ td {
               <div class="son_left_bar">Schools</div>
               <div class="son_left_bar">Income</div>
               <div class="son_left_bar">Help</div>
-              <div class="son_left_bar">Settings</div>
+              <div class="son_left_bar">
+                <a class="a_btn" href="{%url 'reason_time'%}">reason & time</a>
+              </div>
             </div>
         </div>
         
         <div class="container">
             <div class="show_month">
-                <div class="str_month">all</div>
+                <div class="head_title">
+                    <div class="str_month">{{show_text}}</div>
+                    {%if mark == 'Month'%}
+                        <div class="select-month">
+                            <div class="move-content">
+                                    <form method="post" action="{%url 'see_month_data_filter'%}" class="move-to_othermonth">
+                                        {%csrf_token%}
+                                        <label for="id_move_to_month">เลือกเดือน:</label>
+                                        <input type="month" name="move_to_month" id="id_move_to_month" value="{{ current_year }}-{{ current_month|date:'m' }}" required>
+                                        <button class="go-month" type="submit">ไป</button>
+                                    </form>
+                            </div>
+                        </div>
+                    {%elif mark == 'Quarter'%}
+                    <div class="box_select_quarter">
+                        <form action="{%url 'see_quarter_data_filter'%}" method="post">
+                            {%csrf_token%}
+                            <label for="select_quarter">ไตรมาส</label>
+                            <select class="select_quarter" name="select_quarter"id="select_quarter">
+                                {% if quarter %}
+                                <option value="{{ quarter }}">{{ quarter }}</option>
+                                {% endif %}
+                                {% for q in select_quarter %}
+                                    {% if q != quarter %}
+                                        <option value="{{ q }}">{{ q }}</option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                            <label for="input_year">ปี</label>
+                            {%if year %}
+                            <input class="input_year" type="text" value="{{year}}" id="input_year" name="input_year" pattern="\d{4}" title="กรุณาเติมจำนวนปีที่ต้องการ ค.ศ. (e.g., 2024)">
+                            {%else%}
+                            <input class="input_year" type="text" id="input_year" name="input_year" pattern="\d{4}" title="กรุณาเติมจำนวนปีที่ต้องการ ค.ศ. (e.g., 2024)">
+
+                            {%endif%}
+                            <button class="go-quarter" type="submit">ไป</button>
+                        </form>
+                    </div>
+                   
+                    {%endif%}
+                    <div class="dropdown">
+                            <button class="dropbtn">sort by</button>
+                            <div class="dropdown-content">
+                                <a href="{% url 'see_all_data'%}">ข้อมูลทั้งหมด</a>
+                                <a href="{% url 'see_month_data'  %}">ข้อมูลรายเดือน</a>
+                                <a href="{% url 'see_quarter_data' %}">ข้อมูลไตรมาส</a>
+                            </div>
+                      </div>
+          
+                  </div>
+                
                 
             </div>
             <div class="compare-data">
@@ -304,7 +466,9 @@ td {
                         <div class="income_num">
                             <div class="income_num_data">฿{{income}}</div>
                             <div class="box_compare">
+                                {%if income_compare %}
                                 <div class="compare_income_data">{{income_compare}}%</div>
+                                {%endif%}
                             </div>
                             
                         </div>
@@ -314,7 +478,9 @@ td {
                         <div class="success_num">
                             <div class="success_num_data">{{success}}</div>
                             <div class="box_compare">
+                                {%if success_compare%}
                                 <div class="compare_success_data">{{success_compare}}%</div>
+                                {%endif%}
                             </div>
                             
                         </div>
@@ -327,7 +493,9 @@ td {
                         <div class="expenses_num">
                             <div class="expenses_num_data">฿{{expenses}}</div>
                             <div class="box_compare">
+                                {%if expenses_compare%}
                                 <div class="compare_expenses_data">{{expenses_compare}}%</div>
+                                {%endif%}
                             </div>
                             
                         </div>
@@ -337,26 +505,53 @@ td {
                         <div class="cancel_num">
                             <div class="cancel_num_data">{{cancel}}</div>
                             <div class="box_compare">
+                                {%if cancel_compare%}
                                 <div class="compare_cancel_data">{{cancel_compare}}%</div>
+                                {%endif%}
                             </div>
                             
                         </div>
                     </div>
             
                 </div>  
-                <a href="{% url 'download_excel' %}">
-                    <button>Download Excel</button>
-                </a>
+                <div class="box_downlaod">
+                    <div class="donwload_all">
+                        <a class="btn-all" href="{% url 'download_excel' %}">
+                            <button class="buttton_download">ดาวโหลดเอกสารทั้งหมด</button>
+                        </a>
+                    </div>
+                    <div class="select_range_download">
+                        <a class="btn-range" href="{% url 'download_excel_range' %}">
+                            <button class="buttton_download">เลือกดาวโหลดตามช่วงเวลา</button>
+                        </a>
+                    </div>
+
+        
+                </div>
+
             </div>
+            {%if not mark %}
             <div class="dash-container">
-                <div class="{%plotly_class name='SimpleExample' %} ">
-                    {% plotly_app name='SimpleExample' ratio=1 %}
+                <div class="{%plotly_class name='AllData' %} ">
+                    {% plotly_app name='AllData' ratio=1 %}
                 </div>
             </div>
-            
+            {%elif mark == 'Month'%}
+            <div class="dash-container">
+                <div class="{%plotly_class name='MonthData' %} ">
+                    {% plotly_app name='MonthData' ratio=1 %}
+                </div>
+            </div>
+            {%elif mark == 'Quarter'%}
+            <div class="dash-container">
+                <div class="{%plotly_class name='QuarterData' %} ">
+                    {% plotly_app name='QuarterData' ratio=1 %}
+                </div>
+            </div>
+            {%endif%}
         </div>
     </div>
-   
+
 </body>
 
 </html>

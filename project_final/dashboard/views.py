@@ -1,39 +1,85 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from django_plotly_dash.views import add_to_session
-from flask import redirect
 from app.models import *
-from .app import app
+from app.getdate import getdate
+from .dashboards import *
 from django.http import HttpResponse
 import pandas as pd
 from io import BytesIO
-def home(req):
-    add_to_session(req,app)
+import calendar
+from .quarter_get_data import *
+from datetime import datetime
+from django.contrib import messages
+
+def select_month_dash(req):
+    if req.method == 'POST':
+        month = req.POST.get('move_to_month')
+        print(month)
+
+        test_tra = Transaction.objects.filter(date__contains=month)
+        cancel_test = Order.objects.filter(confirm='cancel',created_at__contains=month)
+        com_test = Order.objects.filter(completed='completed',created_at__contains=month)
+        print('test get date',test_tra)
+        print('test get date2',cancel_test)
+        print('test get date3',com_test)
+    return redirect('see_all_data')
+def get_all_data():
+    income = 0
+    expenses = 0
+
+    current_year = date.year
+    current_month = date.month
+    current_month = str(current_month).zfill(2) 
+
+    print(current_year,current_month)
+
+    
+    transactions = Transaction.objects.all()
+
+    sale = Order.objects.filter(completed='completed')
+    cancel = Order.objects.filter(confirm='cancel')
+    print(sale)
+
+    for t in transactions:
+        if t.transaction_type == 'income':
+            income += t.total_price
+        elif t.transaction_type == 'expenses':
+            expenses += t.total_price
+            
+    success = len(sale)
+    cancel = len(cancel)
+
+    return income,expenses,success,cancel
+
+def get_month_data(date):
     income = 0
     expenses = 0
     pre_income = 0
     pre_expenses = 0
-    current = datetime.now().date()
 
-    current_year = current.year
-    current_month = current.month
+    current_year = date.year
+    current_month = date.month
+
     current_month = str(current_month).zfill(2) 
 
-    previous_month = current.month - 1
+    previous_month = date.month - 1
+    pre_current_year = current_year
     if previous_month == 0:
         previous_month = 12  
-        current_year -= 1  
+        pre_current_year = current_year - 1 
     previous_month_str = str(previous_month).zfill(2) #ไว้ทำให้เป็นตัวเลข 2 ตำแหน่ง
-    previous_transactions = Transaction.objects.filter(date__year=current_year, date__month=previous_month_str)
-    transactions = Transaction.objects.filter(date__year=current_year,date__month=current_month)
 
     date_filter = f'{current_year}-{current_month}'
-    pre_date_filter = f'{current_year}-{previous_month_str}'
+    pre_date_filter = f'{pre_current_year}-{previous_month_str}'
+
+    previous_transactions = Transaction.objects.filter(date__contains=pre_date_filter)
+    transactions = Transaction.objects.filter(date__contains=date_filter)
 
     sale = Order.objects.filter(completed='completed',created_at__contains=date_filter)
-    order = Order.objects.filter(confirm='cancel',created_at__contains=date_filter)
+    cancel = Order.objects.filter(confirm='cancel',created_at__contains=date_filter)
 
     pre_sale = Order.objects.filter(completed='completed',created_at__contains=pre_date_filter)
-    pre_order = Order.objects.filter(confirm='cancel',created_at__contains=pre_date_filter)
+    pre_cancel = Order.objects.filter(confirm='cancel',created_at__contains=pre_date_filter)
     print(sale)
     print(pre_sale)
 
@@ -48,20 +94,173 @@ def home(req):
             pre_income += t.total_price
         elif t.transaction_type == 'expenses':
             pre_expenses += t.total_price
-            
-    income_compare = int(((income - pre_income) / pre_income) * 100)
-    expenses_compare = int(((expenses - pre_expenses) / pre_expenses) * 100)
 
     success = len(sale)
-    cancel = len(order)
-    pre_success=len(pre_sale)
-    pre_cancel = len(pre_order)
+    cancel = len(cancel)         
+    if not pre_sale or not pre_cancel:
+        income_compare =''
+        expenses_compare=''
+        pre_success=''
+        pre_cancel = ''
+        success_compare = ''
+        cancel_compare = ''
+    else:
+        income_compare = int(((income - pre_income) / pre_income) * 100)
+        expenses_compare = int(((expenses - pre_expenses) / pre_expenses) * 100)
+        pre_success=len(pre_sale)
+        pre_cancel = len(pre_cancel)
+        success_compare = int(((success - pre_success) / pre_success) * 100)
+        cancel_compare = int(((cancel - pre_cancel) / pre_cancel) * 100)
 
-    success_compare = int(((success - pre_success) / pre_success) * 100)
-    cancel_compare = int(((cancel - pre_cancel) / pre_cancel) * 100)
+    return income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare 
+
+def get_quarter_data(quarter,year):
+    income = 0
+    expenses = 0
+    pre_income = 0
+    pre_expenses = 0
+
+    if quarter == 1 :
+        pre_year = year -1
+        previous_quarter = 1
+    else:
+        previous_quarter = 1
+        pre_year = year
+
+    len_quarter = get_month_dates(year,quarter)
+    pre_len_quarter = get_month_dates(pre_year,previous_quarter)
+
+
+    previous_transactions = Transaction.objects.filter(date__range=(pre_len_quarter))
+    transactions = Transaction.objects.filter(date__range=(len_quarter))
+
+    sale = Order.objects.filter(completed='completed',created_at__range=(len_quarter))
+    cancel = Order.objects.filter(confirm='cancel',created_at__range=(len_quarter))
+
+    pre_sale = Order.objects.filter(completed='completed',created_at__range=(pre_len_quarter))
+    pre_cancel = Order.objects.filter(confirm='cancel',created_at__range=(pre_len_quarter))
+
+
+    for t in transactions:
+        if t.transaction_type == 'income':
+            income += t.total_price
+
+        elif t.transaction_type == 'expenses':
+            expenses += t.total_price
+
+    for t in previous_transactions:
+        if t.transaction_type == 'income':
+            pre_income += t.total_price
+        elif t.transaction_type == 'expenses':
+            pre_expenses += t.total_price
+
+    success = len(sale)
+    cancel = len(cancel)
+
+    if not pre_sale or not pre_cancel:
+        income_compare =''
+        expenses_compare=''
+        pre_success=''
+        pre_cancel = ''
+        success_compare = ''
+        cancel_compare = ''
+    else:
+        income_compare = int(((income - pre_income) / pre_income) * 100)
+        expenses_compare = int(((expenses - pre_expenses) / pre_expenses) * 100)
+        pre_success=len(pre_sale)
+        pre_cancel = len(pre_cancel)
+        success_compare = int(((success - pre_success) / pre_success) * 100)
+        cancel_compare = int(((cancel - pre_cancel) / pre_cancel) * 100)
+    print('income',income)
+    print('expenses',expenses)
+
+    return income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare 
+
+def see_all_data(req,filter=None):
+    show_text = 'ข้อมูลทั้งหมด'
+    if req.method == 'POST':
+        month = req.POST.get('move_to_month')
+        print(month)
+        current = datetime.now().date()
+
+    else:
+        current = datetime.now().date()
+
+    if filter:
+        app = call_all()
+        add_to_session(req,app)
+        print('filter',filter)
+
+    else:
+        app = call_all()
+        add_to_session(req,app)
+
+    month_data = 'month'
+    quater_data = 'quater'
+
+    income,expenses,success,cancel, = get_all_data()
 
     context = {
         'app':app,
+        'income':income,
+        'expenses':expenses,
+        'success':success,
+        'cancel':cancel,
+        'month_data':month_data,
+        'quater_data':quater_data,
+        'show_text':show_text,
+    }
+    return render(req,'dashboard/home.html',context)
+
+def see_month_data(req):
+    show_text = 'ข้อมูลทั้งหมด'
+    mark = 'Month'
+    if req.method == 'POST':
+        select_date = req.POST.get('move_to_month')
+        print('month',select_date)
+
+        split = select_date.split('-')
+        text_send_tra = f'{split[0]}-{split[1]}-12'
+        date = getdate(None,str(text_send_tra))
+        date = date.split(' ')
+        show_text = f'{date[1]} {date[2]}'
+
+        year, month = map(int, select_date.split("-"))
+        all_days = calendar.monthrange(year, month)[1]
+        list_day = [day for day in range(1, all_days + 1)]
+        month = str(month).zfill(2) 
+        app = call_month(select_date,list_day)
+        add_to_session(req,app)
+        raw_current = f'{split[0]}-{split[1]}'
+        current = datetime.strptime(raw_current, "%Y-%m")
+
+    else:
+        current = datetime.now().date()
+        year_t = current.year
+        month_t = current.month
+
+        all_days = calendar.monthrange(year_t, month_t)[1]
+        list_day = [day for day in range(1, all_days + 1)]
+        if month_t < 10 :
+            month_t = f'0{month_t}'
+        date = getdate(None,str(current))
+        date = date.split(' ')[1:]
+        show_text = f'{date[0]} {date[1]}'
+        print(date)
+        print(show_text)
+
+        print(current.year,current.month,'current year month')
+        send_date = str(current).split('-')[0:2]
+        send_date = f'{send_date[0]}-{send_date[1]}'
+        app = call_month(send_date,list_day)
+        add_to_session(req,app)
+
+    month_data = 'month'
+    quater_data = 'quater'
+
+    income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare = get_month_data(current)
+
+    context = {
         'income':income,
         'expenses':expenses,
         'income_compare':income_compare,
@@ -70,13 +269,79 @@ def home(req):
         'cancel':cancel,
         'success_compare':success_compare,
         'cancel_compare':cancel_compare,
+        'month_data':month_data,
+        'quater_data':quater_data,
+        'show_text':show_text,
+        'mark':mark,
     }
     return render(req,'dashboard/home.html',context)
 
-def download_excel(req):
-    transactions = Transaction.objects.filter(transaction_type__in=['income', 'expenses']).order_by('date')
+def sell_quarter_data(req):
+    show_text = 'ข้อมูลทั้งหมด'
+    mark = 'Quarter'
+    select_quarter = [1,2,3,4]
+    if req.method == 'POST':
+        quarter = req.POST.get('select_quarter')
+        year = req.POST.get('input_year')
+        print('quarter',quarter,type(quarter))
+        print('year',year,type(year))
+        quarter = int(quarter)
+        year = int(year)
+
+        len_quater = get_month_dates(year,quarter)
+        print('len_quater',len_quater)
+        show_text =f'ไตรมาสที่ {quarter} ปี {year}'
+        list_quater = get_list_quarter(quarter)
+        app = call_quarter(len_quater,list_quater)
+
+        add_to_session(req,app)
+  
+    else:
+
+        current = datetime.now().date()
+        year = current.year
+        month = current.month
+        print('month_t',month)
+        quarter = get_quarter(month)
+        print('quarter',quarter)
+        len_quarter = get_month_dates(year,quarter)
+        print('len_quater',len_quarter)
+        show_text =f'ไตรมาสที่ {quarter} ปี {year}'
+        list_quarter = get_list_quarter(quarter)
+        app = call_quarter(len_quarter,list_quarter)
+        print('app',app)
+        add_to_session(req,app)
+
+    month_data = 'month'
+    quater_data = 'quater'
+
+    income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare = get_quarter_data(quarter,year)
+
+    context = {
+        'income':income,
+        'expenses':expenses,
+        'income_compare':income_compare,
+        'expenses_compare':expenses_compare,
+        'success':success,
+        'cancel':cancel,
+        'success_compare':success_compare,
+        'cancel_compare':cancel_compare,
+        'month_data':month_data,
+        'quater_data':quater_data,
+        'show_text':show_text,
+        'mark':mark,
+        'select_quarter':select_quarter,
+        'quarter':quarter,
+        'year':year,
+    }
+    return render(req,'dashboard/home.html',context)
+
+def get_excel(range_date=None):
+    if range_date:
+        transactions = Transaction.objects.filter(transaction_type__in=['income', 'expenses'],date__range=range_date).order_by('date')
+    else:
+        transactions = Transaction.objects.filter(transaction_type__in=['income', 'expenses']).order_by('date')
     print(transactions)
-    # Organize data
     data = []
     current_date = None
     income = 0
@@ -108,3 +373,74 @@ def download_excel(req):
     response['Content-Disposition'] = 'attachment; filename="Report_Finacial.xlsx"'
     
     return response
+
+def download_excel(req):
+    res = get_excel()
+    return res
+def download_range(req):
+    if req.method == 'POST':
+        start = req.POST.get('start_month')
+        end = req.POST.get('end_month')
+        print(start,'start')
+        print(end,'end')
+        start_date = datetime.strptime(start, '%Y-%m')
+        end_date = datetime.strptime(end, '%Y-%m')
+
+        start_date = start_date.replace(day=1)
+        end_date = (end_date + relativedelta.relativedelta(day=31))
+        
+        res = get_excel((start_date,end_date))
+        return res
+        
+    else:
+       return render(req,'dashboard/download_page.html')
+def reason_time(req):
+    reason = CancelReason.objects.all()
+    time = TimeReceive.objects.all()
+    return render(req,'dashboard/reason_time.html',{
+        'reason':reason,
+        'time':time
+    })
+def delete_reason(req,id):
+    cancel = CancelReason.objects.get(pk=id)
+    if cancel:
+        cancel.delete()
+        return redirect('reason_time')
+    
+def delete_time(req,id):
+    time = TimeReceive.objects.get(pk=id)
+    if time:
+        time.delete()
+        return redirect('reason_time')
+def save_reason(req):
+    if req.method == "POST":
+        reason = req.POST.get('reason')
+        use_with = req.POST.get('use_with')
+        print(reason,use_with)
+        if reason and use_with :
+            check = CancelReason.objects.filter(reason=reason).first()
+            if check :
+                messages.error(req, f'เหตุนี้ถูกสร้างไว้เเล้ว :{reason}')
+                return redirect('reason_time')
+            else:
+                reason_db = CancelReason.objects.create(reason=reason,use_with=use_with)
+            return redirect('reason_time')
+        else:
+            return redirect('reason_time')
+
+
+def save_time(req):
+    if req.method == "POST":
+        time = req.POST.get('time')
+        print(time)
+        if time:
+            check = TimeReceive.objects.filter(time_receive=time).first()
+            if check :
+                messages.error(req, f'มีเวลานัดรับนี้เเล้ว :{time}')
+                return redirect('reason_time')
+            else:
+                reason_db = TimeReceive.objects.create(time_receive=time)
+        return redirect('reason_time')
+    else:
+        return redirect('reason_time')
+

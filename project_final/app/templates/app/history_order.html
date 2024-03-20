@@ -362,9 +362,9 @@
                         </div>
                         <div class="create-code">
                             <div class="box-time_receive">
-                                {%for e,t in time%}
-                                    {%if order.time_receive  == e %}
-                                        <div class="createtime_receive">เวลานัดรับ {{t}} </div>
+                                {%for t in time%}
+                                    {%if order.time_receive  == t.time_receive %}
+                                        <div class="createtime_receive">เวลานัดรับ {{t.time_receive}} </div>
                                     {%endif%}
                                 {%endfor%}
 

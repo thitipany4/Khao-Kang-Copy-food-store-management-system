@@ -354,9 +354,9 @@
         <form class="form_time" method="post" action="{%url 'order_confirm' ref_code=order.ref_code %}">
           {% csrf_token %}
           <div class="form_content">
-            <select class="select_time" name="select_time" >
-              {%for e,t in select_time %}
-                <option class="option_time" value="{{e}}" >{{t}}</option>
+            <select class="select_time" name="select_time">
+              {%for t in select_time %}
+                <option class="option_time" value="{{e}}">{{t.time_receive}}</option>
               </div>
               {%endfor%}
             </select>

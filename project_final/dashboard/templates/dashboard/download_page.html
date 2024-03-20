@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+           
+            background-color: #f5f5f7;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 500px;
+        }
+        .popup-content {
+            display: flex;
+            flex-direction: column;
+            height: 270px;
+            width: 400px;
+            /* border: 1px solid red; */
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+
+        }
+
+        .text_popup {
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .move-to-month-form {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            /* border: 1px solid red; */
+
+        }
+        .box_start ,.box_end {
+            display: flex;
+            flex-direction: column;
+            width: 80%;
+            height: 60px;
+            /* border: 1px solid blue; */
+            margin-bottom: 10px;
+        }
+        .box_button {
+            display: flex;
+            width: 40%;
+            height: 40px;
+            /* border: 1px solid red; */
+            justify-content: space-between;
+            align-items: center;
+
+        }
+        label {
+            margin-bottom: 10px;
+        }
+        .input_range_month {
+            text-align: center;
+        }
+        .submit,.close_btn {
+            display: flex;
+            width: 75px;
+            height: 25px;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 0.3rem;
+            
+        }
+        .submit {
+            background-color: #59F14A;
+            border: 1px solid #59F14A;
+        }
+        .submit:hover {
+            border: 1px solid #2FBF21;
+            background-color:#2FBF21 ;
+        }
+        .close_btn {
+            background-color: #F14A4A;
+            border:  1px solid #F14A4A;
+        }
+        .close_btn:hover {
+            background-color: #BF3421;
+            border:  1px solid #BF3421;
+
+        }
+        a {
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="popup-content">
+            <div class="text_popup">เลือกช่วงที่ท่านต้องการดาวโหลดเอกสาร</div>
+            <form method="post" action="{% url 'download_excel' %}" class="move-to-month-form">
+                {%csrf_token%}
+                <div class="box_start">
+                    <label for="start_month">เดือนเริ่มต้น</label>
+                    <input class="input_range_month" type="month" name="start_month" id="start_month" value="{{ current_year }}-{{ current_month|date:'m' }}" required>
+                </div>
+                       
+                <div class="box_end">
+                    <label for="end_month">เดือนส่งท้าย</label>
+                    <input  class="input_range_month" type="month" name="end_month" id="end_month" value="{{ current_year }}-{{ current_month|date:'m' }}" required>
+                </div>
+                      
+                <div class="box_button">
+                    <button class="submit" type="submit" >OK</button>
+                    <button class="close_btn" ><a href="{%url 'see_all_data'%}">BACK</a></button>
+                </div>
+    
+            </form>
+        
+        </div>
+    </div>
+   
+</body>
+</html>

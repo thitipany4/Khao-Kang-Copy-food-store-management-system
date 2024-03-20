@@ -12,6 +12,10 @@ admin.site.register(Order)
 admin.site.register(OrderItemtype1)
 admin.site.register(OrderItemtype2)
 admin.site.register(RecommendUs)
+admin.site.register(CancelReason)
+admin.site.register(TimeReceive)
+
+
 
 
 

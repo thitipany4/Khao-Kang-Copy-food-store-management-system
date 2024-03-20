@@ -24,21 +24,25 @@
         ul li a,.login-btn,.logout-btn {
             color: aliceblue;
             text-decoration: none;
+            
 
         }
         .leftitem {
             display: flex;
-            width: 700px;
+            width: 750px;
             /* border: 1px solid burlywood; */
 
         }
         .logoitem {
             margin-left: 20px;
             display: flex;
-            width: 200px;
-            margin-right: 10px;
+            width: 170px;
+            margin-right: 20px;
             /* border: 1px solid palegreen; */
 
+        }
+        .res_name a {
+            font-size: 20px;
         }
         .search-btn-about {
             display: flex;
@@ -109,7 +113,7 @@
             /* border: 1px solid red; */
         }
 
-        .about-us,.profile,.login-btn,.logout-btn,.cart,.history-btn {
+        .about-us,.profile,.login-btn,.logout-btn,.cart,.history-btn,.recommend-us {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -123,13 +127,16 @@
             margin: 5px;
             text-decoration: none;
         }
-        .about-us,.profile,.login-btn,.logout-btn,.cart {
+        .about-us,.profile,.login-btn,.logout-btn,.cart,.recommend-us {
             width: 70px;
+        }
+        .recommend-us {
+            font-size: 14px;
         }
         .history-btn {
             width: 90px;
         }
-        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover,.history-btn:hover {
+        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover,.history-btn:hover,.recommend-us:hover {
             border-radius: 4px;
             border: none;
             color: #FFFFFF;
@@ -140,7 +147,7 @@
             cursor: pointer;
             margin: 5px;
         }
-        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover {
+        .about-us:hover,.profile:hover,.login-btn:hover,.logout-btn:hover,.cart:hover,.recommend-us:hover {
             width: 70px;
         }
         .history-btn:hover {
@@ -148,6 +155,10 @@
         }
         .about-us:hover,.profile:hover,.login-btn:hover{
             background-color: #1E8FF4;
+    }
+        .recommend-us:hover {
+            background-color: #F41E96;
+
     }
         .cart:hover {
             background-color: #F4891E;
@@ -179,6 +190,8 @@
                     </div>
                 </form>
                 <a class="about-us" href="/about_us/">about us</a>
+                <a class="recommend-us" href="/recommend_us/">ข้อเสอแนะ</a>
+
             </div>
         </div>
 

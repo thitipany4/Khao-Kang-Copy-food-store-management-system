@@ -15,13 +15,11 @@ class Member(models.Model):
     phone_number = models.CharField(max_length=100)
     picture = models.URLField(blank=True, null=True)
     age = models.CharField(max_length=20, choices=(
-        ('11-20 ปี', '11-20 ปี'),
-        ('21-30 ปี', '21-30 ปี'),
-        ('31-40 ปี', '31-40 ปี'),
-        ('41-50 ปี', '41-50 ปี'),
-        ('51-60 ปี', '51-60 ปี'),
+        ('ต่ำกว่า 19 ปี', 'ต่ำกว่า 19 ปี'),
+        ('20-39 ปี', '20-39 ปี'),
+        ('40-59 ปี', '40-59 ปี'),
         ('60 ปีขึ้น', '60 ปีขึ้น'),
-    ), default='11-20') 
+    ), default='ต่ำกว่า 19 ปี') 
     gender = models.CharField(max_length=20, choices=(
         ('Male', 'ผู้ชาย'),
         ('Female', 'ผู้หญิง'),
@@ -108,7 +106,16 @@ class Transaction(models.Model):
 
     def __str__(self) -> str:
         return f'{self.name} {self.date}'
-
+    
+class CancelReason(models.Model):
+     reason = models.CharField(max_length=100)
+     use_with = models.CharField(max_length=100)
+     def __str__(self) -> str:
+        return f'{self.reason} ถูกใช้กับ {self.use_with}'
+class TimeReceive(models.Model):
+     time_receive = models.CharField(max_length=100)
+     def __str__(self) -> str:
+        return f'{self.time_receive}'
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(null=True)  # Remove auto_now_add=True
@@ -132,7 +139,8 @@ class Order(models.Model):
         ('user-cancel','ลูกค้าเปลี่ยนใจ/ยกเลิกการจอง'),
         ('cant-receive','ไม่สามารถไปรับอาหารได้'),
     ]
-    time_receive = models.CharField(max_length=20, choices=TIME_CHOICES, null=True)
+    time_receive = models.CharField(max_length=20, null=True,blank=True)
+    cancel_reason = models.CharField(max_length=100,null=True,blank=True)
     confirm = models.CharField(max_length=20, choices=(
         ('wait_to_confirm', 'รอยืนยัน'),
         ('confirmed', 'ยืนยันเเล้ว'),
@@ -142,7 +150,8 @@ class Order(models.Model):
         ('incompleted', 'ยังไม่สมบุรณ์'),
         ('completed', 'สมบุรณ์'),
     ), default='incompleted')
-    cancel_reason = models.CharField(max_length=40, choices=REASON,null=True,blank=True)
+
+    
 
     def save(self, *args, **kwargs):
         if not self.created_at:
@@ -182,3 +191,6 @@ class RecommendUs(models.Model):
 
     def __str__(self) -> str:
         return f'{self.user} {self.created}'
+    
+
+    
