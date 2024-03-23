@@ -1,0 +1,89 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+    body {
+        background-image:url("{% static '/images/pexels-ella-olsson-1640774.jpg' %}");
+        background-size: cover; /* Adjusts the background image size */
+        background-position: center;
+        }
+        .container {
+            display: flex;
+            /* border: 1px solid red; */
+            height: 500px;
+            justify-content: center;
+            align-items: center;
+        
+        }
+        .box_container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 1px solid #444444;
+            border-radius: 0.3rem;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            width: 400px;
+            height: 400px;
+            background-color: white;
+        }
+        .login_line,.login_staff {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80%;
+            height: 120px;
+            margin-top: 10px;
+        }
+        .str_head {
+            margin-bottom: 30px;
+        }
+        .line-icon img{
+            width: 52px;
+            height: 52px;
+    }
+    .staff-icon img {
+            width: 40px;
+            height: 40px;
+    }
+    .staff-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 0.3rem;
+        width: 52px;
+        height: 52px;
+        background-color: #444444;
+        border: 1px solid #444444;
+
+    }
+    .text_head {
+        /* border: 1px solid #444444; */
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box_container">
+            <div class="text_head">
+                ลงชื่อเข้าใช้งาน
+            </div>
+            <div class="login_line">
+                <div class="str_head">ล็อกอินด้วยบัญชีไลน์</div>
+                <a class="line-icon" href="{% url 'line' %}"><img src="{%static '/images/line.png'%}" alt="not found image"></a>
+            </div>
+            <div class="login_staff">
+                <div class="str_head">เฉพาะเจ้าหน้าที่</div>
+                <a class="staff-icon" href="/admin/"><img src="{%static '/images/teamwork.png'%}" alt="not found image"></a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

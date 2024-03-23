@@ -1,0 +1,133 @@
+<style>
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+body {
+    background-color: #f5f5f7;
+}
+
+.page-container {
+    display: flex;
+}
+.side-menu {
+    position: fixed;
+    background: #f05462;
+    width: 190px;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+.side-menu .brand-name {
+    height: 10vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.son_left_bar,.name_superuser {
+    display: flex;
+    justify-content: center;
+    font-size: 24px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    color: white;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+.name_superuser {
+    cursor:not-allowed;
+}
+.son_left_bar:hover {
+    background: white;
+    color: #f05462;
+}
+.container {
+    position: absolute;
+    right: 0;
+    width: 1160px;
+    height: 2000px;
+
+
+}
+    .side-menu {
+        display: flex;
+        align-items: center;
+        /* border: 2px solid green; */
+
+    }
+
+    .side-menu li:hover {
+        background: white;
+        padding: 8px 38px;
+        border: 2px solid white;
+    }
+.left_bar {
+  display: flex;
+  flex-direction: column;
+  width: 70%;
+}
+.a_btn {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .box_superuser {
+            display: flex;
+            align-items: center;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+        .image_user img {
+            border-radius: 40%;
+            width: 100px;
+            height: 70px;
+            border: 1px solid #444444;
+            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+        }
+
+
+</style>
+
+        <div class="side-menu">
+            <div class="box_superuser">
+                <div class="image_user">
+                    <img src="{{user.picture}}" alt="None">
+                </div>
+            </div>
+            <div class="left_bar">
+              <div class="name_superuser">{{user.user}}</div>
+                <a class="a_btn" href="{%url 'home'%}">
+                    <div class="son_left_bar">HOME</div>
+                </a>
+                <a class="a_btn" href="{%url 'calendar'%}">
+                    <div class="son_left_bar">ปฎิทิน</div>
+                </a>
+                <a class="a_btn" href="{%url 'managefood'%}">
+                    <div class="son_left_bar">จัดการเมนูอาหาร</div>
+                </a>
+                <a class="a_btn" href="{%url 'confirm_order'%}">
+                    <div class="son_left_bar">ยืนยันออเดอร์</div>
+                </a>
+                <a class="a_btn" href="{%url 'show_recommend'%}">
+                    <div class="son_left_bar">ข้อเสนอแนะ</div>
+                </a>
+                <a class="a_btn" href="{%url 'reason_time'%}">
+                    <div class="son_left_bar">reason & time</div>
+                </a>
+                <a class="a_btn" href="{%url 'see_all_data'%}">
+                    <div class="son_left_bar">Dashboard</div>
+                </a>
+                <a class="a_btn" href="/admin/">
+                    <div class="son_left_bar">Django Admin</div>
+                </a>
+
+            </div>
+        </div>
+      
+

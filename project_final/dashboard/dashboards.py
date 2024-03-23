@@ -1,12 +1,14 @@
 #เป็นกราฟ โดย update ทุกๆ 1 นาที
-# โดย
 import pandas as pd
+
+import calendar
 from dash import dcc, html
 from app.models import *
 from django_plotly_dash import DjangoDash
 import plotly.express as px
 from dash.dependencies import Input, Output
 from collections import Counter
+from datetime import timedelta
 def call_all():
     app = DjangoDash('AllData')
     food = Food.objects.all()
@@ -14,27 +16,31 @@ def call_all():
     # print(foods)
     list_dropdown = {food_name: food_name for food_name in foods}
 
-    # Initial layout with data
     app.layout = html.Div([
-        dcc.Graph(id='live-update-graph1'),
-        dcc.Graph(id='live-update-graph2',className='g3',style={'width':'700px'}),
-        dcc.Graph(id='live-update-graph3'),
         html.Div([
-            dcc.Dropdown(
-                            options=list_dropdown,
-                            value=foods[0] ,
-                            id='dropdown-column'
-                        ),
-                dcc.Graph(id='live-update-graph4'),
-        ]),
-        dcc.Graph(id='live-update-graph5'),
+        dcc.Graph(id='live-update-graph1',className='g1',style={'width':'420px','margin-right':'10px'}),
+        dcc.Graph(id='live-update-graph5',className='g2',style={'width':'680px'}),
+        ],className='top_dash',style={'display':'flex','margin-bottom':'10px','height':'330px'}),
+        dcc.Graph(id='live-update-graph2',className='g3',style={'width':'1108px','height':'380px','margin-bottom':'10px'}),
+        html.Div([
+            dcc.Graph(id='live-update-graph3',className='g4',style={'width':'720px','margin-right':'10px','height':'366px'}),
+            html.Div([
+                dcc.Dropdown(
+                                options=list_dropdown,
+                                value=foods[0] ,
+                                id='dropdown-column'
+                            ),
+                    dcc.Graph(id='live-update-graph4',className='g5',style={'width':'390px','height':'330px'}),
+            ]),
+        ],className='down_dash',style={'display':'flex'}),
         dcc.Interval(
             id='interval-component',
             interval=60 * 1000,  # in milliseconds
             n_intervals=0
         ),
-    ],className='container_dash',style={'padding': '20px','display':'grid','grid-template-columns': 'repeat(2,1fr)',
-                                        'grid-gap': '10px','background': 'red','height':'1000px','padding': '0.5rem','margin':' 0.5rem'})
+    ],className='container_dash',style={'padding': '20px','display':'flex','flex-direction':'column',
+                                        'box-shadow':'transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px',
+                                       'height':'1100px','padding': '0.5rem','margin':' 0.5rem'})
     @app.callback(
                 Output('live-update-graph1', 'figure'),
                 Output('live-update-graph2', 'figure'),
@@ -60,12 +66,13 @@ def call_all():
 
         figure2 = px.line(price_test,x='year', y='price',color='type',markers=True)
         figure2.update_layout(
-            xaxis_title="วันที่",  
+            xaxis_title="ปี",  
             yaxis_title="ราคา"  ,
             xaxis=dict(
             tickmode='linear', 
-            tickvals=price_test['year'].unique() 
-        ))
+            tickvals=price_test['year'].unique()),
+            title='กราฟแสดงรายละเอียดรายรับรายจ่าย',
+            )
 
         item1 = OrderItemtype1.objects.all()
         item2 = OrderItemtype2.objects.all()
@@ -77,7 +84,9 @@ def call_all():
                 list_item.append(food.name)
         count = Counter(list_item)
         figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'})
-
+        figure3.update_layout(
+            title='กราฟแสดงจำนวนเมนูอาหารที่ขายได้'
+        )
         foods = Food.objects.all()
         review = Reviewfood.objects.filter(food__name=value)
         rating_dic = {'1':0,'2':0,'3':0,'4':0,'5':0}
@@ -86,8 +95,10 @@ def call_all():
             if rating in rating_dic:
                 rating_dic[rating] += 1
         
-        figure4 = px.bar(x=list(rating_dic.values()), y=list(rating_dic.keys()),color=list(rating_dic.keys()), labels={'y': f'คะแนน ({value})', 'x': 'จำนวนที่ขายได้'})
-        
+        figure4 = px.bar(x=list(rating_dic.keys()), y=list(rating_dic.values()),color=list(rating_dic.keys()), labels={'y': 'จำนวนรีวิวเมนูอาหาร', 'x': f'จำนวนคะแนนรีวิว'})
+        figure4.update_layout(
+            title=f'กราฟแสดงจำนวนรีวิวเมนู'
+        )
         sale = Order.objects.filter(completed='completed')
         order = Order.objects.filter(confirm='cancel')
         print(len(sale),len(order))
@@ -122,8 +133,13 @@ def call_all():
         sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
         # food = [f.name for f in foods]
         df_count = df_order_sale.groupby(['age', 'status']).size().reset_index(name='count')
-        figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group')
 
+        figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group')
+        figure5.update_layout(
+            xaxis_title="อายุผู้ของผู้ใช้งาน",  
+            yaxis_title="จำนวนที่สามารถขายได้"  ,
+            title='กราฟแสดงจำนวนที่สามารถขายได้กับอายุของผู้ใช้งาน'
+        )
         return figure1,figure2,figure3,figure4,figure5
     
     return app
@@ -136,25 +152,30 @@ def call_month(date_filter,list_day):
     # print(foods)
     list_dropdown = {food_name: food_name for food_name in foods}
     app.layout = html.Div([
-        dcc.Graph(id='live-update-graph1'),
-        dcc.Graph(id='live-update-graph2',className='g3',style={'width':'600px'}),
-        dcc.Graph(id='live-update-graph3'),
         html.Div([
-            dcc.Dropdown(
-                            options=list_dropdown,
-                            value=foods[0] ,
-                            id='dropdown-column'
-                        ),
-                dcc.Graph(id='live-update-graph4'),
-        ]),
-        dcc.Graph(id='live-update-graph5'),
+        dcc.Graph(id='live-update-graph1',className='g1',style={'width':'420px','margin-right':'10px'}),
+        dcc.Graph(id='live-update-graph5',className='g2',style={'width':'680px'}),
+        ],className='top_dash',style={'display':'flex','margin-bottom':'10px','height':'330px'}),
+        dcc.Graph(id='live-update-graph2',className='g3',style={'width':'1108px','height':'380px','margin-bottom':'10px'}),
+        html.Div([
+            dcc.Graph(id='live-update-graph3',className='g4',style={'width':'720px','margin-right':'10px','height':'366px'}),
+            html.Div([
+                dcc.Dropdown(
+                                options=list_dropdown,
+                                value=foods[0] ,
+                                id='dropdown-column'
+                            ),
+                    dcc.Graph(id='live-update-graph4',className='g5',style={'width':'390px','height':'330px'}),
+            ]),
+        ],className='down_dash',style={'display':'flex'}),
         dcc.Interval(
             id='interval-component',
             interval=60 * 1000,  # in milliseconds
             n_intervals=0
         ),
-    ],className='container_dash',style={'padding': '20px','display':'grid','grid-template-columns': 'repeat(2,1fr)',
-                                        'grid-gap': '10px','background': 'blue','height':'1000px','padding': '0.5rem','margin':' 0.5rem'})
+    ],className='container_dash',style={'padding': '20px','display':'flex','flex-direction':'column',
+                                         'box-shadow':'transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px',
+                                       'height':'1100px','padding': '0.5rem','margin':' 0.5rem'})
     @app.callback(
                 Output('live-update-graph1', 'figure'),
                 Output('live-update-graph2', 'figure'),
@@ -182,7 +203,7 @@ def call_month(date_filter,list_day):
         transaction = Transaction.objects.filter(date__contains=date_filter)
         print(transaction,'transaction 222')
         if transaction:
-            date_tran = [str(t.created).split(' ')[0] for t in transaction]
+            date_tran = [str(t.date).split(' ')[0] for t in transaction]
             # print(date_tran)
             price_tran = [t.total_price for t in transaction]
             type_tran = [t.transaction_type for t in transaction]
@@ -196,8 +217,9 @@ def call_month(date_filter,list_day):
                 yaxis_title="ราคา"  ,
                 xaxis=dict(
                 tickmode='linear', 
-                tickvals=list_day
-            ))
+                tickvals=list_day),
+                title='กราฟแสดงรายละเอียดรายรับรายจ่าย'
+                )
         else:
             figure2 = px.line()
             figure2.update_layout(
@@ -205,7 +227,9 @@ def call_month(date_filter,list_day):
                 yaxis_title="ราคา"  ,
                 xaxis=dict(
                 tickmode='linear', 
-                tickvals=list_day
+                tickvals=list_day,
+                title='กราฟแสดงรายละเอียดรายรับรายจ่าย'
+
             ))
 
         order = Order.objects.filter(completed='completed',created_at__contains=date_filter)
@@ -224,10 +248,15 @@ def call_month(date_filter,list_day):
                         list_item.append(food.name)
 
             count = Counter(list_item)
-            figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'}) #แก้ เพิ่ม ลูบ filter order 
+            figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'})
+            figure3.update_layout(
+                title='กราฟแสดงจำนวนเมนูอาหารที่ขายได้'
+            )
         else:
-            figure3 = px.bar()
-
+            figure3 = px.bar(labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'})
+            figure3.update_layout(
+                title='กราฟแสดงจำนวนเมนูอาหารที่ขายได้'
+            )
         review = Reviewfood.objects.filter(food__name=value,created__contains=date_filter)
         print(review,'review 444')
         if review:
@@ -237,9 +266,17 @@ def call_month(date_filter,list_day):
                 if rating in rating_dic:
                     rating_dic[rating] += 1
             # แก้ตรงโมเดลเเล้วได้เลย figure4
-            figure4 = px.bar(x=list(rating_dic.values()), y=list(rating_dic.keys()),color=list(rating_dic.keys()), labels={'y': f'คะแนน ({value})', 'x': 'จำนวนที่ขายได้'})
+            figure4 = px.bar(x=list(rating_dic.keys()), y=list(rating_dic.values()),color=list(rating_dic.keys()), labels={'y': 'จำนวนที่ขายได้', 'x': 'คะแนน'})
+            figure4.update_layout(
+            title=f'กราฟแสดงจำนวนรีวิวเมนู'
+            )
         else:
             figure4 = px.bar()
+            figure4.update_layout(
+                xaxis_title="คะแนน",  
+                yaxis_title='จำนวนที่ขายได้'  ,
+                title=f'กราฟแสดงจำนวนรีวิวเมนู'
+            ) 
 
         completed = Order.objects.filter(completed='completed',created_at__contains=date_filter)
         cancel = Order.objects.filter(confirm='cancel',created_at__contains=date_filter)
@@ -279,8 +316,18 @@ def call_month(date_filter,list_day):
             sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
             df_count = df_order_sale.groupby(['age', 'status']).size().reset_index(name='count')
             figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group') # 
+            figure5.update_layout(
+                xaxis_title="อายุผู้ของผู้ใช้งาน",  
+                yaxis_title="จำนวนที่สามารถขายได้"  ,
+                title='กราฟแสดงจำนวนที่สามารถขายได้กับอายุของผู้ใช้งาน'
+            )
         else:
             figure5 = px.bar()
+            figure5.update_layout(
+                xaxis_title="อายุผู้ของผู้ใช้งาน",  
+                yaxis_title="จำนวนที่สามารถขายได้"  ,
+                title='กราฟแสดงจำนวนที่สามารถขายได้กับอายุของผู้ใช้งาน'
+            )
         return figure1,figure2,figure3,figure4,figure5
     return app  
 
@@ -291,25 +338,31 @@ def call_quarter(range_date,len_quater):
     # print(foods)
     list_dropdown = {food_name: food_name for food_name in foods}
     app.layout = html.Div([
-        dcc.Graph(id='live-update-graph1'),
-        dcc.Graph(id='live-update-graph2',className='g3',style={'width':'600px'}),
-        dcc.Graph(id='live-update-graph3'),
         html.Div([
-            dcc.Dropdown(
-                            options=list_dropdown,
-                            value=foods[0] ,
-                            id='dropdown-column'
-                        ),
-                dcc.Graph(id='live-update-graph4'),
-        ]),
-        dcc.Graph(id='live-update-graph5'),
+        dcc.Graph(id='live-update-graph1',className='g1',style={'width':'420px','margin-right':'10px'}),
+        dcc.Graph(id='live-update-graph5',className='g2',style={'width':'680px'}),
+        ],className='top_dash',style={'display':'flex','margin-bottom':'10px','height':'330px'}),
+        dcc.Graph(id='live-update-graph2',className='g3',style={'width':'1108px','height':'380px','margin-bottom':'10px'}),
+        html.Div([
+            dcc.Graph(id='live-update-graph3',className='g4',style={'width':'720px','margin-right':'10px','height':'366px'}),
+            html.Div([
+                dcc.Dropdown(
+                                options=list_dropdown,
+                                value=foods[0] ,
+                                id='dropdown-column'
+                            ),
+                    dcc.Graph(id='live-update-graph4',className='g5',style={'width':'390px','height':'330px'}),
+            ]),
+        ],className='down_dash',style={'display':'flex'}),
         dcc.Interval(
             id='interval-component',
             interval=60 * 1000,  # in milliseconds
             n_intervals=0
         ),
-    ],className='container_dash',style={'padding': '20px','display':'grid','grid-template-columns': 'repeat(2,1fr)',
-                                        'grid-gap': '10px','background': 'blue','height':'1000px','padding': '0.5rem','margin':' 0.5rem'})
+    ],className='container_dash',style={'padding': '20px','display':'flex','flex-direction':'column',
+                                        'box-shadow':'transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px',
+                                       'height':'1100px','padding': '0.5rem','margin':' 0.5rem'})
+    
     @app.callback(
                 Output('live-update-graph1', 'figure'),
                 Output('live-update-graph2', 'figure'),
@@ -334,34 +387,41 @@ def call_quarter(range_date,len_quater):
             figure1 = px.pie() # ไม่ต้องแก้
             figure1.update_layout(title='กราฟแสดงเพศของผู้ใช้งาน')
 
+        start_date, end_date = range_date
+        print(start_date, end_date,'chack')
+
         transaction = Transaction.objects.filter(date__range=(range_date))
         if transaction:
-            date_tran = [str(t.created).split(' ')[0] for t in transaction]
-            # print(date_tran)
+            date_tran = [str(t.date).split(' ')[0] for t in transaction]
+            print(date_tran)
             price_tran = [t.total_price for t in transaction]
             type_tran = [t.transaction_type for t in transaction]
-            price_df = pd.DataFrame({'date':date_tran,'price':price_tran,'type':type_tran})
+            price_df = pd.DataFrame({'date':date_tran,'price':price_tran,'ชนิด':type_tran})
             price_df['month'] = pd.to_datetime(price_df['date']).dt.month
-            print(price_df)
-            price_test = price_df.groupby(['month','type'])['price'].sum().reset_index()
-
-            figure2 = px.line(price_test,x='month', y='price',color='type',markers=True) #แก้ การจัดกลุ่มเป็นวัน และแก้ xickvals 
+            price_test = price_df.groupby(['month','ชนิด'])['price'].sum().reset_index()
+            thai_month_names = [
+                'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+                'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+            ]
+            price_test['month_name_thai'] = price_test['month'].apply(lambda x: thai_month_names[x-1])
+            print(price_test)
+            figure2 = px.line(price_test,x='month_name_thai', y='price',color='ชนิด',markers=True) #แก้ การจัดกลุ่มเป็นวัน และแก้ xickvals 
             figure2.update_layout(
-                xaxis_title="วันที่",  
+                xaxis_title="เดือน",  
                 yaxis_title="ราคา"  ,
                 xaxis=dict(
-                tickmode='linear', 
-                tickvals=len_quater
-            ))
+                tickmode='linear', ),
+                title='กราฟแสดงรายละเอียดรายรับรายจ่าย')
         else:
             figure2 = px.line()
             figure2.update_layout(
-                xaxis_title="วันที่",  
+                xaxis_title="เดือน",  
                 yaxis_title="ราคา"  ,
                 xaxis=dict(
                 tickmode='linear', 
-                tickvals=len_quater
-            ))
+                tickvals=len_quater),
+                title='กราฟแสดงรายละเอียดรายรับรายจ่าย'
+                )
 
         order = Order.objects.filter(completed='completed',created_at__range=(range_date))
         print(order,'order 333')
@@ -379,9 +439,16 @@ def call_quarter(range_date,len_quater):
                         list_item.append(food.name)
 
             count = Counter(list_item)
-            figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'}) #แก้ เพิ่ม ลูบ filter order 
+
+            figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'})
+            figure3.update_layout(
+                title='กราฟแสดงจำนวนเมนูอาหารที่ขายได้'
+            )
         else:
             figure3 = px.bar()
+            figure3.update_layout(
+                title='กราฟแสดงจำนวนเมนูอาหารที่ขายได้'
+            )
 
         review = Reviewfood.objects.filter(food__name=value,created__range=(range_date))
         print(review,'review 444')
@@ -392,10 +459,18 @@ def call_quarter(range_date,len_quater):
                 if rating in rating_dic:
                     rating_dic[rating] += 1
             # แก้ตรงโมเดลเเล้วได้เลย figure4
-            figure4 = px.bar(x=list(rating_dic.values()), y=list(rating_dic.keys()),color=list(rating_dic.keys()), labels={'y': f'คะแนน ({value})', 'x': 'จำนวนที่ขายได้'})
+            figure4 = px.bar(x=list(rating_dic.keys()), y=list(rating_dic.values()),color=list(rating_dic.keys()), labels={'y': 'จำนวนที่ขายได้', 
+                                                                                                                           'x': 'คะแนน'})
+            figure4.update_layout(
+                title=f'กราฟแสดงจำนวนรีวิวเมนู '
+            ) 
         else:
             figure4 = px.bar()
-
+            figure4.update_layout(
+                xaxis_title="จำนวนที่ขายได้",  
+                yaxis_title='คะแนน'  ,
+                title=f'กราฟแสดงจำนวนรีวิวเมนู'
+            ) 
         completed = Order.objects.filter(completed='completed',created_at__range=(range_date))
         cancel = Order.objects.filter(confirm='cancel',created_at__range=(range_date))
         print(completed,'completed 555')
@@ -434,8 +509,18 @@ def call_quarter(range_date,len_quater):
             sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
             df_count = df_order_sale.groupby(['age', 'status']).size().reset_index(name='count')
             figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group') # 
+            figure5.update_layout(
+                xaxis_title="อายุผู้ของผู้ใช้งาน",  
+                yaxis_title="จำนวนที่สามารถขายได้"  ,
+                title='กราฟแสดงจำนวนที่สามารถขายได้กับอายุของผู้ใช้งาน'
+            )
         else:
             figure5 = px.bar()
+            figure5.update_layout(
+                xaxis_title="อายุผู้ของผู้ใช้งาน",  
+                yaxis_title="จำนวนที่สามารถขายได้"  ,
+                title='กราฟแสดงจำนวนที่สามารถขายได้กับอายุของผู้ใช้งาน'
+            )
         return figure1,figure2,figure3,figure4,figure5
     return app  
 

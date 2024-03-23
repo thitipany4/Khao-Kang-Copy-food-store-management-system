@@ -10,19 +10,22 @@ import calendar
 from .quarter_get_data import *
 from datetime import datetime
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, user_passes_test
 
-def select_month_dash(req):
-    if req.method == 'POST':
-        month = req.POST.get('move_to_month')
-        print(month)
 
-        test_tra = Transaction.objects.filter(date__contains=month)
-        cancel_test = Order.objects.filter(confirm='cancel',created_at__contains=month)
-        com_test = Order.objects.filter(completed='completed',created_at__contains=month)
-        print('test get date',test_tra)
-        print('test get date2',cancel_test)
-        print('test get date3',com_test)
-    return redirect('see_all_data')
+# def select_month_dash(req):
+#     if req.method == 'POST':
+#         month = req.POST.get('move_to_month')
+#         print(month)
+
+#         test_tra = Transaction.objects.filter(date__contains=month)
+#         cancel_test = Order.objects.filter(confirm='cancel',created_at__contains=month)
+#         com_test = Order.objects.filter(completed='completed',created_at__contains=month)
+#         print('test get date',test_tra)
+#         print('test get date2',cancel_test)
+#         print('test get date3',com_test)
+#     return redirect('see_all_data')
+
 def get_all_data():
     income = 0
     expenses = 0
@@ -176,7 +179,23 @@ def get_quarter_data(quarter,year):
 
     return income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare 
 
+def call_user(user):
+    if user.is_superuser:
+        print(user.id)
+        member = Member.objects.get(pk=user.id)
+        return member
+    else:
+        return None
+    
+def is_superuser(user):
+    return user.is_authenticated and user.is_superuser
+
+
+@login_required
 def see_all_data(req,filter=None):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     show_text = 'ข้อมูลทั้งหมด'
     if req.method == 'POST':
         month = req.POST.get('move_to_month')
@@ -199,6 +218,8 @@ def see_all_data(req,filter=None):
     quater_data = 'quater'
 
     income,expenses,success,cancel, = get_all_data()
+    user = req.user
+    user_check = call_user(user)
 
     context = {
         'app':app,
@@ -209,10 +230,15 @@ def see_all_data(req,filter=None):
         'month_data':month_data,
         'quater_data':quater_data,
         'show_text':show_text,
+        'user':user_check,
     }
     return render(req,'dashboard/home.html',context)
 
+@login_required
 def see_month_data(req):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     show_text = 'ข้อมูลทั้งหมด'
     mark = 'Month'
     if req.method == 'POST':
@@ -259,7 +285,8 @@ def see_month_data(req):
     quater_data = 'quater'
 
     income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare = get_month_data(current)
-
+    user = req.user
+    user_check = call_user(user)
     context = {
         'income':income,
         'expenses':expenses,
@@ -273,10 +300,15 @@ def see_month_data(req):
         'quater_data':quater_data,
         'show_text':show_text,
         'mark':mark,
+        'user':user_check
     }
     return render(req,'dashboard/home.html',context)
 
-def sell_quarter_data(req):
+@login_required
+def see_quarter_data(req):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     show_text = 'ข้อมูลทั้งหมด'
     mark = 'Quarter'
     select_quarter = [1,2,3,4]
@@ -292,6 +324,7 @@ def sell_quarter_data(req):
         print('len_quater',len_quater)
         show_text =f'ไตรมาสที่ {quarter} ปี {year}'
         list_quater = get_list_quarter(quarter)
+        print('list_quater',list_quater)
         app = call_quarter(len_quater,list_quater)
 
         add_to_session(req,app)
@@ -316,7 +349,8 @@ def sell_quarter_data(req):
     quater_data = 'quater'
 
     income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare = get_quarter_data(quarter,year)
-
+    user = req.user
+    user_check = call_user(user)
     context = {
         'income':income,
         'expenses':expenses,
@@ -333,6 +367,7 @@ def sell_quarter_data(req):
         'select_quarter':select_quarter,
         'quarter':quarter,
         'year':year,
+        'user':user_check
     }
     return render(req,'dashboard/home.html',context)
 
@@ -377,7 +412,12 @@ def get_excel(range_date=None):
 def download_excel(req):
     res = get_excel()
     return res
+
+@login_required
 def download_range(req):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     if req.method == 'POST':
         start = req.POST.get('start_month')
         end = req.POST.get('end_month')
@@ -397,22 +437,40 @@ def download_range(req):
 def reason_time(req):
     reason = CancelReason.objects.all()
     time = TimeReceive.objects.all()
+    user = req.user
+    user_check = call_user(user)
+
     return render(req,'dashboard/reason_time.html',{
         'reason':reason,
-        'time':time
+        'time':time,
+        'user':user_check
     })
+
+@login_required
 def delete_reason(req,id):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     cancel = CancelReason.objects.get(pk=id)
     if cancel:
         cancel.delete()
         return redirect('reason_time')
     
+@login_required
 def delete_time(req,id):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     time = TimeReceive.objects.get(pk=id)
     if time:
         time.delete()
         return redirect('reason_time')
+    
+@login_required
 def save_reason(req):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     if req.method == "POST":
         reason = req.POST.get('reason')
         use_with = req.POST.get('use_with')
@@ -420,7 +478,7 @@ def save_reason(req):
         if reason and use_with :
             check = CancelReason.objects.filter(reason=reason).first()
             if check :
-                messages.error(req, f'เหตุนี้ถูกสร้างไว้เเล้ว :{reason}')
+                messages.error(req, f'เหตุผลนี้ถูกสร้างไว้เเล้ว :{reason}')
                 return redirect('reason_time')
             else:
                 reason_db = CancelReason.objects.create(reason=reason,use_with=use_with)
@@ -428,8 +486,11 @@ def save_reason(req):
         else:
             return redirect('reason_time')
 
-
+@login_required
 def save_time(req):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     if req.method == "POST":
         time = req.POST.get('time')
         print(time)

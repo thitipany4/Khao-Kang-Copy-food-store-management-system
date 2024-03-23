@@ -9,7 +9,6 @@ from app.forms import *
 #from linebot.models import TextSendMessage
 from app.models import *
 from django.contrib.auth.models import User
-from django.db import transaction
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from .getdate import getdate
 from .message_admin import *
@@ -19,15 +18,19 @@ from .line_login import LineLogin
 from .calculator import calculator
 from .forms import FormNote
 from .utils import EventCalendar
-
+from django.contrib.auth.decorators import login_required
 
 #------------------------------------------------------------------
+def is_superuser(user):
+    return user.is_authenticated and user.is_superuser
 
+        
 # Create your views here.
+def before_login(req):
+    return render(req,'register/before_login.html')
 
 def home(req):
     #key = check()
-
     date = getdate()
     food_sale = Historysale.objects.filter(date_field=date)
     foods = Food.objects.all()
@@ -44,7 +47,12 @@ def home(req):
     return render(req,'app/home.html',context)
 def about_us(req):
     return render(req,'app/aboutus.html')
+
+@login_required
 def create(req):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('profile') 
     form = FoodForm()
     if req.method =='POST':
         form = FoodForm(req.POST,req.FILES)
@@ -72,7 +80,11 @@ def search(req):
     else:
         return render(req,'app/search.html',{'text':'กรุณาเพิ่มเมนูอาหารที่ท่านต้องการค้นหา'}) 
 
+@login_required
 def select_date(req):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     if req.method =='POST':
             form_date = DateForm(req.POST)
 
@@ -158,7 +170,12 @@ def clearfood(req):
         return redirect('managefood')
     else:
         return redirect('managefood')
+    
+@login_required
 def updatefood(req,id):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     if req.method=='GET':
         food = Food.objects.get(pk=id)
         form = FoodForm(instance=food)
@@ -174,6 +191,7 @@ def updatefood(req,id):
     }
     return render(req,'app/updatefood.html',context)
 
+@login_required
 def profile(req,username):
     if req.method=='GET':
         user =  get_object_or_404(User,username=username)
@@ -205,6 +223,8 @@ def profile(req,username):
         'form':form,
     }
     return render(req,'app/profile.html',context)
+
+@login_required           
 def delete(req,id):
     #return render(request, 'kawai/delete.html')
     f = Food.objects.get(pk=id)
@@ -272,7 +292,11 @@ def foodview(req, id=None, target=None):
     
     return render(req, 'app/foodview.html', {})
 
+@login_required
 def reviewfood(req,id):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     food = Food.objects.get(pk=id)
     if req.method =='GET':
         form = ReviewFood(instance=food)
@@ -305,8 +329,11 @@ def reviewfood(req,id):
     }
     return render(req,'app/review.html',context)
 
-
+@login_required
 def managefood(req, date=None):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     print(date)
     if req.method == 'POST':
         quantity = req.POST.getlist('input_quantity')
@@ -575,7 +602,11 @@ def get_next_month(d):
     next_month_date = d.replace(year=year, month=month)
     return next_month_date
 
+@login_required
 def calendar(req,date=None,mark=None):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     my_calendar = EventCalendar()
     if req.method == 'GET':
         if date and mark =='next_month':
@@ -632,7 +663,11 @@ def calendar(req,date=None,mark=None):
                 'sum_income':sum_income,}
     return render(req, 'app/calendar_template.html',context)
 
+@login_required
 def note(req, date=None,type=None,filter=None):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     if req.method == 'POST':
         name = req.POST.get('name')
         price = req.POST.get('price')
@@ -676,8 +711,11 @@ def note(req, date=None,type=None,filter=None):
     }
     return render(req, 'app/note.html',context)
 
-   
+@login_required
 def delete_note(req,date,type,id):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     note = Transaction.objects.get(pk=id)
     if note:
         note.delete()
@@ -686,8 +724,11 @@ def delete_note(req,date,type,id):
     else:
         return redirect('note', date=date, type=type)
 
-
+@login_required
 def show_note(req,date=None,type=None):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     if type:
         if type == 'expenses':
             note = Transaction.objects.filter(date=date).annotate(
@@ -721,6 +762,7 @@ def show_note(req,date=None,type=None):
     }
     return render(req, 'app/show-note.html',context )
 
+@login_required
 def create_cart(request):
     user = request.user
     member = Member.objects.filter(user=user).first()
@@ -744,7 +786,7 @@ def create_cart(request):
         print(order, 'create cart done')
     return redirect('view_cart')
 
-
+@login_required
 def view_cart(request):
     order_id = request.session.get('order')
     print('view cart',order_id)
@@ -780,6 +822,7 @@ def delete_cart(request,code):
         print('deleted cart')
     return redirect('home')
 
+@login_required
 def shopping_food_type1(request):
     item = []
     date = getdate()
@@ -792,6 +835,8 @@ def shopping_food_type1(request):
             item.append(f)
     return render(request, 'app/shop_food1.html', {'food': item,
                                                          })
+
+@login_required
 def modify_cart1(request,ref_code):
     date = getdate()
     foods = Historysale.objects.filter(date_field=date,options='วางขาย')
@@ -814,6 +859,7 @@ def modify_cart1(request,ref_code):
     return render(request, 'app/shop_food1.html', {'food_item': food_item, 'modify':modify
                                                          })
 
+@login_required
 def shopping_food_type2(request):
     item = []
     date = getdate()
@@ -825,6 +871,7 @@ def shopping_food_type2(request):
             item.append(f)
     return render(request, 'app/shop_food2.html', {'food': item,
                                                          })
+@login_required
 def modify_cart2(request,id):
     special = 'False'
     date = getdate()
@@ -840,6 +887,8 @@ def modify_cart2(request,id):
     print(selected)
     return render(request, 'app/shop_food2.html', {'food': food_sale, 'selected':selected,'modify':modify,'special':special,'item':item,
                                                          })
+
+@login_required
 def add_to_cart(request,type,modify=None):
     if request.method == 'POST':
         
@@ -1026,7 +1075,8 @@ def add_to_cart(request,type,modify=None):
                     return redirect('view_cart')
             else:
                 print('faile')
-            
+
+@login_required           
 def delete_from_cart(request, product_id,type):
     if type == 'type1':
         product = get_object_or_404(OrderItemtype1, pk=product_id,user=request.user) # ปัญหาที่ database เพราะมันเป็น object เดียวกัน ต้องแยก
@@ -1038,8 +1088,11 @@ def delete_from_cart(request, product_id,type):
         print(product , 'delete done')
         product.delete()
     return redirect('view_cart')
-#แก้ไข time checkout 
+#แก้ไข time checkout
+ 
+@login_required           
 def checkout(request,ref_code,total_price):
+
     order = get_object_or_404(Order, ref_code=ref_code)
     total_price = int(total_price)
     order_item1 = OrderItemtype1.objects.filter(order=order)
@@ -1071,6 +1124,7 @@ def checkout(request,ref_code,total_price):
             'total_price':total_price,
         }
     return render(request, 'app/checkout.html', context)
+
 def get_quatity(obj):
     date = getdate()
     food_sale = get_object_or_404(Historysale,food=obj,date_field=date)
@@ -1078,7 +1132,8 @@ def get_quatity(obj):
         return food_sale
     else:
         return redirect('home')
-
+    
+@login_required           
 def create_transaction(obj1,obj2):
     date = getdate()
     if obj1:
@@ -1106,7 +1161,7 @@ def create_transaction(obj1,obj2):
             )
             print('transaction',transaction)
 
-
+@login_required           
 def order_confirmation(request, ref_code=None):
     if ref_code is None:
         order_id = request.session.pop('order', None)
@@ -1181,8 +1236,11 @@ def order_confirmation(request, ref_code=None):
     else:
         return redirect('product_list')
 
-
+@login_required           
 def confirm_order(request,code=None,status=None,filter=None):
+    if not is_superuser(request.user):
+        messages.error(request, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     # order = Order.objects.get(pk=order_id)
     if request.method == 'GET':
         current_date = getdate()
@@ -1292,7 +1350,11 @@ def confirm_order(request,code=None,status=None,filter=None):
     return render(request, 'app/confirm_order.html', context)
 
 
+@login_required           
 def complete_order(req,ref_code):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     order = Order.objects.get(ref_code=ref_code)
     order_item1 = OrderItemtype1.objects.filter(order=order)
     order_item2 = OrderItemtype2.objects.filter(order=order)
@@ -1302,7 +1364,9 @@ def complete_order(req,ref_code):
     print(order)
     return redirect('confirm_order')
 
+         
 def filter_history_confirm(orders,filter):
+        
         if filter =='receive':
             sort = orders.annotate(
             receive=Case(When(completed='completed', then=Value(0)),default=Value(1))).order_by('receive')
@@ -1317,8 +1381,11 @@ def filter_history_confirm(orders,filter):
             cancel_num=Case(When(confirm='cancel', then=Value(0)),default=Value(1))).order_by('cancel_num')
         return sort
 
-
+@login_required           
 def history_confirm_order(request,date=None,filter=None):
+        if not is_superuser(request.user):
+            messages.error(request, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+            return redirect('home') 
     # order = Order.objects.get(pk=order_id)
         if not date:
             print('not date')
@@ -1416,22 +1483,8 @@ def history_confirm_order(request,date=None,filter=None):
                 'cancel_num_text':cancel_num_text,
         }
         return render(request, 'app/history_confirm_order.html', context)
-def test_select_time(req):
-    list_time = ['10:00 AM','10:30 AM','11:00 AM','11:30 AM','12:00 AM','12:30 AM','01:00 PM','01:30 PM']
-    time_str = '11:00 PM'
-    current_datetime = datetime.now() 
-    current_time = timezone.localtime().time()
-    for i in list_time:
-    # Convert string to time object
-        time_obj = datetime.strptime(i, '%I:%M %p').time()
-        print(time_obj)
-        # print(timezone.localtime().time())
-        if time_obj <= current_time: #เพราะมันวิ่งจากซ้ายไปขวาตัวซ้ายเลยมากกว่า
-            print('work',time_obj)
-        else:
-            print(current_time)
-    print(current_time,current_time.strftime('%p'))
 
+@login_required           
 def my_order(req):
     current_date = getdate()
     current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
@@ -1498,6 +1551,7 @@ def my_order(req):
 
     return render(req,'app/my_order.html',context)
 
+@login_required           
 def cancel_my_order(req,ref_code):
     order = Order.objects.get(ref_code=ref_code)
     item1 = OrderItemtype1.objects.filter(order=order)
@@ -1524,7 +1578,7 @@ def cancel_my_order(req,ref_code):
     print(order)
     return redirect('my_order')
 
-
+@login_required           
 def my_history(req,filter=None):
     wait = 'wait'
     receive ='receive'
@@ -1624,6 +1678,7 @@ def next_qr_code(req):
     messages.error(req,'กรุณากรอบข้อมูลส่วนตัวให้ครบถ้วน')
     return redirect('profile',username=user)
 
+@login_required           
 def recommend_us(req):
     if req.method == 'POST':
         form = RecommendForm(req.POST, req.FILES)
@@ -1641,12 +1696,22 @@ def recommend_us(req):
         'form': form
     }
     return render(req, 'app/recommend.html', context)
+
+@login_required           
 def show_recommend(req):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     rec = RecommendUs.objects.all()
     return render(req,'app/show_recom.html',context={
         'recomend':rec
     })
+
+@login_required           
 def full_recommend(req,id):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     rec = RecommendUs.objects.get(pk=id)
     return render(req,'app/show_full_rec.html',context={
         'recomend':rec

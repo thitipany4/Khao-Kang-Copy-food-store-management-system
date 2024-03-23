@@ -6,8 +6,8 @@ urlpatterns = [
     path('',see_all_data,name='see_all_data'),
     path('SeeMonth/',see_month_data,name='see_month_data'),
     path('SeeMonth/filter/',see_month_data,name='see_month_data_filter'),
-    path('SeeQuarter/',sell_quarter_data,name='see_quarter_data'),
-    path('SeeQuarter/filter/',sell_quarter_data,name='see_quarter_data_filter'),
+    path('SeeQuarter/',see_quarter_data,name='see_quarter_data'),
+    path('SeeQuarter/filter/',see_quarter_data,name='see_quarter_data_filter'),
 
     path('download/', download_excel, name='download_excel'),
     path('download/select_range/', download_range, name='download_excel_range'),

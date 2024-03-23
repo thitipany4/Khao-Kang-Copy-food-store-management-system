@@ -190,7 +190,12 @@
                     </div>
                 </form>
                 <a class="about-us" href="/about_us/">about us</a>
+
+                {% if request.user.is_superuser %}
+                <a class="recommend-us" href="{%url 'see_all_data'%}">Dashboard</a>
+                {%else%}
                 <a class="recommend-us" href="/recommend_us/">ข้อเสอแนะ</a>
+                {% endif %}
 
             </div>
         </div>
@@ -214,7 +219,7 @@
                 <a class="logout-btn" 
                 href="{% url 'logout' %}">Logout</a>
                 {% else %}
-                <a class="login-btn" href="{% url 'line' %}">Login</a>
+                <a class="login-btn" href="/link_login/">Login</a>
                 {% endif %}
             </ul>
         </div>

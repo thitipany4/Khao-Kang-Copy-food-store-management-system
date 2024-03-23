@@ -128,10 +128,60 @@
             font-weight: bold;
             margin-left: 10px;
         }
+        .message-alerts {
+            display: flex;
+            align-items: center;
+            width: 100%;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .error {   
+            display: flex;
+            width: 50%;  
+            height: 40px;
+            align-items: center;
+            justify-content: space-between;
+            color: #000000;
+            font-weight: bold;
+            font-size: 18px;
+            background-color: #F97979;
+            border: 1px solid #F97979;
+            padding: 0 10px; 
+            box-sizing: border-box; 
+            border-radius: 0.3rem;
+        }
+        .error .close-button {
+            cursor: pointer;
+            margin-left: 100px;
+        }
+        .box_error {
+            display: flex;
+            /* border: 1px solid blue; */
+            justify-content: end;
+            width: 65%;
+
+        }
     </style>
 </head>
 <body>
         {% include 'app/navbar.html' %}
+        {% if messages %}
+        <div class="message-alerts">
+            {% for message in messages %}
+                {% if message.tags == 'error' %}
+                    <div class="error">
+                        <div class="box_error">
+                            {{ message }}
+                        </div>
+
+                        <span class="close-button" onclick="this.parentElement.style.display='none';">&times;</span>
+                    </div>
+                {% elif message.tags == 'success' %}
+                    <div class="success">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
         {%if food%}
             <div class="head_text">
                 <div class="box_head_text">

@@ -63,6 +63,7 @@ urlpatterns = [
     path('show_recommend_us/',show_recommend,name='show_recommend'),
     path('show_full_recommend/<str:id>/',full_recommend,name='full_recommend'),
 
+    path('link_login/',before_login,name='before_login'),
 
 
 
