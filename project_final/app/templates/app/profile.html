@@ -13,7 +13,6 @@
         background-position: center;
         }
     .container {
-
         height: 600px;
         display: flex;
         align-items: center;
@@ -116,38 +115,59 @@
     }
     .message-alerts {
             display: flex;
-            align-items: center;
-            width: 80%;
             justify-content: center;
             align-items: center;
-            /* border: 1px solid green;  */
+            width: 100%;
             margin-top: 10px;
         }
         .error {   
+
             display: flex;
-            width: 100%;  
+            position: relative;
+            width: 700px;  
             height: 40px;
             align-items: center;
-            justify-content: center; 
-            color: #000000; /* Dark red text color */
-            /* border: 1px solid green; */
+            justify-content: center;
+            color: #000000;
             font-weight: bold;
             font-size: 18px;
             background-color: #F97979;
             border: 1px solid #F97979;
-            
-}
+            padding: 0 10px; 
+            border-radius: 0.3rem;
+            margin-right: 90px;
+        }   
+        .error,.success {
+            cursor: pointer;
+            margin-left: 100px;
+        }
+        .close-button {
+            position: absolute;
+            right: 3%;
+        }
+        .box_error,.box_success {
+            display: flex;
+            /* border: 1px solid blue; */
+            justify-content: center;
+            width: 100%;
+
+        }
         .success {  
             display: flex;
-            width: 100%;  
+            position: relative;
+            width: 50%;  
             height: 40px;
             align-items: center;
-            justify-content: center;
-            color: #000000; /* Dark red text color */
+            justify-content: space-between;
+            color: #000000;
             font-weight: bold;
             font-size: 18px;
             background-color: #7BF979;
             border: 1px solid #7BF979;
+            padding: 0 10px; 
+            border-radius: 0.3rem;
+            margin-right: 90px;
+
         }
     label {
         font-size: 14px
@@ -196,19 +216,28 @@
 </style>
 <body>
     {% include 'app/navbar.html' %}
-
+    {% if messages %}
+    <div class="message-alerts">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div class="error">
+                <div class="box_error">
+                    {{ message }}
+                </div>
+                <span class="close-button" onclick="this.parentElement.style.display='none';">&times;</span>
+            </div>
+            {% elif message.tags == 'success' %}
+            <div class="success">
+                <div class="box_success">
+                    {{ message }}
+                </div>
+                <span class="close-button" onclick="this.parentElement.style.display='none';">&times;</span>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
     <div class="container">
-        {% if messages %}
-        <div class="message-alerts">
-            {% for message in messages %}
-                {% if message.tags == 'error' %}
-                    <div class="error">{{ message }}</div>
-                {% elif message.tags == 'success' %}
-                    <div class="success">{{ message }}</div>
-                {% endif %}
-            {% endfor %}
-        </div>
-        {% endif %}
         <div class="profile-container">
             
             <div class="container-top">

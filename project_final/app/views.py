@@ -1101,20 +1101,20 @@ def checkout(request,ref_code,total_price):
         messages.error(request, 'ตะกร้าของท่านไม่มีเมนูอาหาร')
         return redirect('view_cart')
     db_time = TimeReceive.objects.all()
-
-
     selected_times = []
     bangkok_tz = pytz.timezone('Asia/Bangkok')
     current_time_bangkok = datetime.now(bangkok_tz)
+
     for time_slot in db_time:
         slot_time = datetime.strptime(time_slot.time_receive.split()[0], "%H:%M")
         slot_datetime = bangkok_tz.localize(datetime.combine(current_time_bangkok.date(), slot_time.time()))
     
         if slot_datetime > current_time_bangkok:
             selected_times.append(time_slot)
-    current_time = timezone.localtime().time()
- 
+    
+    selected_times.sort(key=lambda x: x.time_receive.split()[0])
     print("Selected times:", selected_times)
+
     context ={
             'order':order,
             'total_price':total_price,

@@ -16,6 +16,7 @@
     margin: 10px;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     /* border: 1px solid red; */
   }
   .area_container {
@@ -24,6 +25,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 50%;
 
   }
@@ -174,24 +176,42 @@
             align-items: center;
             width: 100%;
             justify-content: center;
-            align-items: center;
-            /* border: 1px solid green;  */
             margin-top: 10px;
         }
         .error {   
             display: flex;
-            width: 100%;  
+            /* border: 1px solid blue; */
+            position: relative;
+            width: 750px;  
             height: 40px;
             align-items: center;
-            justify-content: center; 
-            color: #000000; /* Dark red text color */
-            /* border: 1px solid green; */
+            justify-content: center;
+            color: #000000;
             font-weight: bold;
             font-size: 18px;
             background-color: #F97979;
             border: 1px solid #F97979;
-            
-}
+            padding: 0 10px; 
+            box-sizing: border-box; 
+            border-radius: 0.3rem;
+            margin-right: 90px;
+        }
+        .error  {
+            cursor: pointer;
+            margin-left: 100px;
+        }
+        .close-button {
+          position: absolute;
+          right: 3%;
+        }
+        .box_error {
+            display: flex;
+            /* border: 1px solid blue; */
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+
+        }
 </style>
 <body>
   {% include 'app/navbar.html' %}
@@ -199,13 +219,17 @@
   <div class="message-alerts">
       {% for message in messages %}
           {% if message.tags == 'error' %}
-              <div class="error">{{ message }}</div>
-          {% elif message.tags == 'success' %}
-              <div class="success">{{ message }}</div>
+              <div class="error">
+                  <div class="box_error">
+                      {{ message }}
+                  </div>
+                  <span class="close-button" onclick="this.parentElement.style.display='none';">&times;</span>
+              </div>
           {% endif %}
       {% endfor %}
   </div>
   {% endif %}
+
   <div class="container">
     <div class="area_container">
     <h2>Shopping Cart</h2>

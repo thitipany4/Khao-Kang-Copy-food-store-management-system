@@ -476,10 +476,15 @@ def save_reason(req):
         use_with = req.POST.get('use_with')
         print(reason,use_with)
         if reason and use_with :
-            check = CancelReason.objects.filter(reason=reason).first()
-            if check :
-                messages.error(req, f'เหตุผลนี้ถูกสร้างไว้เเล้ว :{reason}')
-                return redirect('reason_time')
+            check = CancelReason.objects.filter(reason=reason)
+            print(len(check))
+            if check.exists():
+                for c in check:
+                    if c.use_with == use_with :
+                        messages.error(req, f'เหตุผลนี้ถูกสร้างไว้เเล้ว :  {reason}')
+                        return redirect('reason_time')
+                    if c.use_with != use_with :
+                        reason_db = CancelReason.objects.create(reason=reason,use_with=use_with)
             else:
                 reason_db = CancelReason.objects.create(reason=reason,use_with=use_with)
             return redirect('reason_time')
