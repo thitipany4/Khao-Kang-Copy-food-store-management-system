@@ -373,8 +373,10 @@ def see_quarter_data(req):
 
 def get_excel(range_date=None):
     if range_date:
-        transactions = Transaction.objects.filter(transaction_type__in=['income', 'expenses'],date__range=range_date).order_by('date')
+        print('range_dateeeee')
+        transactions = Transaction.objects.filter(transaction_type__in=['income', 'expenses'],date__range=(range_date)).order_by('date')
     else:
+        print('not range_dateeeee')
         transactions = Transaction.objects.filter(transaction_type__in=['income', 'expenses']).order_by('date')
     print(transactions)
     data = []
@@ -409,7 +411,11 @@ def get_excel(range_date=None):
     
     return response
 
+@login_required
 def download_excel(req):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     res = get_excel()
     return res
 

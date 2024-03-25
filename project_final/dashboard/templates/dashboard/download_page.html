@@ -101,7 +101,7 @@
     <div class="container">
         <div class="popup-content">
             <div class="text_popup">เลือกช่วงที่ท่านต้องการดาวโหลดเอกสาร</div>
-            <form method="post" action="{% url 'download_excel' %}" class="move-to-month-form">
+            <form method="post" action="{% url 'download_excel_range' %}" class="move-to-month-form">
                 {%csrf_token%}
                 <div class="box_start">
                     <label for="start_month">เดือนเริ่มต้น</label>
