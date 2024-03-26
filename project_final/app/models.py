@@ -185,7 +185,7 @@ class OrderItemtype2(models.Model):
         return f'{self.name} price {self.total_price}'
     
 class RecommendUs(models.Model):
-    user = models.ForeignKey(Member,on_delete=models.DO_NOTHING)
+    user = models.ForeignKey(Member,on_delete=models.SET_NULL,null=True)
     text = models.TextField()
     created = models.DateTimeField(auto_now_add=True)
 

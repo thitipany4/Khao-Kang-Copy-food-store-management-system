@@ -19,7 +19,7 @@ from .calculator import calculator
 from .forms import FormNote
 from .utils import EventCalendar
 from django.contrib.auth.decorators import login_required
-
+from datetime import datetime
 #------------------------------------------------------------------
 def is_superuser(user):
     return user.is_authenticated and user.is_superuser
@@ -31,7 +31,11 @@ def before_login(req):
 
 def home(req):
     #key = check()
-    date = getdate()
+    # date = getdate()
+    date = '2024-03-27'
+    date_obj = datetime.strptime(date, '%Y-%m-%d')
+    is_weekend = date_obj.weekday() in [5, 6] 
+    print(is_weekend)
     food_sale = Historysale.objects.filter(date_field=date)
     foods = Food.objects.all()
     print(food_sale)
@@ -42,7 +46,8 @@ def home(req):
             list_food.append(food)
     context ={
         'food':list_food,
-        'food_list':foods
+        'food_list':foods,
+        'is_weekend':is_weekend,
     }
     return render(req,'app/home.html',context)
 def about_us(req):
@@ -1132,8 +1137,7 @@ def get_quatity(obj):
         return food_sale
     else:
         return redirect('home')
-    
-@login_required           
+           
 def create_transaction(obj1,obj2):
     date = getdate()
     if obj1:
@@ -1167,7 +1171,8 @@ def order_confirmation(request, ref_code=None):
         order_id = request.session.pop('order', None)
         return redirect('home')
 
-    if ref_code:
+    if request.method == 'POST':
+        print(request.POST) 
         time = request.POST.get('select_time')
         print('new_time',time)
         order = get_object_or_404(Order, ref_code=ref_code)
@@ -1283,10 +1288,11 @@ def confirm_order(request,code=None,status=None,filter=None):
                 order.save()
                 if status =='confirmed':
                     user = request.user
+                    print(order.time_receive)
                     message_confirmed(order,user)
                 print(order.confirm,'save done')
                 return redirect('confirm_order')
-            
+
         for order in orders:
             print(len(orders))
             list_item=[]
@@ -1327,6 +1333,9 @@ def confirm_order(request,code=None,status=None,filter=None):
                 order.confirm = status 
                 order.cancel_reason = reason
                 order.save()
+                user = request.user
+                print(user)
+                message_cancel(order,user)
                 print(order.confirm,'save done')
                 return redirect('confirm_order')
     context={
@@ -1361,6 +1370,8 @@ def complete_order(req,ref_code):
     transaction = create_transaction(order_item1,order_item2)
     order.completed = 'completed'
     order.save()
+    user = req.user
+    message_complete(order,user)
     print(order)
     return redirect('confirm_order')
 
@@ -1486,6 +1497,7 @@ def history_confirm_order(request,date=None,filter=None):
 
 @login_required           
 def my_order(req):
+    user = req.user
     current_date = getdate()
     current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
     if current_date.month >9:
@@ -1495,7 +1507,7 @@ def my_order(req):
     if current_date.day <10:
             date_filter = f'{current_date.year}-{current_date.month}-0{current_date.day}'
     print(date_filter)
-    orders = Order.objects.filter(created_at__contains=date_filter,completed='incompleted',checkout=True).order_by('-created_at')
+    orders = Order.objects.filter(user=user,created_at__contains=date_filter,completed='incompleted',checkout=True).order_by('-created_at')
     print('not',orders)
     total_price = 0 
     if orders :
@@ -1588,7 +1600,6 @@ def my_history(req,filter=None):
 
     if not filter:
         orders = Order.objects.filter(user=req.user,checkout=True).order_by('-created_at')
-
     else:
         if filter =='wait':
             orders = Order.objects.filter(user=req.user, checkout=True).annotate(wait_order=Case(
