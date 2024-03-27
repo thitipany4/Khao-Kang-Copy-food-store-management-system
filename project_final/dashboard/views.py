@@ -402,44 +402,45 @@ def see_quarter_data(req):
 
 def get_excel(range_date=None):
     if range_date:
-        print('range_dateeeee')
-        transactions = Transaction.objects.filter(transaction_type__in=['income', 'expenses'],date__range=(range_date)).order_by('date')
+        transactions = Transaction.objects.filter(transaction_type__in=['income', 'expenses'], date__range=range_date).order_by('date')
     else:
-        print('not range_dateeeee')
-        transactions = Transaction.objects.filter(transaction_type__in=['income', 'expenses']).order_by('date')
-    print(transactions)
-    data = []
-    current_date = None
-    income = 0
-    expenses = 0
+        transactions = Transaction.objects.all().order_by('date')
+
+    # Dictionary to store data for each transaction type
+    data_by_type = {'income': [], 'expenses': [], 'leftover': []}
+
+    # Iterate over transactions and group them by transaction type
     for transaction in transactions:
-        current_date = transaction.date
-        income = 0
-        expenses = 0
+        formatted_date = transaction.date.strftime('%Y/%m/%d')
+        type_str = None
         if transaction.transaction_type == 'income':
-            income += transaction.price
             type_str = 'รายรับ'
         elif transaction.transaction_type == 'expenses':
-            expenses += transaction.price
             type_str = 'รายจ่าย'
+        elif transaction.transaction_type == 'leftover':
+            type_str = 'คงเหลือ'
 
-        formatted_date = current_date.strftime('%Y/%m/%d')
-        data.append({'วันที่': formatted_date,'ชื่อ':transaction.name,'จำนวน':transaction.amount ,'ราคา':transaction.price,'ราคารวม':transaction.total_price
-                     ,'ประเภท': type_str})
-        
+        data_by_type[transaction.transaction_type].append({
+            'วันที่': formatted_date,
+            'ชื่อรายการอาหาร/วัตถุดิบ': transaction.name,
+            'จำนวน': transaction.amount,
+            'ราคา': transaction.price,
+            'ราคารวม': transaction.total_price,
+            'ประเภท': type_str
+        })
 
-    
-    df = pd.DataFrame(data)
-    print(df)
+    # Create Excel file with multiple sheets
     excel_buffer = BytesIO()
-    df.to_excel(excel_buffer, index=False)
-    
+    with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
+        for transaction_type, data in data_by_type.items():
+            df = pd.DataFrame(data)
+            df.to_excel(writer, sheet_name=transaction_type, index=False)
+
     # Create HTTP response with Excel file content
     response = HttpResponse(excel_buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename="Report_Finacial.xlsx"'
-    
-    return response
 
+    return response
 @login_required
 def download_excel(req):
     if not is_superuser(req.user):

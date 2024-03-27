@@ -51,12 +51,21 @@ def call_all():
                 Input('interval-component', 'n_intervals'),)
 
     def update_graph(value,n_intervals):
-        member = Member.objects.all()
-        all_age = [m.age for m in member]
-        figure1 = px.pie(names=all_age)
-        figure1.update_layout(title='กราฟแสดงเพศของผู้ใช้งาน')
+        list_user_use = []
+        count_genre_user =[]
+        orders = Order.objects.all()
+        for o in orders:
+            member = Member.objects.get(user=o.user)
+            if member:
+                list_user_use.append(member)
+        for member in list_user_use:
+                count_genre_user.append(member.gender)
+        print(count_genre_user)
+        # all_age = [m.age for m in range_age_user_use]
+        figure1 = px.pie(names=count_genre_user)
+        figure1.update_layout(title='กราฟแสดงจำนวนเพศของผู้ใช้งานทั้งหมดภายในระบบ')
 
-        transaction = Transaction.objects.all()
+        transaction = Transaction.objects.filter(transaction_type__in=['income','expenses'])
         price_tran = [t.total_price for t in transaction]
         type_tran = [t.transaction_type for t in transaction]
         date_tran = [str(t.created).split(' ')[0] for t in transaction]
@@ -67,11 +76,11 @@ def call_all():
         figure2 = px.line(price_test,x='year', y='price',color='type',markers=True)
         figure2.update_layout(
             xaxis_title="ปี",  
-            yaxis_title="ราคา"  ,
+            yaxis_title="จำนวนเงิน (รวมทั้งหมดแต่ละปี)"  ,
             xaxis=dict(
             tickmode='linear', 
             tickvals=price_test['year'].unique()),
-            title='กราฟแสดงรายละเอียดรายรับรายจ่าย',
+            title='กราฟแสดงสรุปรายละเอียดของรายรับรายจ่ายทั้งหมดภายในระบบ',
             )
 
         item1 = OrderItemtype1.objects.all()
@@ -83,9 +92,10 @@ def call_all():
             for food in item.foods.all():
                 list_item.append(food.name)
         count = Counter(list_item)
-        figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'})
+        figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), 
+                         labels={'x': 'ชื่อเมนูอาหาร', 'y': 'จำนวนการสั่งจอง'},text=list(count.values()))
         figure3.update_layout(
-            title='กราฟแสดงจำนวนเมนูอาหารที่ขายได้'
+            title='กราฟแสดงจำนวนเมนูอาหารที่ถูกสั่งจองทั้งหมดภายในระบบ'
         )
         foods = Food.objects.all()
         review = Reviewfood.objects.filter(food__name=value)
@@ -95,9 +105,10 @@ def call_all():
             if rating in rating_dic:
                 rating_dic[rating] += 1
         
-        figure4 = px.bar(x=list(rating_dic.keys()), y=list(rating_dic.values()),color=list(rating_dic.keys()), labels={'y': 'จำนวนรีวิวเมนูอาหาร', 'x': f'จำนวนคะแนนรีวิว'})
+        figure4 = px.bar(x=list(rating_dic.keys()), y=list(rating_dic.values()),color=list(rating_dic.keys()), 
+                         labels={'y': 'จำนวนการรีวิวเมนูอาหาร', 'x': f'คะแนนรีวิว'},text=list(rating_dic.values()))
         figure4.update_layout(
-            title=f'กราฟแสดงจำนวนรีวิวเมนู'
+            title=f'กราฟแสดงจำนวนรีวิวเมนูทั้งหมดภายในระบบ'
         )
         sale = Order.objects.filter(completed='completed')
         order = Order.objects.filter(confirm='cancel')
@@ -134,11 +145,12 @@ def call_all():
         # food = [f.name for f in foods]
         df_count = df_order_sale.groupby(['age', 'status']).size().reset_index(name='count')
 
-        figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group')
+        figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group',text='count')
+        # figure5.update_traces(textposition='outside')
         figure5.update_layout(
             xaxis_title="อายุผู้ของผู้ใช้งาน",  
-            yaxis_title="จำนวนที่สามารถขายได้"  ,
-            title='กราฟแสดงจำนวนที่สามารถขายได้กับอายุของผู้ใช้งาน'
+            yaxis_title="จำนวนการสั่งจอง"  ,
+            title='กราฟแสดงจำนวนการสั่งจองทั้งหมดภายในระบบ'
         )
         return figure1,figure2,figure3,figure4,figure5
     
@@ -153,8 +165,8 @@ def call_month(date_filter,list_day):
     list_dropdown = {food_name: food_name for food_name in foods}
     app.layout = html.Div([
         html.Div([
-        dcc.Graph(id='live-update-graph1',className='g1',style={'width':'420px','margin-right':'10px'}),
-        dcc.Graph(id='live-update-graph5',className='g2',style={'width':'680px'}),
+        dcc.Graph(id='live-update-graph1',className='g1',style={'width':'660px','margin-right':'10px'}),
+        dcc.Graph(id='live-update-graph5',className='g2',style={'width':'440px'}),
         ],className='top_dash',style={'display':'flex','margin-bottom':'10px','height':'330px'}),
         dcc.Graph(id='live-update-graph2',className='g3',style={'width':'1108px','height':'380px','margin-bottom':'10px'}),
         html.Div([
@@ -190,18 +202,40 @@ def call_month(date_filter,list_day):
         
         print('list_day',list_day)
         print(date_filter,'date')
-
-        member = Member.objects.all()
-        if member :
-            all_age = [m.age for m in member]
-            figure1 = px.pie(names=all_age) # ไม่ต้องแก้
-            figure1.update_layout(title='กราฟแสดงเพศของผู้ใช้งาน')
+        created_at_list = []
+        gender_list = []
+        orders_fig1 = Order.objects.filter(completed='completed',created_at__contains=date_filter)
+        if orders_fig1:
+            for order in orders_fig1:
+                member = Member.objects.get(user=order.user)
+                created_at_list.append(order.created_at.date())
+                gender_list.append(member.gender)
+            data = {
+            'created_at': created_at_list,
+            'gender': gender_list}
+            df_gender = pd.DataFrame(data)
+            df_gender['day'] = pd.to_datetime(df_gender['created_at']).dt.day
+            df_grouped = df_gender.groupby(['day', 'gender']).size().reset_index(name='count')
+            figure1 = px.line(df_grouped, x='day', y='count', color='gender',markers=True)
+            figure1.update_layout(
+                    xaxis_title="วันที่",  
+                    yaxis_title="จำนวนผู้ใช้งานในแต่ละวัน"  ,
+                    xaxis=dict(
+                    tickmode='linear', 
+                    tickvals=list_day),
+                    title='กราฟแสดงจำนวนเพศของผู้ใช้งานภายในระบบ (เดือน)')
         else:
-            figure1 = px.pie() # ไม่ต้องแก้
-            figure1.update_layout(title='กราฟแสดงเพศของผู้ใช้งาน')
+            figure1 = px.line()
+            figure1.update_layout(
+                    xaxis_title="วันที่",  
+                    yaxis_title="จำนวนผู้ใช้งานในแต่ละวัน"  ,
+                    xaxis=dict(
+                    tickmode='linear', 
+                    tickvals=list_day),
+                    title='กราฟแสดงจำนวนเพศของผู้ใช้งานภายในระบบ (เดือน)')
 
-        transaction = Transaction.objects.filter(date__contains=date_filter)
-        print(transaction,'transaction 222')
+        transaction = Transaction.objects.filter(date__contains=date_filter,transaction_type__in=['income','expenses'])
+        # print(transaction,'transaction 222')
         if transaction:
             date_tran = [str(t.date).split(' ')[0] for t in transaction]
             # print(date_tran)
@@ -214,26 +248,26 @@ def call_month(date_filter,list_day):
             figure2 = px.line(price_test,x='day', y='price',color='type',markers=True) #แก้ การจัดกลุ่มเป็นวัน และแก้ xickvals 
             figure2.update_layout(
                 xaxis_title="วันที่",  
-                yaxis_title="ราคา"  ,
+                yaxis_title="จำนวนเงิน (รวมทั้งหมดในแต่ละวัน)"  ,
                 xaxis=dict(
                 tickmode='linear', 
                 tickvals=list_day),
-                title='กราฟแสดงรายละเอียดรายรับรายจ่าย'
+                title='กราฟแสดงสรุปรายละเอียดของรายรับรายจ่ายภายในระบบ (เดือน)'
                 )
         else:
             figure2 = px.line()
             figure2.update_layout(
                 xaxis_title="วันที่",  
-                yaxis_title="ราคา"  ,
+                yaxis_title="จำนวนเงิน (รวมทั้งหมดในแต่ละวัน)"  ,
                 xaxis=dict(
                 tickmode='linear', 
                 tickvals=list_day,
-                title='กราฟแสดงรายละเอียดรายรับรายจ่าย'
+                title='กราฟแสดงสรุปผลรวมของรายรับรายจ่ายภายในระบบ (เดือน)'
 
             ))
 
         order = Order.objects.filter(completed='completed',created_at__contains=date_filter)
-        print(order,'order 333')
+        # print(order,'order 333')
         if order:
             
             list_item = []
@@ -248,17 +282,18 @@ def call_month(date_filter,list_day):
                         list_item.append(food.name)
 
             count = Counter(list_item)
-            figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'})
+            figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), 
+                             labels={'x': 'ชื่อเมนูอาหาร', 'y': 'จำนวนการสั่งจอง'},text=list(count.values()))
             figure3.update_layout(
-                title='กราฟแสดงจำนวนเมนูอาหารที่ขายได้'
+                title='กราฟแสดงจำนวนเมนูอาหารที่ถูกสั่งจองภายในระบบ (เดือน)',
             )
         else:
-            figure3 = px.bar(labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'})
+            figure3 = px.bar(labels={'x': 'ชื่อเมนูอาหาร', 'y': 'จำนวนการสั่งจอง'})
             figure3.update_layout(
-                title='กราฟแสดงจำนวนเมนูอาหารที่ขายได้'
+                title='กราฟแสดงจำนวนเมนูอาหารที่ถูกสั่งจองภายในระบบ (เดือน)'
             )
         review = Reviewfood.objects.filter(food__name=value,created__contains=date_filter)
-        print(review,'review 444')
+        # print(review,'review 444')
         if review:
             rating_dic = {'1':0,'2':0,'3':0,'4':0,'5':0}
             for r in review:
@@ -266,22 +301,23 @@ def call_month(date_filter,list_day):
                 if rating in rating_dic:
                     rating_dic[rating] += 1
             # แก้ตรงโมเดลเเล้วได้เลย figure4
-            figure4 = px.bar(x=list(rating_dic.keys()), y=list(rating_dic.values()),color=list(rating_dic.keys()), labels={'y': 'จำนวนที่ขายได้', 'x': 'คะแนน'})
+            figure4 = px.bar(x=list(rating_dic.keys()), y=list(rating_dic.values()),color=list(rating_dic.keys()), 
+                             labels={'y': 'จำนวนการรีวิวเมนูอาหาร', 'x': 'คะแนน'},text=list(rating_dic.values()))
             figure4.update_layout(
-            title=f'กราฟแสดงจำนวนรีวิวเมนู'
+            title=f'กราฟแสดงจำนวนรีวิวเมนูภายในระบบ (เดือน)',
             )
         else:
             figure4 = px.bar()
             figure4.update_layout(
                 xaxis_title="คะแนน",  
-                yaxis_title='จำนวนที่ขายได้'  ,
-                title=f'กราฟแสดงจำนวนรีวิวเมนู'
+                yaxis_title='จำนวนการรีวิวเมนูอาหาร'  ,
+                title=f'กราฟแสดงจำนวนรีวิวเมนูภายในระบบ (เดือน)'
             ) 
 
         completed = Order.objects.filter(completed='completed',created_at__contains=date_filter)
         cancel = Order.objects.filter(confirm='cancel',created_at__contains=date_filter)
-        print(completed,'completed 555')
-        print(cancel,'cancel 555')
+        # print(completed,'completed 555')
+        # print(cancel,'cancel 555')
 
         if  completed or cancel:
             # print('transaction',transaction)
@@ -315,18 +351,18 @@ def call_month(date_filter,list_day):
             sort_df_complete = df_complete.groupby('date')['price'].sum().reset_index()
             sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
             df_count = df_order_sale.groupby(['age', 'status']).size().reset_index(name='count')
-            figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group') # 
+            figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group',text='count') # 
             figure5.update_layout(
                 xaxis_title="อายุผู้ของผู้ใช้งาน",  
-                yaxis_title="จำนวนที่สามารถขายได้"  ,
-                title='กราฟแสดงจำนวนที่สามารถขายได้กับอายุของผู้ใช้งาน'
+                yaxis_title="จำนวนที่การสั่งจอง"  ,
+                title='กราฟแสดงสรุปจำนวนการสั่งจองภายในระบบ (เดือน)'
             )
         else:
             figure5 = px.bar()
             figure5.update_layout(
                 xaxis_title="อายุผู้ของผู้ใช้งาน",  
-                yaxis_title="จำนวนที่สามารถขายได้"  ,
-                title='กราฟแสดงจำนวนที่สามารถขายได้กับอายุของผู้ใช้งาน'
+                yaxis_title="จำนวนที่การสั่งจอง"  ,
+                title='กราฟแสดงสรุปจำนวนการสั่งจองภายในระบบ (เดือน)'
             )
         return figure1,figure2,figure3,figure4,figure5
     return app  
@@ -339,8 +375,8 @@ def call_quarter(range_date,len_quater):
     list_dropdown = {food_name: food_name for food_name in foods}
     app.layout = html.Div([
         html.Div([
-        dcc.Graph(id='live-update-graph1',className='g1',style={'width':'420px','margin-right':'10px'}),
-        dcc.Graph(id='live-update-graph5',className='g2',style={'width':'680px'}),
+        dcc.Graph(id='live-update-graph1',className='g1',style={'width':'580px','margin-right':'10px'}),
+        dcc.Graph(id='live-update-graph5',className='g2',style={'width':'520px'}),
         ],className='top_dash',style={'display':'flex','margin-bottom':'10px','height':'330px'}),
         dcc.Graph(id='live-update-graph2',className='g3',style={'width':'1108px','height':'380px','margin-bottom':'10px'}),
         html.Div([
@@ -377,20 +413,40 @@ def call_quarter(range_date,len_quater):
         
         print('len_quater',len_quater)
         print(range_date,'date')
-
-        member = Member.objects.all()
-        if member :
-            all_age = [m.age for m in member]
-            figure1 = px.pie(names=all_age) # ไม่ต้องแก้
-            figure1.update_layout(title='กราฟแสดงเพศของผู้ใช้งาน')
+        thai_month_names = [
+                'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
+                'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
+            ]
+        created_at_list = []
+        gender_list = []
+        orders_fig1 = Order.objects.filter(completed='completed',created_at__range=(range_date))
+        if orders_fig1:
+            for order in orders_fig1:
+                member = Member.objects.get(user=order.user)
+                created_at_list.append(order.created_at.date())
+                gender_list.append(member.gender)
+            data = {
+            'created_at': created_at_list,
+            'gender': gender_list}
+            df_gender = pd.DataFrame(data)
+            df_gender['month'] = pd.to_datetime(df_gender['created_at']).dt.month
+            df_grouped = df_gender.groupby(['month', 'gender']).size().reset_index(name='count')
+            df_grouped['month_name_thai'] = df_grouped['month'].apply(lambda x: thai_month_names[x-1])
+            figure1 = px.line(df_grouped, x='month_name_thai', y='count', color='gender',markers=True)
+            figure1.update_layout(
+                    xaxis_title="วันที่",  
+                    yaxis_title="จำนวนผู้ใช้งานในแต่ละเดือน"  ,
+                    xaxis=dict(
+                    tickmode='linear'),
+                    title='กราฟแสดงจำนวนเพศของผู้ใช้งานภายในระบบ (ไตรมาส)')
         else:
             figure1 = px.pie() # ไม่ต้องแก้
-            figure1.update_layout(title='กราฟแสดงเพศของผู้ใช้งาน')
+            figure1.update_layout(title='กราฟแสดงจำนวนเพศของผู้ใช้งานภายในระบบ (ไตรมาส)')
 
         start_date, end_date = range_date
         print(start_date, end_date,'chack')
 
-        transaction = Transaction.objects.filter(date__range=(range_date))
+        transaction = Transaction.objects.filter(date__range=(range_date),transaction_type__in=['income','expenses'])
         if transaction:
             date_tran = [str(t.date).split(' ')[0] for t in transaction]
             print(date_tran)
@@ -399,28 +455,24 @@ def call_quarter(range_date,len_quater):
             price_df = pd.DataFrame({'date':date_tran,'price':price_tran,'ชนิด':type_tran})
             price_df['month'] = pd.to_datetime(price_df['date']).dt.month
             price_test = price_df.groupby(['month','ชนิด'])['price'].sum().reset_index()
-            thai_month_names = [
-                'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
-                'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
-            ]
             price_test['month_name_thai'] = price_test['month'].apply(lambda x: thai_month_names[x-1])
             print(price_test)
             figure2 = px.line(price_test,x='month_name_thai', y='price',color='ชนิด',markers=True) #แก้ การจัดกลุ่มเป็นวัน และแก้ xickvals 
             figure2.update_layout(
                 xaxis_title="เดือน",  
-                yaxis_title="ราคา"  ,
+                yaxis_title="จำนวนเงิน (รวมทั้งหมดในแต่ละเดือน)"   ,
                 xaxis=dict(
                 tickmode='linear', ),
-                title='กราฟแสดงรายละเอียดรายรับรายจ่าย')
+                title='กราฟแสดงสรุปรายละเอียดของรายรับรายจ่ายภายในระบบ (ไตรมาส)')
         else:
             figure2 = px.line()
             figure2.update_layout(
                 xaxis_title="เดือน",  
-                yaxis_title="ราคา"  ,
+                yaxis_title="จำนวนเงิน (รวมทั้งหมดในแต่ละเดือน)"   ,
                 xaxis=dict(
                 tickmode='linear', 
                 tickvals=len_quater),
-                title='กราฟแสดงรายละเอียดรายรับรายจ่าย'
+                title='กราฟแสดงสรุปรายละเอียดของรายรับรายจ่ายภายในระบบ (ไตรมาส)'
                 )
 
         order = Order.objects.filter(completed='completed',created_at__range=(range_date))
@@ -440,14 +492,15 @@ def call_quarter(range_date,len_quater):
 
             count = Counter(list_item)
 
-            figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()), labels={'x': 'ชื่ออาหาร', 'y': 'จำนวนที่ขายได้'})
+            figure3 = px.bar(x=list(count.keys()), y=list(count.values()),color=list(count.keys()),
+                              labels={'x': 'ชื่อเเมนูอาหาร', 'y': 'จำนวนการสั่งจอง'},text=list(count.values()))
             figure3.update_layout(
-                title='กราฟแสดงจำนวนเมนูอาหารที่ขายได้'
+                title='กราฟแสดงจำนวนเมนูอาหารที่ถูกสั่งจองภายในระบบ (ไตรมาส)'
             )
         else:
             figure3 = px.bar()
             figure3.update_layout(
-                title='กราฟแสดงจำนวนเมนูอาหารที่ขายได้'
+                title='กราฟแสดงจำนวนเมนูอาหารที่ถูกสั่งจองภายในระบบ (ไตรมาส)'
             )
 
         review = Reviewfood.objects.filter(food__name=value,created__range=(range_date))
@@ -459,17 +512,17 @@ def call_quarter(range_date,len_quater):
                 if rating in rating_dic:
                     rating_dic[rating] += 1
             # แก้ตรงโมเดลเเล้วได้เลย figure4
-            figure4 = px.bar(x=list(rating_dic.keys()), y=list(rating_dic.values()),color=list(rating_dic.keys()), labels={'y': 'จำนวนที่ขายได้', 
-                                                                                                                           'x': 'คะแนน'})
+            figure4 = px.bar(x=list(rating_dic.keys()), y=list(rating_dic.values()),
+                             color=list(rating_dic.keys()), labels={'y': 'จำนวนการรีวิวเมนูอาหาร','x': 'คะแนน'},text=list(rating_dic.values()))
             figure4.update_layout(
-                title=f'กราฟแสดงจำนวนรีวิวเมนู '
+                title=f'กราฟแสดงจำนวนรีวิวเมนูภายในระบบ (ไตรมาส)'
             ) 
         else:
             figure4 = px.bar()
             figure4.update_layout(
-                xaxis_title="จำนวนที่ขายได้",  
+                xaxis_title="จำนวนการรีวิวเมนูอาหาร",  
                 yaxis_title='คะแนน'  ,
-                title=f'กราฟแสดงจำนวนรีวิวเมนู'
+                title=f'กราฟแสดงจำนวนรีวิวเมนูภายในระบบ (ไตรมาส)'
             ) 
         completed = Order.objects.filter(completed='completed',created_at__range=(range_date))
         cancel = Order.objects.filter(confirm='cancel',created_at__range=(range_date))
@@ -508,18 +561,18 @@ def call_quarter(range_date,len_quater):
             sort_df_complete = df_complete.groupby('date')['price'].sum().reset_index()
             sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
             df_count = df_order_sale.groupby(['age', 'status']).size().reset_index(name='count')
-            figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group') # 
+            figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group',text='count') # 
             figure5.update_layout(
                 xaxis_title="อายุผู้ของผู้ใช้งาน",  
-                yaxis_title="จำนวนที่สามารถขายได้"  ,
-                title='กราฟแสดงจำนวนที่สามารถขายได้กับอายุของผู้ใช้งาน'
+                yaxis_title="จำนวนการสั่งจอง"  ,
+                title='กราฟแสดงสรุปจำนวนการสั่งจองภายในระบบ (ไตรมาส)'
             )
         else:
             figure5 = px.bar()
             figure5.update_layout(
                 xaxis_title="อายุผู้ของผู้ใช้งาน",  
-                yaxis_title="จำนวนที่สามารถขายได้"  ,
-                title='กราฟแสดงจำนวนที่สามารถขายได้กับอายุของผู้ใช้งาน'
+                yaxis_title="จำนวนการสั่งจอง"  ,
+                title='กราฟแสดงสรุปจำนวนการสั่งจองภายในระบบ (ไตรมาส)'
             )
         return figure1,figure2,figure3,figure4,figure5
     return app  
