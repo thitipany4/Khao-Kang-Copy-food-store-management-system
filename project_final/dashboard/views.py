@@ -25,7 +25,6 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 #         print('test get date2',cancel_test)
 #         print('test get date3',com_test)
 #     return redirect('see_all_data')
-
 def get_all_data():
     income = 0
     expenses = 0
@@ -74,10 +73,11 @@ def get_month_data(date):
 
     date_filter = f'{current_year}-{current_month}'
     pre_date_filter = f'{pre_current_year}-{previous_month_str}'
-
+    print(date_filter,'date_filter',pre_date_filter,'pre_date_filter')
     previous_transactions = Transaction.objects.filter(date__contains=pre_date_filter)
     transactions = Transaction.objects.filter(date__contains=date_filter)
 
+    print(transactions,'transactions',previous_transactions,'previous_transactions')
     sale = Order.objects.filter(completed='completed',created_at__contains=date_filter)
     cancel = Order.objects.filter(confirm='cancel',created_at__contains=date_filter)
 
@@ -99,21 +99,37 @@ def get_month_data(date):
             pre_expenses += t.total_price
 
     success = len(sale)
-    cancel = len(cancel)         
-    if not pre_sale or not pre_cancel:
-        income_compare =''
-        expenses_compare=''
-        pre_success=''
-        pre_cancel = ''
-        success_compare = ''
-        cancel_compare = ''
+    cancel = len(cancel)
+    pre_success =len(pre_sale)
+    pre_cancel = len(pre_cancel)
+   
+    if not pre_sale and not pre_cancel and not transactions and not previous_transactions:
+        income_compare ='N/A'
+        expenses_compare='N/A'
+        pre_success='N/A'
+        pre_cancel = 'N/A'
+        success_compare = 'N/A'
+        cancel_compare = 'N/A'
     else:
-        income_compare = int(((income - pre_income) / pre_income) * 100)
-        expenses_compare = int(((expenses - pre_expenses) / pre_expenses) * 100)
-        pre_success=len(pre_sale)
-        pre_cancel = len(pre_cancel)
-        success_compare = int(((success - pre_success) / pre_success) * 100)
-        cancel_compare = int(((cancel - pre_cancel) / pre_cancel) * 100)
+        if pre_income == 0:
+            income_compare = 'N/A'
+        else:
+            income_compare = int(((income - pre_income) / pre_income) * 100)
+            
+        if pre_expenses == 0:
+            expenses_compare = 'N/A'
+        else:
+            expenses_compare = int(((expenses - pre_expenses) / pre_expenses) * 100)
+            
+        if pre_success == 0:
+            success_compare = 'N/A'
+        else:
+            success_compare = int(((success - pre_success) / pre_success) * 100)
+            
+        if pre_cancel == 0:
+            cancel_compare = 'N/A'
+        else:
+            cancel_compare = int(((cancel - pre_cancel) / pre_cancel) * 100)
 
     return income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare 
 
@@ -159,23 +175,36 @@ def get_quarter_data(quarter,year):
 
     success = len(sale)
     cancel = len(cancel)
-
-    if not pre_sale or not pre_cancel:
-        income_compare =''
-        expenses_compare=''
-        pre_success=''
-        pre_cancel = ''
-        success_compare = ''
-        cancel_compare = ''
+    pre_success =len(pre_sale)
+    pre_cancel = len(pre_cancel)
+   
+    if not pre_sale and not pre_cancel and not transactions and not previous_transactions:
+        income_compare ='N/A'
+        expenses_compare='N/A'
+        pre_success='N/A'
+        pre_cancel = 'N/A'
+        success_compare = 'N/A'
+        cancel_compare = 'N/A'
     else:
-        income_compare = int(((income - pre_income) / pre_income) * 100)
-        expenses_compare = int(((expenses - pre_expenses) / pre_expenses) * 100)
-        pre_success=len(pre_sale)
-        pre_cancel = len(pre_cancel)
-        success_compare = int(((success - pre_success) / pre_success) * 100)
-        cancel_compare = int(((cancel - pre_cancel) / pre_cancel) * 100)
-    print('income',income)
-    print('expenses',expenses)
+        if pre_income == 0:
+            income_compare = 'N/A'
+        else:
+            income_compare = int(((income - pre_income) / pre_income) * 100)
+            
+        if pre_expenses == 0:
+            expenses_compare = 'N/A'
+        else:
+            expenses_compare = int(((expenses - pre_expenses) / pre_expenses) * 100)
+            
+        if pre_success == 0:
+            success_compare = 'N/A'
+        else:
+            success_compare = int(((success - pre_success) / pre_success) * 100)
+            
+        if pre_cancel == 0:
+            cancel_compare = 'N/A'
+        else:
+            cancel_compare = int(((cancel - pre_cancel) / pre_cancel) * 100)
 
     return income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare 
 
