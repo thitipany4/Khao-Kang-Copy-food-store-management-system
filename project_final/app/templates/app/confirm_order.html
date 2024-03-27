@@ -245,7 +245,7 @@
         justify-content: space-between;
 
       }
-      .popupButton,.closeButton,.confirm_btn,.cancle_btn,.history-button {
+      .popupButton,.closeButton,.confirm_btn,.cancel_btn,.history-button {
           display: flex;
           color: #fff;
           border: none;
@@ -259,7 +259,7 @@
         width: 120px;
         height: 40px;
       }
-      .confirm_btn,.cancle_btn {
+      .confirm_btn,.cancel_btn {
         width: 80%;
         height: 30px;
       }
@@ -268,7 +268,7 @@
         background-color: #0056b3;
         text-decoration: none;
       }
-      .cancle_btn {
+      .cancel_btn {
         background-color: #FF4600;
 
       }
@@ -437,39 +437,35 @@
                             {%if status == 'รอการยืนยัน' %}
                             <div class="button_confirm">
                                 <a class="confirm_btn" href="/confirm_order/{{order.ref_code}}/{{confirm}}/">confirm</a>
-                                <button class="cancle_btn">cancel</button>
+                                <button class="cancel_btn" data-ref-code="{{ order.ref_code }}">cancel</button>
                             </div>
                             {%elif status == 'รอดำเนินการ' %}
                             <div class="button_confirm">
                                 <a class="confirm_btn" href="/complete_order/{{order.ref_code}}/">completed</a>
-                                <button class="cancle_btn">cancel</button>
+                                <button class="cancel_btn" data-ref-code="{{ order.ref_code }}">cancel</button>
                             </div>
                             {%endif%}
                         </td>
                     </tr>
                     <div id="popupContainer" class="popupContainer">
-                        <div class="popup">
-                            <div class="head_popup">
-                              เลือกเหตุผลในการยกเลิก
+                            <div class="popup">
+                                <div class="head_popup">เลือกเหตุผลในการยกเลิก</div>
+                                <form class="form_reason" method="post" action="">
+                                    {% csrf_token %}
+                                    <div class="form_content">
+                                        <select class="select_reason" name="select_reason">
+                                            {% for r in reason %}
+                                                <option class="option_reason" value="{{ r.reason }}">{{ r.reason }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="submit-popup">
+                                            <button class="popupButton">ยืนยัน</button>
+                                            <span class="closeButton">ยกเลิก</span>
+                                        </div>
+                                    </div>
+                                </form>
                             </div>
-                            <form class="form_reason" method="post" action="/confirm_order/{{order.ref_code}}/{{cancel}}/">
-                              {% csrf_token %}
-                              <div class="form_content">
-                                <select class="select_reason" name="select_reason">
-                                  {%for r in reason %}
-                                    <option class="option_reason" value="{{r.reason}}" >{{r.reason}}</option>
-                                  </div>
-                                  {%endfor%}
-                                </select>
-                                <div class="submit-popup">
-                                  <button class="popupButton">ยืนยัน</button>
-                                  <span class="closeButton">ยกเลิก</span>
-                              </div>
-                    
-                            </form>
-                    
-                        </div>
-                      </div>
+                    </div>
                     {% endfor %}
                 </tbody>
             </table>
@@ -477,15 +473,21 @@
        
     </div>
     <script>
-        const cancelButtons = document.querySelectorAll('.cancle_btn');
+        const cancelButtons = document.querySelectorAll('.cancel_btn');
         const popupContainer = document.getElementById('popupContainer');
         const closeButton = popupContainer.querySelector('.closeButton');
+
         cancelButtons.forEach(cancelButton => {
             cancelButton.addEventListener('click', function() {
+                const refCode = this.dataset.refCode;
+                const popupContent = popupContainer.querySelector('.popup');
+                popupContent.querySelector('.head_popup').innerText = `เลือกเหตุผลในการยกเลิก ${refCode}`;
+                const form = popupContent.querySelector('.form_reason');
+                form.action = `/confirm_order/${refCode}/cancel/`;
                 popupContainer.style.display = 'block';
             });
         });
-        
+
         closeButton.addEventListener('click', function() {
             popupContainer.style.display = 'none';
         });

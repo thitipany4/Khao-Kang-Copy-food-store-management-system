@@ -148,7 +148,24 @@
                 background-color: #F94D4D;
 
             }
-        
+            .box_message_to_user {
+            display: flex;
+            width: 100%;
+            height: 70px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 70px;
+        }
+        .box_to_user {
+            border: 1px solid #333333;
+            box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+            justify-content: center;
+            align-items: center;
+            display: flex;
+            width: 60%;
+            height: 50px;
+            border-radius: 0.2rem;
+        }
 </style>
 <body>
   {% include 'app/navbar.html' %}
@@ -250,6 +267,13 @@
 </div>
 {% endif %}
 
+{% if not food and not food_item  %}
+<div class="box_message_to_user">
+    <div class="box_to_user">
+        ขออภัยค่ะ วันนี้ไม่มีเมนูอาหารที่สามารถสั่งจองได้ค่ะ กรุณากลับมาใช้บริการในโอกาสหน้าค่ะ
+    </div>
+</div>
+{% endif %}
 
       <script>
         const typeValue = "type1";
