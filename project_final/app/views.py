@@ -31,8 +31,8 @@ def before_login(req):
 
 def home(req):
     #key = check()
-    # date = getdate()
-    date = '2024-03-27'
+    date = getdate()
+
     date_obj = datetime.strptime(date, '%Y-%m-%d')
     is_weekend = date_obj.weekday() in [5, 6] 
     print(is_weekend)
@@ -62,7 +62,15 @@ def create(req):
     if req.method =='POST':
         form = FoodForm(req.POST,req.FILES)
         if form.is_valid():
-            form.save()
+            name_form = form.instance.name
+            print(form.instance.name,'form.instance.name')
+            check_name = Food.objects.filter(name=form.instance.name).first()
+            if check_name:
+                messages.error(req, f"ภายในระบบมีเมนู {name_form} แล้ว")
+                return redirect('managefood')
+            else:
+                form.save()
+                
             return redirect('managefood')
     context = {
         'form':form
