@@ -66,7 +66,7 @@ def create(req):
             print(form.instance.name,'form.instance.name')
             check_name = Food.objects.filter(name=form.instance.name).first()
             if check_name:
-                messages.error(req, f"ภายในระบบมีเมนู {name_form} แล้ว")
+                messages.error(req, f"ขออภัยค่ะ ไม่สามารถสร้างเมนู {name_form} ได้ เนื่องจากมีเมนูนี้อยู่ในระบบเเล้ว กรุณาตรวจสอบข้อมูลของท่านอีกครั้งค่ะ")
                 return redirect('managefood')
             else:
                 form.save()
