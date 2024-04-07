@@ -195,9 +195,17 @@ def updatefood(req,id):
     else:
         food = Food.objects.get(pk=id)
         form = FoodForm(req.POST,req.FILES,instance=food)
+        old_name = food.name
         if form.is_valid():
-            form.save()
-            return redirect('managefood')
+            name_form = form.instance.name
+            print(form.instance.name,'form.instance.name')
+            check_name = Food.objects.filter(name=form.instance.name).first()
+            if old_name != name_form and check_name:
+                messages.error(req, f"ขออภัยค่ะ ไม่สามารถแก้ไข {old_name} เป็น {name_form} ได้ เนื่องจากมีเมนูนี้อยู่ในระบบเเล้ว")
+                return redirect('managefood')
+            else:
+                form.save()
+                return redirect('managefood')
     context ={
         'food':food,
         'form':form,
