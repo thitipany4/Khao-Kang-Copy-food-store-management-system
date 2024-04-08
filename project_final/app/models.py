@@ -163,7 +163,7 @@ class Order(models.Model):
     def __str__(self) -> str:
         return f'{self.ref_code} confirm {self.confirm}'
 class OrderItemtype1(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    # user = models.ForeignKey(User,on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     food = models.ForeignKey(Food,on_delete=models.DO_NOTHING)
     quantity = models.IntegerField(default=0)
@@ -173,7 +173,7 @@ class OrderItemtype1(models.Model):
         return f'{self.food} price {self.total_price}'
     
 class OrderItemtype2(models.Model):
-    user = models.ForeignKey(User,on_delete=models.CASCADE)
+    # user = models.ForeignKey(User,on_delete=models.CASCADE)
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     name = models.CharField(max_length=100,null=True)
     foods = models.ManyToManyField('Food')
