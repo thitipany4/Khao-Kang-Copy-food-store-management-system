@@ -11,8 +11,8 @@ class Member(models.Model):
     email =models.EmailField(blank=True,null=True)
     first_name = models.CharField(max_length=100,blank=True,null=True)
     last_name = models.CharField(max_length=100,blank=True,null=True)
-    line_id = models.CharField(max_length=100,blank=True,null=True)
-    phone_number = models.CharField(max_length=100)
+    line_id = models.CharField(max_length=500,blank=True,null=True)
+    phone_number = models.CharField(max_length=10)
     picture = models.URLField(blank=True, null=True)
     age = models.CharField(max_length=20, choices=(
         ('ต่ำกว่า 19 ปี', 'ต่ำกว่า 19 ปี'),
@@ -65,12 +65,12 @@ class Historysale(models.Model):
     def __str__(self) -> str:
         return f'{self.date_field} {self.food.name}'
     
-    @classmethod
-    def update_options_at_2pm(cls):
-        current_time = timezone.now().time()
-        if current_time == time(12, 0):  # 14:00 is 2 pm
+    # @classmethod
+    # def update_options_at_2pm(cls):
+    #     current_time = timezone.now().time()
+    #     if current_time == time(12, 0):  # 14:00 is 2 pm
             
-            cls.objects.update(options=None)
+    #         cls.objects.update(options=None)
 
 class Reviewfood(models.Model):
     food = models.ForeignKey(Food,on_delete=models.CASCADE)
@@ -119,7 +119,7 @@ class TimeReceive(models.Model):
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(null=True)  # Remove auto_now_add=True
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+    total_price = models.IntegerField(default=0)
     ref_code = models.CharField(max_length=100, null=True)
     checkout = models.BooleanField(default=False)
     TIME_CHOICES = [

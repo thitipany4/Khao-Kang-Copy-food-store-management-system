@@ -32,7 +32,6 @@ def before_login(req):
 def home(req):
     #key = check()
     date = getdate()
-
     date_obj = datetime.strptime(date, '%Y-%m-%d')
     is_weekend = date_obj.weekday() in [5, 6] 
     print(is_weekend)
@@ -261,8 +260,6 @@ def foodview(req, id=None, target=None):
             print(i.owner)
         orderby =review.order_by('-created')
         star_range = [1,2,3,4,5]
-        # print(review)
-        print('...........................................................................................')
         star_count = defaultdict(int)
 
         for rating in review:
@@ -276,30 +273,17 @@ def foodview(req, id=None, target=None):
             'food': food,
             'review': orderby,
         }
-        
             return render(req, 'app/foodview.html', context) 
-
-
-        # Now, organize the data for stars and their counts
         ratings = []
         for i in range(1, 6):
             rating_count = star_count[i]
             width = (rating_count / count_score) * 100 if count_score > 0 else 0
             ratings.append({'rating': i, 'count': rating_count, 'width': width})
-
-        for i in ratings:
-            print('rating :',i)
-        
         if req.method == "GET" and target:
             if target == 'lastest':
                 orderby = review.order_by('-created')
-                print('date')
-                print(orderby)
-                
             else:
                 orderby = review.order_by('-rating')
-                print('best')
-
         context = {
             'food': food,
             'review': orderby,
@@ -308,26 +292,17 @@ def foodview(req, id=None, target=None):
             'ratings':ratings,
             'average_score':average_score,
         }
-        
         return render(req, 'app/foodview.html', context)
-    
     return render(req, 'app/foodview.html', {})
 
 @login_required
 def reviewfood(req,id):
-    if not is_superuser(req.user):
-        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
-        return redirect('home') 
     food = Food.objects.get(pk=id)
     if req.method =='GET':
         form = ReviewFood(instance=food)
-        print(form.instance.id)
     else:
-        print('suscess')
         form = ReviewFood(req.POST,req.FILES)
         form.instance.food = food
-
-
         if form.is_valid():
             review = form.save(commit=False)
             member = Member.objects.get(user=req.user)
@@ -337,13 +312,9 @@ def reviewfood(req,id):
             if food.quantity_review !=0:
                 average_score = (food.score * (int(food.quantity_review) - 1) + form.instance.rating) / food.quantity_review
                 food.score = round(average_score, 2)
-                food.score = average_score
             food.save()
             review.save()
             return redirect('home')
-        else:
-            print(form.errors)
-            print(form.non_field_errors)
     context = {
         'form':form,
         'food':food,
@@ -513,103 +484,6 @@ def logout(req):
     auth_logout(req)
     return redirect('home')
 
-def send_line_message(req):
-    pass
-'''
-def line_login(req):
-      print('------------------------------------------------------------')
-      line_login_url = 'https://access.line.me/oauth2/v2.1/login?returnUri=%2Foauth2%2Fv2.1%2Fauthorize%2Fconsent%3Fclient_id%3D2002071461%26redirect_uri%3Dhttp%253A%252F%252F127.0.0.1%253A8000%252Flogin%252Fcallback%252F%26scope%3Dprofile%2Bopenid%2Bemail%26response_type%3Dcode%26state%3Do5LbuxfoP3E5zU3p&loginChannelId=2002071461&loginState=5RSv0jsdBZgXGfTdkjcF0u'
-      return redirect(line_login_url)
-
-
-def get_line_user_info(access_token):
-    user_info_url = 'https://api.line.me/v2/profile'
-
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-        'Content-Type': 'application/json'
-    }
-
-    response = requests.get(user_info_url, headers=headers)
-
-    if response.status_code == 200:
-        user_data = response.json()
-        user_id = user_data.get('userId')
-        display_name = user_data.get('displayName')
-        email = user_data.get('email', '')
-        picture = user_data.get('pictureUrl', '')
-        openid = user_data.get('openid')
-
-        return {
-            'user_id': user_id,
-            'display_name': display_name,
-            'email': email,
-            'picture': picture,
-            'openid': openid
-        }
-    else:
-        print('Failed to fetch user information.')
-        return None
-
-
-def line_callback(req):
-
-    if req.method == 'GET':
-        # Extract the callback data from the request
-        callback_data = req.GET.dict()
-
-        # Check if 'code' is in the callback data
-        if 'code' in callback_data:
-            authorization_code = callback_data['code']
-            access_token_url = 'https://api.line.me/oauth2/v2.1/token'
-            payload = {
-                'grant_type': 'authorization_code',
-                'code': authorization_code,
-                'redirect_uri': 'http://127.0.0.1:8000/login/callback/',
-                'client_id': '2002071461',
-                'client_secret': 'ccdce5af4dca9056f145c473d7193d11'
-            }
-
-            # Send a POST request to exchange authorization code for an access token
-            response = requests .post(access_token_url, data=payload)
-
-            if response.status_code == 200:
-                access_token_data = response.json()
-                access_token = access_token_data.get('access_token')
-                # Now, you can use the access_token to make requests to Line API to get user information
-                # e.g., Get user profile information
-
-                # Replace the below with your logic to handle the access_token and fetch user info
-                print('Access Token:', access_token)
-                user_info = get_line_user_info(access_token)
-                print('User ID:', user_info['user_id'],type(user_info['user_id']))
-                if user_info:
-                     user = User.objects.get(username=user_info['user_id'])
-                     if user !=[]:
-                        
-                        # member = Member.objects.get(user=user)
-                        auth_login(req, user)
-                        return redirect('home') 
-                        # return render(req,'app/home.html',{'member':member})
-                     else:
-                        line_user = req.user if req.user.is_authenticated else User.objects.create_user(username=user_info['user_id'])
-                        line_user_profile, created = Member.objects.get_or_create(
-                                user=line_user,
-                                user_name = user_info['display_name'],)
-                        user = User.objects.get(username=user_info['user_id'])
-                        if user !=[]:
-                            return render(req,'app/login.html',)
-
-
-    # Access other user-related data as needed
-                return redirect('home')
-            else:
-                print('Failed to retrieve access token.')
-                return redirect('error_page')  # Redirect to an error page or handle as needed
-        else:
-            print('Authorization code not found in callback data.')
-            return redirect('error_page')  # Redirect to an error page or handle as needed
-'''
 def get_prev_month(d):
     year = d.year - 1 if d.month == 1 else d.year
     month = d.month - 1 if d.month > 1 else 12
@@ -802,7 +676,7 @@ def create_cart(request):
 
     else:
         random_code = generate_random_system_code()
-        order = Order.objects.create(total_price=Decimal('0.00'), ref_code=random_code,user=request.user)
+        order = Order.objects.create(total_price=0, ref_code=random_code,user=request.user)
         request.session['order'] = order.ref_code  # Use ref_code for session
         print(order, 'create cart done')
     return redirect('view_cart')
@@ -952,7 +826,7 @@ def add_to_cart(request,type,modify=None):
                 if not order_id:
                     print('creating new order')
                     random_code = generate_random_system_code()
-                    order = Order.objects.create(total_price=Decimal('0.00'), ref_code=random_code, user=request.user)
+                    order = Order.objects.create(total_price=0, ref_code=random_code, user=request.user)
                     print('created success')
                     request.session['order'] = random_code
                 else:
@@ -1006,7 +880,7 @@ def add_to_cart(request,type,modify=None):
 
                     if not order_id:
                         random_code = generate_random_system_code()
-                        order = Order.objects.create(total_price=Decimal('0.00'), ref_code=random_code,user=request.user)
+                        order = Order.objects.create(total_price=0, ref_code=random_code,user=request.user)
                         print('order',order)
                         request.session['order'] = order.ref_code
                         print('order',order)
