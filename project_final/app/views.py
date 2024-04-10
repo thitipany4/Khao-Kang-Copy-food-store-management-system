@@ -677,14 +677,13 @@ def create_cart(request):
     else:
         random_code = generate_random_system_code()
         order = Order.objects.create(total_price=0, ref_code=random_code,user=request.user)
-        request.session['order'] = order.ref_code  # Use ref_code for session
+        request.session['order'] = order.ref_code  
         print(order, 'create cart done')
     return redirect('view_cart')
 
 @login_required
 def view_cart(request):
     order_id = request.session.get('order')
-    print('view cart',order_id)
     total_price = 0
     context={}
     if order_id:
@@ -707,14 +706,10 @@ def view_cart(request):
         }
     return render(request, 'app/view_cart.html', context)
 
+@login_required
 def delete_cart(request,code):
-    # order_id = request.session.get('order')
-    # pop_order_id = request.session.pop('order', None)
-    request.session.pop('cart', None)
-    print('order id',code)
-    if id:
+    if code:
         Order.objects.filter(ref_code=code).delete()
-        print('deleted cart')
     return redirect('home')
 
 @login_required
@@ -722,11 +717,8 @@ def shopping_food_type1(request):
     item = []
     date = getdate()
     food_sale = Historysale.objects.filter(date_field=date)
-    print()
     for f in food_sale:
-        date = getdate()
         if f.options == 'วางขาย':
-            print(f)
             item.append(f)
     return render(request, 'app/shop_food1.html', {'food': item,
                                                          })
@@ -760,9 +752,7 @@ def shopping_food_type2(request):
     date = getdate()
     food_sale = Historysale.objects.filter(date_field=date)
     for f in food_sale:
-        date = getdate()
         if f.options == 'วางขาย':
-            print(f)
             item.append(f)
     return render(request, 'app/shop_food2.html', {'food': item,
                                                          })
@@ -786,111 +776,64 @@ def modify_cart2(request,id):
 @login_required
 def add_to_cart(request,type,modify=None):
     if request.method == 'POST':
-        
         if type=='type1':
-            print('type1')
             product_ids = request.POST.getlist('product_id')
-            print('product_ids',product_ids)
-
             quantities = request.POST.getlist('quantity')
-            print('quantities',quantities)
             order_id = request.session.get('order')
-            print('order_id',order_id)
-            
             for product_id, quantity in zip(product_ids, quantities):
-                # print('in loop')
-                # print('product_id', product_id)
-                # print('quantity',quantity)
                 product = get_object_or_404(Food, pk=product_id)
-                print('product', product)
                 quantity = int(quantity)  
-
                 if quantity == 0:  
                     order = get_object_or_404(Order, ref_code=order_id)
                     product = OrderItemtype1.objects.filter(food=product,order=order).first()
                     if product:
-                        # if order:
-                        #     item = product.first()
-                            # order.total_price -= (item.food.price*item.quantity)
-                        # order.save()
-                        print(product,'has beend delete ')
                         product.delete()
                         continue
                     else:
-                        print('not data deleted')
                         continue
-
-                print(quantity,'ppp')
-
-                # Update order data in the database
                 if not order_id:
-                    print('creating new order')
                     random_code = generate_random_system_code()
                     order = Order.objects.create(total_price=0, ref_code=random_code, user=request.user)
-                    print('created success')
                     request.session['order'] = random_code
                 else:
-                    print('using existing order')
                     order = Order.objects.get(ref_code=order_id)
-                    print(order)
-
                 order_item = OrderItemtype1.objects.filter(order=order, food=product).first()
                 if order_item:
                     pass
-                    # order_item.quantity += quantity
                 else:
                     order_item = OrderItemtype1.objects.create(order=order, food=product)
-                    print('orderitem are created')
                 if not modify :
                     order_item.quantity += quantity
                     order_item.total_price += (product.price * quantity)
-                    print(' order_item.total_price', order_item.total_price)
-                    # order.total_price +=  (product.price * quantity)
                 else:
                     if order_item.quantity != quantity:
-                        # order.total_price -= (product.price*order_item.quantity)
-                        # order.total_price += (product.price * quantity)
                         order_item.total_price += (product.price * quantity)
                         order_item.total_price -= (product.price * order_item.quantity)
                         order_item.quantity = quantity
                     else:
-                        print('it is same')
+                        pass
                 order_item.save()
-                # order.save()
             return redirect('view_cart')
-
         else:
-            print('start type 2')
             product_ids = request.POST.getlist('product_id')
             quantities = request.POST.getlist('quantity')
             checked_add = request.POST.getlist('add_to_cart')
             special = request.POST.get('special')
             order_id = request.session.get('order')
-            print('special',special)
-            print('product_ids',product_ids)
-         
             selected_product_ids = [product_id for product_id, checked in zip(product_ids, checked_add) if checked == 'checked']
             selected_products = Food.objects.filter(id__in=selected_product_ids)
-            print('selected_products', selected_products)
             total_quantity = sum(int(quantity) for quantity in quantities)
-            print(total_quantity)
             if selected_products:
-                    print('in if')
                     food_names = ' + '.join(product.name for product in selected_products)
-
                     if not order_id:
                         random_code = generate_random_system_code()
                         order = Order.objects.create(total_price=0, ref_code=random_code,user=request.user)
-                        print('order',order)
                         request.session['order'] = order.ref_code
-                        print('order',order)
                     else:
                         order = get_object_or_404(Order, ref_code=order_id)
-                        print(order)
                     if modify:
                         id =int(modify)
                         order_item = OrderItemtype2.objects.get(pk=id)
-                        print('get item',order_item)
                     else:
                         check_item = OrderItemtype2.objects.filter(order=order,name=food_names).first()
                         if check_item:
@@ -899,29 +842,16 @@ def add_to_cart(request,type,modify=None):
                             order_item = OrderItemtype2.objects.create(order=order, quantity=0
                                                                        ,name=food_names)
                     if total_quantity == 0 :
-
                         order_item.delete()
-                        # order.save()
-                        print('orderitem2 have been delete')
                         return redirect('view_cart')
-                    
-            
                     order_item.foods.set(selected_products)
-                    print('order_item.foods',order_item.foods)
-
                     if not modify :
                         if special == 'not checked':
                             order_item.price = 40
                         else:
                             order_item.price = 50
-                        print(order_item.price)
-                        print('order_item', order_item)
                         order_item.quantity += total_quantity
                         order_item.total_price += (order_item.price * total_quantity)
-                        # order.total_price += (order_item.price * total_quantity)
-                        # print('order price ',order.total_price)
-                        # print('order itemmm',order_item)
-                        
                     else:
                         original_price = None
                         if special == 'not checked':
@@ -936,41 +866,20 @@ def add_to_cart(request,type,modify=None):
                                 original_price = 40
                             else:
                                 order_item.price = 50
-             
-
-                        print(order_item.price)
-                        print('order_item', order_item)
-                        
                         if order_item.quantity != total_quantity:
-                            print(original_price)
                             if original_price:
                                 order_item.total_price -= (original_price*order_item.quantity)
                                 order_item.total_price += (order_item.price*total_quantity)
-                                ('HAVE  origin price')
                             else:
                                 order_item.total_price -= (order_item.price*order_item.quantity)
                                 order_item.total_price += (order_item.price*total_quantity)
-                            # order.total_price -= (order_item.price*order_item.quantity)
                             order_item.quantity = total_quantity
-                            print('order_item quantity ',order_item.quantity)
-                            # order.total_price += (order_item.price*order_item.quantity)
-                            # print('order price ',order.total_price)
-
-
                         else:
                             if original_price:
                                 order_item.total_price -= (original_price*order_item.quantity)
                                 order_item.total_price += (order_item.price*order_item.quantity)         
-                            print('it is same')
-                        
                     order_item.save()
-                    # order.save()
-
-                        # Include order_item data in the cart
-            
                     return redirect('view_cart')
-            else:
-                print('faile')
 
 @login_required           
 def delete_from_cart(request, product_id,type):

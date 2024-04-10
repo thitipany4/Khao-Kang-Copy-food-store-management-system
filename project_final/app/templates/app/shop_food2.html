@@ -407,15 +407,12 @@
             const formData = new FormData();
             let addToCartCount = 0;
             let exceededLimit = false;
-
             forms.forEach(form => {
                 const formInputs = form.querySelectorAll('input');
-
                 formInputs.forEach(input => {
                     if (input.type === 'checkbox') {
                         if (input.checked) {
                             if (input.name === 'add_to_cart') {
-                                // Check if 'add_to_cart' checkbox count exceeds 2
                                 if (addToCartCount >= 2) {
                                     alert('You can only select up to 2 products for add_to_cart.');
                                     exceededLimit = true;
@@ -428,7 +425,6 @@
                             formData.append(input.name, 'not checked');
                         }
                     } else if (input.type === 'number') {
-                        // Include the quantity value in the form data
                         formData.append('quantity', input.value);
                     } else {
                         formData.append(input.name, input.value);
@@ -436,13 +432,12 @@
                 });
             });
             if (exceededLimit) {
-                return; // Exit the function if limit exceeded
+                return;
             }
             if (addToCartCount === 0) {
                 alert('You must choose products for add_to_cart.');
-                return; // Exit the function if no products selected
+                return; 
             }
-
             fetch('/add-to-cart/' + typeValue + '/' ,{
                 method: 'POST',
                 body: formData,
@@ -462,15 +457,13 @@
 
             forms.forEach(form => {
                 const formInputs = form.querySelectorAll('input');
-
                 formInputs.forEach(input => {
                     if (input.type === 'checkbox') {
                         if (input.checked) {
                             if (input.name === 'add_to_cart') {
-                                // Check if 'add_to_cart' checkbox count exceeds 2
                                 if (addToCartCount >= 2) {
-                                    alert('You can only select up to 2 products for add_to_cart.');
-                                    exceededLimit = true; // Flag that limit has been exceeded
+                                    alert('ท่านสามารถเลือกเมนูอาหารเป็นกับได้สูงสุดแค่ 2 เมนู');
+                                    exceededLimit = true; 
                                 } else {
                                     addToCartCount++;
                                 }
@@ -480,7 +473,6 @@
                             formData.append(input.name, 'not checked');
                         }
                     } else if (input.type === 'number') {
-                        // Include the quantity value in the form data
                         formData.append('quantity', input.value);
                     } else {
                         formData.append(input.name, input.value);
@@ -489,15 +481,13 @@
             });
 
             if (exceededLimit) {
-                return; // Exit the function if limit exceeded
+                return; 
             }
 
             if (addToCartCount === 0) {
-                alert('You must choose products for add_to_cart.');
-                return; // Exit the function if no products selected
+                alert('กรุณาเลือกเมนูอาหารเป็บกับข้าว');
+                return;
             }
-
-            // If addToCartCount does not exceed 2 and there are selected products, submit the form
             fetch('/add-to-cart/' + typeValue + '/' + modifyValue + '/', {
                 method: 'POST',
                 body: formData,
@@ -509,12 +499,10 @@
                 }
             });
         }
-
         function incrementQuantity(productId) {
             var quantityInput = document.getElementById("id_quantity_" + productId);
             quantityInput.value = parseInt(quantityInput.value) + 1;
         }
-
         function decrementQuantity(productId) {
             var quantityInput = document.getElementById("id_quantity_" + productId);
             var currentQuantity = parseInt(quantityInput.value);

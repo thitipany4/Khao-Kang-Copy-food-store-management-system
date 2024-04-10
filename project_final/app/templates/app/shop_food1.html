@@ -277,7 +277,6 @@
 
       <script>
         const typeValue = "type1";
-        
         function submitForms() {
             const forms = document.querySelectorAll('.add-to-cart-form');
             const formData = new FormData();
@@ -293,10 +292,7 @@
                     });
                 }
             });
-    
-            // Check if there are forms with quantity > 0 before making the request
             if (formData.has('quantity')) {
-                // Ajax request to submit form data to Django backend
                 fetch('/add-to-cart/' + typeValue + '/', {
                     method: 'POST',
                     body: formData,
@@ -308,7 +304,7 @@
                     }
                 });
             } else {
-                alert('No forms with quantity greater than 0.');
+                alert('กรุณาเลือกเมนูอาหารที่ท่านต้องการ');
             }
         }
         const modifyValue = "{{modify}}";
@@ -322,8 +318,6 @@
                     formData.append(input.name, input.value);
                 });
             });
-
-            // Ajax request to submit form data to Django backend
             fetch('/add-to-cart/' + typeValue + '/' + modifyValue + '/', {
                 method: 'POST',
                 body: formData,
