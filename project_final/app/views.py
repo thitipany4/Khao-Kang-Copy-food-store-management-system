@@ -62,18 +62,15 @@ def create(req):
         form = FoodForm(req.POST,req.FILES)
         if form.is_valid():
             name_form = form.instance.name
-            print(form.instance.name,'form.instance.name')
             check_name = Food.objects.filter(name=form.instance.name).first()
             if check_name:
                 messages.error(req, f"ขออภัยค่ะ ไม่สามารถสร้างเมนู {name_form} ได้ เนื่องจากมีเมนูนี้อยู่ในระบบเเล้ว กรุณาตรวจสอบข้อมูลของท่านอีกครั้งค่ะ")
                 return redirect('managefood')
             else:
                 form.save()
-                
             return redirect('managefood')
     context = {
-        'form':form
-    }
+        'form':form}
     return render(req,'app/create.html',context)
 
 def search(req):
@@ -97,86 +94,34 @@ def select_date(req):
     if not is_superuser(req.user):
         messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
         return redirect('home') 
-    if req.method =='POST':
-            form_date = DateForm(req.POST)
-
-            if form_date.is_valid():
-                date = form_date.cleaned_data['date_field']
-                print(date)
-                get_date = getdate(date)
-                print('get_date:',get_date)
-                currect_date = getdate(datetime.now().date())
-                print('currect_date:',currect_date)
-                #ทำการเปรียบเทียบ ถ้าวันที่ ที่ส่งมาเป็นเมื่อวานหรือมากกว่านั้น ให้ รีเทิร์น history.html ไป แต่ ถ้าเป็นปัจจุบันก็รีเทิร์น managefood.html
-                # currect_date > get_date = เมื่อวาน
-                if currect_date > get_date:
-
-                    food_history = Historysale.objects.filter(date_field=get_date)
-                    foods = []
-                    for history in food_history:
-                        if history.food:
-                            foods.append(history)
-                    print(foods)
-                    form_date = DateForm()
-                    thai_date = getdate(None,get_date)
-                    print(thai_date)
-                    context ={
-                        'date':get_date,
-                        'thai_date':thai_date,
-                        'food':foods,
-                        'form':form_date,
-                    }
-                    return render(req,'app/historysales.html',context)
-                # currect_date < get_date = เมื่อวาน
-                elif currect_date < get_date:
-                    food_history = Historysale.objects.filter(date_field=get_date)
-                    foods = []
-                    for history in food_history:
-                        if history.food:
-                            foods.append(history)
-                    print(foods)
-                    form_date = DateForm()
-                    thai_date = getdate(None,get_date)
-                    print(thai_date)
-
-                    context ={
-                        'date':get_date,
-                        'thai_date':thai_date,
-                        'food':foods,
-                        'form':form_date,
-                        
-                        
-                    }
-                    return render(req,'app/historysales.html',context)
-                # present
-                else:
-                   print('44444444444444')
-                   return redirect('managefood')
-    else:
-            food = Food.objects.all()
+    if req.method == 'POST':
+        form_date = DateForm(req.POST)
+        if form_date.is_valid():
+            date = form_date.cleaned_data['date_field']
+            get_date = getdate(date)
+            currect_date = getdate(datetime.now().date())
+            food_history = Historysale.objects.filter(date_field=get_date)
             form_date = DateForm()
-            get_date = getdate()
-            thai_date = getdate(None,get_date)
-
-
-    context ={
-        'date':get_date,
-        'thai_date':thai_date,
-        'food':food,
-        'form':form_date,
-
-    }
-    return render(req,'app/managefood.html',context)
+            thai_date = getdate(None, get_date)
+            context = {
+                'date': get_date,
+                'thai_date': thai_date,
+                'food': food_history,
+                'form': form_date,
+}
+            if currect_date != get_date:
+                return render(req, 'app/historysales.html', context)
+            else:
+                return redirect('managefood')
+    else:
+        return redirect('managefood')
 
 def clearfood(req):
     if req.method=='POST':
-        #Food.objects.exclude(options='notchoose').update(options='notchoose')
         date = getdate()
         foods = Historysale.objects.filter( date_field=date)
         for f in foods:
             if f.options != None:
-                print('setsetset')
-                print(f)
                 f.options = None
                 f.save()
         return redirect('managefood')
@@ -197,7 +142,6 @@ def updatefood(req,id):
         old_name = food.name
         if form.is_valid():
             name_form = form.instance.name
-            print(form.instance.name,'form.instance.name')
             check_name = Food.objects.filter(name=form.instance.name).first()
             if old_name != name_form and check_name:
                 messages.error(req, f"ขออภัยค่ะ ไม่สามารถแก้ไข {old_name} เป็น {name_form} ได้ เนื่องจากมีเมนูนี้อยู่ในระบบเเล้ว")
@@ -207,8 +151,7 @@ def updatefood(req,id):
                 return redirect('managefood')
     context ={
         'food':food,
-        'form':form,
-    }
+        'form':form,}
     return render(req,'app/updatefood.html',context)
 
 @login_required
@@ -217,31 +160,22 @@ def profile(req,username):
         user =  get_object_or_404(User,username=username)
         member = Member.objects.get(user=user)
         form = MemberForm(instance=member)
-        print(form.instance.first_name)
     elif req.method=='POST':
         user =  get_object_or_404(User,username=username)
         member = Member.objects.get(user=user)
-        name = req.POST.get('first_name')
-        print(name)
         form = MemberForm(req.POST,req.FILES,instance=member)
         if form.is_valid():
             phone_number = form.cleaned_data['phone_number']
             if len(phone_number) != 10 or not phone_number.isdigit():
                 messages.error(req, 'รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง')
                 return redirect('profile',username=username)
-            print('form are valid')
             form.instance.age = req.POST.get('age')
             form.save()
-            print(form.instance.age)
             messages.success(req, 'บันทึกข้อมูลสำเร็จ')
             return redirect('profile',username=username)
-        else:
-            messages.error(req, 'ข้อมูลภายในฟอร์มไม่ถูกต้อง')
-            print(form.errors)
     context ={
         'member':member,
-        'form':form,
-    }
+        'form':form,}
     return render(req,'app/profile.html',context)
 
 @login_required           
@@ -326,29 +260,18 @@ def managefood(req, date=None):
     if not is_superuser(req.user):
         messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
         return redirect('home') 
-    print(date)
     if req.method == 'POST':
         quantity = req.POST.getlist('input_quantity')
-        print(quantity)
         food_ids = req.POST.getlist('food_id')
-        # print(food_ids)
         options = req.POST.getlist('options')
-        # print(options)
         if len(food_ids) == len(options):
             for id, option,quantity in zip(food_ids, options,quantity):
-               
                 food_item = Food.objects.get(pk=id)
-                print(food_item, f'pass {option}')
                 if option == 'ไม่ได้เลือก':
                     found = Historysale.objects.filter(food_id=food_item.id, date_field=date).first()
-                    print(found)
                     if found:
                         found.options = option
                         found.delete()
-                        print('ลบสำเร็จ (Deletion successful)')
-                    else:
-                        print('ไม่พบข้อมูลในฐานข้อมูล (Data not found in the database)')
-
                 elif option in ['วางขาย', 'ขายหมดแล้ว']:
                     found = Historysale.objects.filter(food_id=food_item.id, date_field=date).first()
                     if not found and quantity == '':
@@ -359,35 +282,20 @@ def managefood(req, date=None):
                         if found.options != option:
                             if option == 'ขายหมดแล้ว':
                                 found.options = option
-                                # found.quantity = quantity
                                 found.save()
-                          
-                                print('เปลี่ยนแปลงข้อมูลสำเร็จ (Data changed successfully)')
                             else:
                                 found.quantity = quantity
                                 found.options = option
-                                # food_item.quantity_sale = quantity
                                 found.save()
-                                # food_item.save()
-                                print('เปลี่ยนแปลงข้อมูลสำเร็จ (Data changed successfully)')
                         else:
-                            print('ไม่มีการเปลี่ยนแปลง (No changes made)')
                             if quantity:
                                 if option == 'ขายหมดแล้ว':
                                     pass
                                 else:
                                     found.quantity = quantity
                                     found.save()
-                                    # food_item.save()
                     else:
-                        # food_item.options = option
-                        # food_item.quantity_sale = quantity
-                        # food_item.save()
                         history_sale = Historysale.objects.create(food=food_item, date_field=date,quantity=quantity,options='วางขาย')
-
-                        print('เซฟข้อมูลลงฐานข้อมูลได้ (Saved data to the database)')
-                
-
         return redirect('managefood')
     else:
         food = Food.objects.all()
@@ -399,12 +307,9 @@ def managefood(req, date=None):
         options = Historysale.OPTIONS
         for o in options:
             list_options.append(o[0])
-        print(options)
         list_food =[]
-
         for food in food:
             found_item = ''
-            print(food)
             for item in history:
                 if food == item.food:
                     found_item = item
@@ -413,16 +318,13 @@ def managefood(req, date=None):
                 list_food.append((food,found_item))
             else:
                 list_food.append((food,''))
-        print(list_food)
-
         context ={
             'date':get_date,
             'thai_date':thai_date,
             'food':food,
             'form':form_date,
             'list_food':list_food,
-            'options':list_options,
-        }
+            'options':list_options,}
         return render(req,'app/managefood.html',context)
 
 def login(req):
@@ -487,7 +389,6 @@ def logout(req):
 def get_prev_month(d):
     year = d.year - 1 if d.month == 1 else d.year
     month = d.month - 1 if d.month > 1 else 12
-
     prev_month_date = d.replace(year=year, month=month)
     return prev_month_date
 
@@ -508,33 +409,24 @@ def calendar(req,date=None,mark=None):
             d = datetime.strptime(date, '%Y-%m-%d').date()
             date_str = get_next_month(d)
             date=getdate(date_str)
-            print('date11',date_str)
         elif date and mark =='prev_month':
-            print('date  dd' ,date)
             d = datetime.strptime(date, '%Y-%m-%d').date()
             date_str = get_prev_month(d)
             date=getdate(date_str)
-            print('date11',date_str)
         else:
             date = getdate()
-            print('currect month')
             date_str = datetime.strptime(date, '%Y-%m-%d').date()
-        
-        print('rrrrrrr',date_str)
         year = date_str.year
         month = date_str.month
         calendar_html = my_calendar.formatmonth(year, month)
     else:
         date = req.POST.get('move_to_month') + '-01'
-        print('date ==',date)
         if date:
             d = datetime.strptime(date, '%Y-%m-%d').date()
-            print('move to',d)
             year = d.year
             month = d.month
             calendar_html = my_calendar.formatmonth(year, month)
             note = Transaction.objects.filter(date__year=year, date__month=month)
-            # print(note)
             sum_expenses,sum_income= calculator(note)
             total = sum_income- sum_expenses 
             context = {'calendar_html': calendar_html,
@@ -544,11 +436,8 @@ def calendar(req,date=None,mark=None):
                         'sum_income':sum_income,}
             return render(req, 'app/calendar_template.html',context)
         else:
-            print('วันที่ภายในฟอร์มไม่ได้เลือก')
             return redirect('home')
-
     note = Transaction.objects.filter(date__year=date_str.year, date__month=date_str.month)
-    # print(note)
     sum_expenses,sum_income= calculator(note)
     total = sum_income- sum_expenses 
     context = {'calendar_html': calendar_html,
@@ -576,7 +465,6 @@ def note(req, date=None,type=None,filter=None):
             date=date,
             total_price=(int(price)*int(amount))
         )
-        print(add_data)
     if filter:
         if filter == 'most_quatity':
             note = Transaction.objects.filter(date=date,transaction_type=type).order_by('-amount')
@@ -587,15 +475,11 @@ def note(req, date=None,type=None,filter=None):
     else:
         note = Transaction.objects.filter(date=date,transaction_type=type)
     sum_expenses,sum_income= calculator(note)
-    form = FormNote()
     most_quatity = 'most_quatity'
     most_price = 'most_price'
     latest = 'latest'
-    for i in note:
-        print(i,i.transaction_type)
     context = {
         'note':note,
-        'form':form,
         'date':date,
         'type':type,
         'sum_expenses':sum_expenses,
@@ -615,7 +499,6 @@ def delete_note(req,date,type,id):
     if note:
         note.delete()
         return redirect('note', date=date, type=type)
-
     else:
         return redirect('note', date=date, type=type)
 
@@ -636,12 +519,8 @@ def show_note(req,date=None,type=None):
             leftover_order=Case(When(transaction_type='leftover', then=Value(0)),default=Value(1))).order_by('leftover_order')
     else:
         note = Transaction.objects.filter(date=date)    
-
-
     sum_expenses,sum_income= calculator(note)
-    print(note)
     total = sum_income- sum_expenses 
-    print(total)
     expenses= 'expenses'
     income ='income'
     leftover ='leftover'
@@ -727,12 +606,10 @@ def shopping_food_type1(request):
 def modify_cart1(request,ref_code):
     date = getdate()
     foods = Historysale.objects.filter(date_field=date,options='วางขาย')
-    print(ref_code)
     items = OrderItemtype1.objects.filter(order__ref_code=ref_code)
     food_item = []
     for food in foods:
         found_item = ''
-        print(food)
         for item in items:
             if food.food == item.food:
                 found_item = item
@@ -742,9 +619,7 @@ def modify_cart1(request,ref_code):
         else:
             food_item.append((food,0,food.quantity))
     modify = 'True'
-        
-    return render(request, 'app/shop_food1.html', {'food_item': food_item, 'modify':modify
-                                                         })
+    return render(request, 'app/shop_food1.html', {'food_item': food_item, 'modify':modify})
 
 @login_required
 def shopping_food_type2(request):
@@ -766,12 +641,9 @@ def modify_cart2(request,id):
         special = 'True'
     modify = f'{item.id}'
     selected = []
-    print('modify2',item)
     for i in item.foods.all():
         selected.append(i.id)
-    print(selected)
-    return render(request, 'app/shop_food2.html', {'food': food_sale, 'selected':selected,'modify':modify,'special':special,'item':item,
-                                                         })
+    return render(request, 'app/shop_food2.html', {'food': food_sale, 'selected':selected,'modify':modify,'special':special,'item':item,})
 
 @login_required
 def add_to_cart(request,type,modify=None):
@@ -884,20 +756,15 @@ def add_to_cart(request,type,modify=None):
 @login_required           
 def delete_from_cart(request, product_id,type):
     if type == 'type1':
-        product = get_object_or_404(OrderItemtype1, pk=product_id) # ปัญหาที่ database เพราะมันเป็น object เดียวกัน ต้องแยก
-        print(product , 'delete done')
+        product = get_object_or_404(OrderItemtype1, pk=product_id) 
         product.delete()
-
     else:
-        product = get_object_or_404(OrderItemtype2, id=product_id) # ปัญหาที่ database เพราะมันเป็น object เดียวกัน ต้องแยก
-        print(product , 'delete done')
+        product = get_object_or_404(OrderItemtype2, id=product_id) 
         product.delete()
     return redirect('view_cart')
-#แก้ไข time checkout
  
 @login_required           
 def checkout(request,ref_code,total_price):
-
     order = get_object_or_404(Order, ref_code=ref_code)
     total_price = int(total_price)
     order_item1 = OrderItemtype1.objects.filter(order=order)
@@ -909,17 +776,12 @@ def checkout(request,ref_code,total_price):
     selected_times = []
     bangkok_tz = pytz.timezone('Asia/Bangkok')
     current_time_bangkok = datetime.now(bangkok_tz)
-
     for time_slot in db_time:
         slot_time = datetime.strptime(time_slot.time_receive.split()[0], "%H:%M")
         slot_datetime = bangkok_tz.localize(datetime.combine(current_time_bangkok.date(), slot_time.time()))
-    
         if slot_datetime > current_time_bangkok:
             selected_times.append(time_slot)
-    
     selected_times.sort(key=lambda x: x.time_receive.split()[0])
-    print("Selected times:", selected_times)
-
     context ={
             'order':order,
             'total_price':total_price,
@@ -970,22 +832,14 @@ def order_confirmation(request, ref_code=None):
     if ref_code is None:
         order_id = request.session.pop('order', None)
         return redirect('home')
-
     if request.method == 'POST':
-        print(request.POST) 
         time = request.POST.get('select_time')
-        print('new_time',time)
         order = get_object_or_404(Order, ref_code=ref_code)
-        print(order)
         order_item1 = OrderItemtype1.objects.filter(order=order)
         order_item2 = OrderItemtype2.objects.filter(order=order)
-
-        # transaction = create_transaction(order_item1,order_item2)
-        total_price = 0
         if order_item1:
             for i in order_item1:
                 food = Food.objects.filter(pk=i.food.id).first()
-                print('food',food)
                 food_sale = get_quatity(food)
                 if food_sale.quantity - i.quantity < 0 :
                     messages.error(request,f'จำนวน {food_sale.food.name} ไม่เพียงพอ')
@@ -993,22 +847,16 @@ def order_confirmation(request, ref_code=None):
                 elif food_sale.quantity - i.quantity == 0 :
                     food_sale.quantity -= i.quantity 
                     food_sale.options = 'ขายหมดแล้ว'
-                    food.save()
                 else:
                     food_sale.quantity -= i.quantity 
                 order.total_price += i.total_price
                 order.save()
                 food_sale.save()
-
-                print(i.quantity)
-                print(food_sale.quantity)
         if order_item2:
             for item in order_item2:
                 for i in item.foods.all():
-                    print(i,'iii')
                     foods = get_object_or_404(Food,pk=i.id)
                     food_sale2 = get_quatity(foods)
-                    print(food_sale2.quantity)
                     if food_sale2.quantity - item.quantity < 0 :
                         messages.error(request,f'จำนวน {food_sale2.food.name} ไม่เพียงพอ')
                         return redirect('view_cart')
@@ -1019,27 +867,22 @@ def order_confirmation(request, ref_code=None):
                     else:
                         food_sale2.quantity -= item.quantity 
                         food_sale2.save()
-                    print('food_sale2.quantity',food_sale2.quantity)
                 if item.total_price != 0:
                     order.total_price += item.total_price
                     order.save()
-            print(order_item2.first().foods.all())
         request.session.pop('order', None)
         date= getdate()
         order.checkout = True
         order.time_receive=time
         order.save()
-        print('order has been checkout')
         message_to_admin(order)
         context ={  
             'order':order,
             'order_item1':order_item1,
-            'order_item2':order_item2,
-
-        }
+            'order_item2':order_item2,}
         return render(request, 'app/order_confirmation.html', context)
     else:
-        return redirect('product_list')
+        return redirect('view_cart')
 
 @login_required           
 def confirm_order(request,code=None,status=None,filter=None):
@@ -1177,7 +1020,6 @@ def complete_order(req,ref_code):
 
          
 def filter_history_confirm(orders,filter):
-        
         if filter =='receive':
             sort = orders.annotate(
             receive=Case(When(completed='completed', then=Value(0)),default=Value(1))).order_by('receive')
@@ -1301,28 +1143,14 @@ def my_order(req):
     current_date = getdate()
     current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
     date_filter = f'{current_date.year}-{current_date.month:02d}-{current_date.day:02d}'
-    print(date_filter)
     orders = Order.objects.filter(user=user,created_at__contains=date_filter,completed='incompleted',checkout=True).order_by('-created_at')
-    print('not',orders)
     total_price = 0 
     if orders :
         time_test = TimeReceive.objects.all()
-        for t in time_test:
-            print(t)
-        print(orders.first().time_receive,'time_receive')
         reason_test = CancelReason.objects.filter(use_with='user')
-        for r in reason_test:
-            print(r)
-        time = orders.first().TIME_CHOICES
-        reason =[('user-cancel','ลูกค้าเปลี่ยนใจ/ยกเลิกการจอง'),
-                ('cant-receive','ไม่สามารถไปรับอาหารได้'),]
-        print(reason)
-    # orders = Order.objects.filter(user=req.user).order_by('-created_at') ไว้ build sor t by
         items = []
-        
         for order in orders:
             order_items = []
-
             order_items_type1 = OrderItemtype1.objects.filter(order=order)
             for item in order_items_type1:
                 order_items.append(item)
@@ -1331,13 +1159,10 @@ def my_order(req):
             for item in order_items_type2:
                 order_items.append(item)
                 total_price += item.total_price
-            
             thai_tz = pytz.timezone('Asia/Bangkok')
             thai_time = timezone.localtime(order.created_at, timezone=thai_tz)
-            # print(thai_time.strftime("%d %B %Y %H:%M"))
             date_raw = order.created_at.date()
             date = getdate(None,str(date_raw))
-            # print(f'{date} {thai_time.strftime("%H:%M")}')
             date = f'{date} เวลา {thai_time.strftime("%H:%M")} น.'
             items.append(( order,order_items,date))
         context ={
@@ -1345,44 +1170,21 @@ def my_order(req):
                     'items':items,
                     'time':time_test,
                     'reason':reason_test,
-                    'total_price':total_price,
-                }
+                    'total_price':total_price,}
     else:
         context ={
-                    'order':orders,
-                    # 'items':items,
-                    # 'time':time,
-                    # 'order_item1':order_item1,
-                    # 'order_item2':order_item2,
-                }
-
+                    'order':orders,}
     return render(req,'app/my_order.html',context)
 
 @login_required           
 def cancel_my_order(req,ref_code):
     order = Order.objects.get(ref_code=ref_code)
-    item1 = OrderItemtype1.objects.filter(order=order)
-    item2 = OrderItemtype2.objects.filter(order=order)
-    for item in item1:
-        quatity1 = item.quantity
-        his = get_quatity(item.food)
-        # his.quantity += quatity1
-        his.save()
-    for item in item2:
-        quatity1 = item.quantity
-        for i in item.foods.all():
-            his = get_quatity(i)
-            # his.quantity += quatity1
-            his.save()
-
     reason = req.POST.get('select_reason')
     order.confirm = 'cancel'
     order.cancel_reason = reason
     order.save()
     user = req.user
-    print(user)
     message_cancel(order,user)
-    print(order)
     return redirect('my_order')
 
 @login_required           
@@ -1392,44 +1194,32 @@ def my_history(req,filter=None):
     cancel = 'cancel'
     completed = 'completed'
     orders =''
-
     if not filter:
         orders = Order.objects.filter(user=req.user,checkout=True).order_by('-created_at')
     else:
         if filter =='wait':
             orders = Order.objects.filter(user=req.user, checkout=True).annotate(wait_order=Case(
                 When(confirm='wait_to_confirm', then=Value(0)),default=Value(1))).order_by('wait_order', '-created_at')
-
             if not orders:
                 orders=None
-            print('wait ')
-
         elif filter =='receive':
             orders = Order.objects.filter(user=req.user,checkout=True).annotate(
             confirmed_order=Case(When(confirm='confirmed', then=Value(0)),default=Value(1))).order_by('confirmed_order','-created_at')
             if not orders:
                 orders=None
-            print('receive ')
         elif filter =='cancel':
             orders = Order.objects.filter(user=req.user,checkout=True).annotate(
             cancel_order=Case(When(confirm='cancel', then=Value(0)),default=Value(1))).order_by('cancel_order','-created_at')
-            print(orders)
             if not orders:
                 orders=None
-            print('cancel ')
         elif filter == 'completed':
             orders = Order.objects.filter(user=req.user,checkout=True).annotate(
             completed_order=Case(When(completed='completed', then=Value(0)),default=Value(1))).order_by('completed_order','-created_at')
-            print(orders)
             if not orders:
                 orders=None
-            print('completed ')
-    
     if orders :
         time = TimeReceive.objects.all()
-    # orders = Order.objects.filter(user=req.user).order_by('-created_at') ไว้ build sor t by
         items = []
-        
         for order in orders:
             order_items = []
             total_price = 0
@@ -1437,20 +1227,15 @@ def my_history(req,filter=None):
             for item in order_items_type1:
                 order_items.append(item)
                 total_price += item.total_price
-
             order_items_type2 = OrderItemtype2.objects.filter(order=order)
             for item in order_items_type2:
                 order_items.append(item)
                 total_price += item.total_price
-            
             thai_tz = pytz.timezone('Asia/Bangkok')
             thai_time = timezone.localtime(order.created_at, timezone=thai_tz)
-            # print(thai_time.strftime("%d %B %Y %H:%M"))
             date_raw = order.created_at.date()
             date = getdate(None,str(date_raw))
-            # print(f'{date} {thai_time.strftime("%H:%M")}')
             date = f'{date} เวลา {thai_time.strftime("%H:%M")} น.'
-
             items.append(( order,order_items,date,total_price))
         context ={
                     'order':orders,
@@ -1459,19 +1244,13 @@ def my_history(req,filter=None):
                     'receive':receive,
                     'wait':wait,
                     'cancel':cancel,
-                    'completed':completed,
-
-                }
+                    'completed':completed, }
     else:
         context ={
                     'order':orders,
                     'receive':receive,
                     'wait':wait,
-                    'cancel':cancel
-
-                }
-
-
+                    'cancel':cancel}
     return render(req,'app/history_order.html',context)
 
 def qr_code(req,check=None):

@@ -401,7 +401,6 @@
 
     <script>
         const typeValue = "type2";
-        const modifyValue = "{{modify}}";
         function submitForms() {
             const forms = document.querySelectorAll('.add-to-cart-form, .add-to-cart-form2,.checkbox_form');
             const formData = new FormData();
@@ -414,7 +413,7 @@
                         if (input.checked) {
                             if (input.name === 'add_to_cart') {
                                 if (addToCartCount >= 2) {
-                                    alert('You can only select up to 2 products for add_to_cart.');
+                                    alert('ท่านสามารถเลือกเมนูอาหารเป็นกับได้สูงสุดแค่ 2 เมนู');
                                     exceededLimit = true;
                                 } else {
                                     addToCartCount++;
@@ -435,7 +434,7 @@
                 return;
             }
             if (addToCartCount === 0) {
-                alert('You must choose products for add_to_cart.');
+                alert('กรุณาเลือกเมนูอาหารเป็บกับข้าว');
                 return; 
             }
             fetch('/add-to-cart/' + typeValue + '/' ,{
@@ -449,6 +448,7 @@
                 }
             });
         }
+        const modifyValue = "{{modify}}";
         function submitForms_modify() {
             const forms = document.querySelectorAll('.add-to-cart-form, .add-to-cart-form2,.checkbox_form');
             const formData = new FormData();
