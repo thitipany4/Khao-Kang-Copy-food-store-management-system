@@ -331,10 +331,10 @@
                                         {%csrf_token%}
                                         <div class="box_form">
                                             <label for="reason">เพิ่มเหตุที่ต้องการ</label>
-                                            <input type="text" name="reason" id="reason" maxlength="100">
+                                            <input type="text" name="reason" id="reason" maxlength="100" required>
     
                                             <label for="use_with">ผู้ใช้ที่ต้องการเลือกใช้</label>
-                                            <select name="use_with" id="use_with">
+                                            <select name="use_with" id="use_with" required>
                                                 <option value="admin">ผู้ดูเเลระบบ</option>
                                                 <option value="user">ผู้ใช้งาน</option>
                                             </select>

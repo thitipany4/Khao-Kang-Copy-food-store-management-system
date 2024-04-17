@@ -12,19 +12,6 @@ from datetime import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 
-
-# def select_month_dash(req):
-#     if req.method == 'POST':
-#         month = req.POST.get('move_to_month')
-#         print(month)
-
-#         test_tra = Transaction.objects.filter(date__contains=month)
-#         cancel_test = Order.objects.filter(confirm='cancel',created_at__contains=month)
-#         com_test = Order.objects.filter(completed='completed',created_at__contains=month)
-#         print('test get date',test_tra)
-#         print('test get date2',cancel_test)
-#         print('test get date3',com_test)
-#     return redirect('see_all_data')
 def get_all_data():
     income = 0
     expenses = 0
@@ -215,51 +202,26 @@ def call_user(user):
         return member
     else:
         return None
-    
 def is_superuser(user):
     return user.is_authenticated and user.is_superuser
 
 
 @login_required
-def see_all_data(req,filter=None):
+def see_all_data(req):
     if not is_superuser(req.user):
         messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
         return redirect('home') 
     show_text = 'ข้อมูลทั้งหมด'
-    if req.method == 'POST':
-        month = req.POST.get('move_to_month')
-        print(month)
-        current = datetime.now().date()
-
-    else:
-        current = datetime.now().date()
-
-    if filter:
-        app = call_all()
-        add_to_session(req,app)
-        print('filter',filter)
-
-    else:
-        app = call_all()
-        add_to_session(req,app)
-
-    month_data = 'month'
-    quater_data = 'quater'
-
+    app = call_all()
+    add_to_session(req,app)
     income,expenses,success,cancel, = get_all_data()
-    user = req.user
-    user_check = call_user(user)
-
     context = {
         'app':app,
         'income':income,
         'expenses':expenses,
         'success':success,
         'cancel':cancel,
-        'month_data':month_data,
-        'quater_data':quater_data,
         'show_text':show_text,
-        'user':user_check,
     }
     return render(req,'dashboard/home.html',context)
 
@@ -272,50 +234,35 @@ def see_month_data(req):
     mark = 'Month'
     if req.method == 'POST':
         select_date = req.POST.get('move_to_month')
-        print('month',select_date)
-
         split = select_date.split('-')
         text_send_tra = f'{split[0]}-{split[1]}-12'
         date = getdate(None,str(text_send_tra))
         date = date.split(' ')
         show_text = f'{date[1]} {date[2]}'
-
         year, month = map(int, select_date.split("-"))
         all_days = calendar.monthrange(year, month)[1]
         list_day = [day for day in range(1, all_days + 1)]
-        month = str(month).zfill(2) 
+        # month = str(month).zfill(2) 
         app = call_month(select_date,list_day)
         add_to_session(req,app)
         raw_current = f'{split[0]}-{split[1]}'
         current = datetime.strptime(raw_current, "%Y-%m")
-
     else:
         current = datetime.now().date()
         year_t = current.year
         month_t = current.month
-
         all_days = calendar.monthrange(year_t, month_t)[1]
         list_day = [day for day in range(1, all_days + 1)]
-        if month_t < 10 :
-            month_t = f'0{month_t}'
-        date = getdate(None,str(current))
-        date = date.split(' ')[1:]
-        show_text = f'{date[0]} {date[1]}'
-        print(date)
-        print(show_text)
-
-        print(current.year,current.month,'current year month')
+        # if month_t < 10 :
+        #     month_t = f'0{month_t}'
         send_date = str(current).split('-')[0:2]
         send_date = f'{send_date[0]}-{send_date[1]}'
         app = call_month(send_date,list_day)
         add_to_session(req,app)
-
-    month_data = 'month'
-    quater_data = 'quater'
-
+        date = getdate(None,str(current))
+        date = date.split(' ')[1:]
+        show_text = f'{date[0]} {date[1]}'
     income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare = get_month_data(current)
-    user = req.user
-    user_check = call_user(user)
     context = {
         'income':income,
         'expenses':expenses,
@@ -325,12 +272,8 @@ def see_month_data(req):
         'cancel':cancel,
         'success_compare':success_compare,
         'cancel_compare':cancel_compare,
-        'month_data':month_data,
-        'quater_data':quater_data,
         'show_text':show_text,
-        'mark':mark,
-        'user':user_check
-    }
+        'mark':mark,}
     return render(req,'dashboard/home.html',context)
 
 @login_required
@@ -344,42 +287,25 @@ def see_quarter_data(req):
     if req.method == 'POST':
         quarter = req.POST.get('select_quarter')
         year = req.POST.get('input_year')
-        print('quarter',quarter,type(quarter))
-        print('year',year,type(year))
         quarter = int(quarter)
         year = int(year)
-
         len_quater = get_month_dates(year,quarter)
-        print('len_quater',len_quater)
         show_text =f'ไตรมาสที่ {quarter} ปี {year}'
         list_quater = get_list_quarter(quarter)
-        print('list_quater',list_quater)
         app = call_quarter(len_quater,list_quater)
-
         add_to_session(req,app)
-  
     else:
-
         current = datetime.now().date()
         year = current.year
         month = current.month
-        print('month_t',month)
         quarter = get_quarter(month)
-        print('quarter',quarter)
         len_quarter = get_month_dates(year,quarter)
-        print('len_quater',len_quarter)
         show_text =f'ไตรมาสที่ {quarter} ปี {year}'
         list_quarter = get_list_quarter(quarter)
         app = call_quarter(len_quarter,list_quarter)
-        print('app',app)
         add_to_session(req,app)
 
-    month_data = 'month'
-    quater_data = 'quater'
-
     income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare = get_quarter_data(quarter,year)
-    user = req.user
-    user_check = call_user(user)
     context = {
         'income':income,
         'expenses':expenses,
@@ -389,15 +315,11 @@ def see_quarter_data(req):
         'cancel':cancel,
         'success_compare':success_compare,
         'cancel_compare':cancel_compare,
-        'month_data':month_data,
-        'quater_data':quater_data,
         'show_text':show_text,
         'mark':mark,
         'select_quarter':select_quarter,
         'quarter':quarter,
-        'year':year,
-        'user':user_check
-    }
+        'year':year,}
     return render(req,'dashboard/home.html',context)
 
 def get_excel(range_date=None):
@@ -405,11 +327,7 @@ def get_excel(range_date=None):
         transactions = Transaction.objects.filter(transaction_type__in=['income', 'expenses'], date__range=range_date).order_by('date')
     else:
         transactions = Transaction.objects.all().order_by('date')
-
-    # Dictionary to store data for each transaction type
-    data_by_type = {'income': [], 'expenses': [], 'leftover': []}
-
-    # Iterate over transactions and group them by transaction type
+    data_by_type = {'income': [], 'expenses': [], 'leftover': []} 
     for transaction in transactions:
         formatted_date = transaction.date.strftime('%Y/%m/%d')
         type_str = None
@@ -419,7 +337,6 @@ def get_excel(range_date=None):
             type_str = 'รายจ่าย'
         elif transaction.transaction_type == 'leftover':
             type_str = 'คงเหลือ'
-
         data_by_type[transaction.transaction_type].append({
             'วันที่': formatted_date,
             'ชื่อรายการอาหาร/วัตถุดิบ': transaction.name,
@@ -428,19 +345,15 @@ def get_excel(range_date=None):
             'ราคารวม': transaction.total_price,
             'ประเภท': type_str
         })
-
-    # Create Excel file with multiple sheets
     excel_buffer = BytesIO()
     with pd.ExcelWriter(excel_buffer, engine='xlsxwriter') as writer:
         for transaction_type, data in data_by_type.items():
             df = pd.DataFrame(data)
             df.to_excel(writer, sheet_name=transaction_type, index=False)
-
-    # Create HTTP response with Excel file content
     response = HttpResponse(excel_buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
     response['Content-Disposition'] = 'attachment; filename="Report_Finacial.xlsx"'
-
     return response
+
 @login_required
 def download_excel(req):
     if not is_superuser(req.user):
@@ -457,30 +370,24 @@ def download_range(req):
     if req.method == 'POST':
         start = req.POST.get('start_month')
         end = req.POST.get('end_month')
-        print(start,'start')
-        print(end,'end')
         start_date = datetime.strptime(start, '%Y-%m')
         end_date = datetime.strptime(end, '%Y-%m')
-
         start_date = start_date.replace(day=1)
         end_date = (end_date + relativedelta.relativedelta(day=31))
-        
         res = get_excel((start_date,end_date))
         return res
-        
     else:
        return render(req,'dashboard/download_page.html')
+    
 def reason_time(req):
+    if not is_superuser(req.user):
+        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+        return redirect('home') 
     reason = CancelReason.objects.all()
     time = TimeReceive.objects.all()
-    user = req.user
-    user_check = call_user(user)
-
     return render(req,'dashboard/reason_time.html',{
         'reason':reason,
-        'time':time,
-        'user':user_check
-    })
+        'time':time,})
 
 @login_required
 def delete_reason(req,id):
@@ -510,10 +417,8 @@ def save_reason(req):
     if req.method == "POST":
         reason = req.POST.get('reason')
         use_with = req.POST.get('use_with')
-        print(reason,use_with)
         if reason and use_with :
             check = CancelReason.objects.filter(reason=reason)
-            print(len(check))
             if check.exists():
                 for c in check:
                     if c.use_with == use_with :
@@ -524,8 +429,6 @@ def save_reason(req):
             else:
                 reason_db = CancelReason.objects.create(reason=reason,use_with=use_with)
             return redirect('reason_time')
-        else:
-            return redirect('reason_time')
 
 @login_required
 def save_time(req):
@@ -534,7 +437,6 @@ def save_time(req):
         return redirect('home') 
     if req.method == "POST":
         time = req.POST.get('time')
-        print(time)
         if time:
             check = TimeReceive.objects.filter(time_receive=time).first()
             if check :

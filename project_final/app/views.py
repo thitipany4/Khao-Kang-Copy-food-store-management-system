@@ -1289,8 +1289,7 @@ def show_recommend(req):
         return redirect('home') 
     rec = RecommendUs.objects.all()
     return render(req,'app/show_recom.html',context={
-        'recomend':rec
-    })
+        'recomend':rec})
 
 @login_required           
 def full_recommend(req,id):
@@ -1299,5 +1298,4 @@ def full_recommend(req,id):
         return redirect('home') 
     rec = RecommendUs.objects.get(pk=id)
     return render(req,'app/show_full_rec.html',context={
-        'recomend':rec
-    })
+        'recomend':rec})
