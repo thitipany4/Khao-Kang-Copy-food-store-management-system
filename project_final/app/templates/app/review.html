@@ -174,11 +174,87 @@
             -webkit-user-select: none;
             touch-action: manipulation;
         }
+        .message-alerts {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+        .error {   
 
+            display: flex;
+            position: relative;
+            width: 700px;  
+            height: 40px;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-weight: bold;
+            font-size: 18px;
+            background-color: #F97979;
+            border: 1px solid #F97979;
+            padding: 0 10px; 
+            border-radius: 0.3rem;
+            margin-right: 90px;
+        }   
+        .error,.success {
+            cursor: pointer;
+            margin-left: 100px;
+        }
+        .close-button {
+            position: absolute;
+            right: 3%;
+        }
+        .box_error,.box_success {
+            display: flex;
+            /* border: 1px solid blue; */
+            justify-content: center;
+            width: 100%;
+
+        }
+        .success {  
+            display: flex;
+            position: relative;
+            width: 50%;  
+            height: 40px;
+            align-items: center;
+            justify-content: space-between;
+            color: #000000;
+            font-weight: bold;
+            font-size: 18px;
+            background-color: #7BF979;
+            border: 1px solid #7BF979;
+            padding: 0 10px; 
+            border-radius: 0.3rem;
+            margin-right: 90px;
+
+        }
     </style>
 </head>
 <body>
     {% include 'app/navbar.html' %}
+    {% if messages %}
+    <div class="message-alerts">
+        {% for message in messages %}
+            {% if message.tags == 'error' %}
+            <div class="error">
+                <div class="box_error">
+                    {{ message }}
+                </div>
+                <span class="close-button" onclick="this.parentElement.style.display='none';">&times;</span>
+            </div>
+            {% elif message.tags == 'success' %}
+            <div class="success">
+                <div class="box_success">
+                    {{ message }}
+                </div>
+                <span class="close-button" onclick="this.parentElement.style.display='none';">&times;</span>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
     <div class="container">
         <form class="form-review" action="/review/{{form.instance.id}}/" method="post" enctype="multipart/form-data">
             {%csrf_token%}
@@ -215,7 +291,7 @@
             </div>
 
             <div class="text-review">
-                <textarea class="textarea" id="review_id" name="review">{{ form.instance.review }}</textarea>
+                <textarea class="textarea" id="review_id" name="review" required>{{ form.instance.review }}</textarea>
             </div>
 
             <div class="button-submit">
@@ -233,8 +309,6 @@
 function toggleStars(score) {
     const stars = document.querySelectorAll('.fa-star');
     const ratingInput = document.getElementById('ratingInput');
-
-    // Loop through the stars and apply the 'checked' class
     for (let i = 0; i < stars.length; i++) {
         if (i < score) {
             stars[i].classList.add('checked');
@@ -243,10 +317,7 @@ function toggleStars(score) {
         }
     }
 
-    // Update the rating value
     ratingInput.value = score;
-
-    // Display the score value
     document.getElementById('scoreValue').innerText = `Score: ${score}`;
 }
 

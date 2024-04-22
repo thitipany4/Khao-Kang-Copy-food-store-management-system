@@ -190,8 +190,7 @@ def foodview(req, id=None, target=None):
         orderby = 'not order'
         food = Food.objects.get(pk=id)
         review = Reviewfood.objects.filter(food=food)
-        for i in review:
-            print(i.owner)
+        memver = Member.objects.all()
         orderby =review.order_by('-created')
         star_range = [1,2,3,4,5]
         star_count = defaultdict(int)
@@ -218,6 +217,7 @@ def foodview(req, id=None, target=None):
                 orderby = review.order_by('-created')
             else:
                 orderby = review.order_by('-rating')
+        
         context = {
             'food': food,
             'review': orderby,
@@ -248,7 +248,10 @@ def reviewfood(req,id):
                 food.score = round(average_score, 2)
             food.save()
             review.save()
-            return redirect('home')
+            return redirect('foodview',id=id)
+        else:
+            messages.error(req, 'กรุณาป้อนคะแนนรีวิวที่ท่านต้องการ')
+            return redirect('review',id=id)
     context = {
         'form':form,
         'food':food,

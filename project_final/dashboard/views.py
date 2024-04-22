@@ -215,6 +215,7 @@ def see_all_data(req):
     app = call_all()
     add_to_session(req,app)
     income,expenses,success,cancel, = get_all_data()
+    admin = call_user(req.user)
     context = {
         'app':app,
         'income':income,
@@ -222,6 +223,7 @@ def see_all_data(req):
         'success':success,
         'cancel':cancel,
         'show_text':show_text,
+        'admin':admin
     }
     return render(req,'dashboard/home.html',context)
 
@@ -263,6 +265,7 @@ def see_month_data(req):
         date = date.split(' ')[1:]
         show_text = f'{date[0]} {date[1]}'
     income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare = get_month_data(current)
+    admin = call_user(req.user)
     context = {
         'income':income,
         'expenses':expenses,
@@ -273,7 +276,8 @@ def see_month_data(req):
         'success_compare':success_compare,
         'cancel_compare':cancel_compare,
         'show_text':show_text,
-        'mark':mark,}
+        'mark':mark,
+        'admin':admin}
     return render(req,'dashboard/home.html',context)
 
 @login_required
@@ -306,6 +310,7 @@ def see_quarter_data(req):
         add_to_session(req,app)
 
     income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare = get_quarter_data(quarter,year)
+    admin = call_user(req.user)
     context = {
         'income':income,
         'expenses':expenses,
@@ -319,7 +324,8 @@ def see_quarter_data(req):
         'mark':mark,
         'select_quarter':select_quarter,
         'quarter':quarter,
-        'year':year,}
+        'year':year,
+        'admin':admin}
     return render(req,'dashboard/home.html',context)
 
 def get_excel(range_date=None):
@@ -385,9 +391,11 @@ def reason_time(req):
         return redirect('home') 
     reason = CancelReason.objects.all()
     time = TimeReceive.objects.all()
+    admin = call_user(req.user)
     return render(req,'dashboard/reason_time.html',{
         'reason':reason,
-        'time':time,})
+        'time':time,
+        'admin':admin})
 
 @login_required
 def delete_reason(req,id):

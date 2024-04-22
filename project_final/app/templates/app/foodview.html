@@ -675,11 +675,16 @@
         
           {%for review in review%}
             <div class="review-detail">
-
                 <div class="box-review1">
+                    {%if review.owner.picture %}
                     <div class="image-user">
                         <img src="{{review.owner.picture}}" alt="img not found">
                     </div>
+                    {%else%}
+                    <div class="image-user">
+                        <img src="{{review.owner.picture}}" alt="Nont">
+                    </div>
+                    {%endif%}
                 </div>
                 {%if review.review|length > 116 %}
                     <div class="box-review2-more-116">
