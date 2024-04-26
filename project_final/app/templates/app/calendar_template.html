@@ -348,13 +348,12 @@
                         <div class="popup-content">
                             <!-- Your existing form code -->
                             <form method="post" action="{% url 'calendar' %}" class="move-to-month-form">
-                                {%csrf_token%}
+                                {% csrf_token %}
                                 <label for="id_move_to_month">Move to Month:</label>
                                 <input type="month" name="move_to_month" id="id_move_to_month" value="{{ current_year }}-{{ current_month|date:'m' }}" required>
                                 <button type="submit">Go</button>
                                 <button id="closePopup">Close</button>
                             </form>
-                
                         </div>
                     </div>
                 </div>
@@ -378,7 +377,8 @@
             document.getElementById('popupOverlay').style.display = 'flex';
         });
 
-        document.getElementById('closePopup').addEventListener('click', function() {
+        document.getElementById('closePopup').addEventListener('click', function(event) {
+            event.preventDefault();
             document.getElementById('popupOverlay').style.display = 'none';
         });
     </script>

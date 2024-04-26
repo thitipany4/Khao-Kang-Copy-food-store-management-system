@@ -174,7 +174,7 @@
         .total-all {
             display: flex;
             height: 60px;
-            margin-top: 10px;
+            margin-bottom: 10px;
             text-align: right;
             justify-content: space-between;
             border: 1px solid #dddddd;
@@ -301,7 +301,18 @@
                     </div>
             </form>
         </div>
-        
+        {% if type != 'leftover'  %}    
+            <div class="total-all">
+                <div class="text-total">สรุปยอดรวม</div>
+                {% if type == 'income' %}
+                    <div class="total-all-plus">{{sum_income}} ฿ </div>
+                {% endif %}
+                {% if type == 'expenses' %}
+                    <div class="total-all-negative">{{sum_expenses}} ฿ </div>
+                {% endif %}
+                
+            </div>
+        {% endif %}
         <table>
             <thead>
                 <tr>
@@ -337,18 +348,6 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% if type != 'leftover'  %}    
-            <div class="total-all">
-                <div class="text-total">สรุปยอดรวม</div>
-                {% if type == 'income' %}
-                    <div class="total-all-plus">{{sum_income}} ฿ </div>
-                {% endif %}
-                {% if type == 'expenses' %}
-                    <div class="total-all-negative">{{sum_expenses}} ฿ </div>
-                {% endif %}
-                
-            </div>
-        {% endif %}
     </div>
 </body>
 </html>
