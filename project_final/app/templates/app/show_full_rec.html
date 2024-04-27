@@ -34,6 +34,7 @@
         .box-top {
             display: flex;
             /* border: 1px solid green; */
+            flex-direction: column;
             width: 100%;
             justify-content: center;
             align-items: center;
@@ -62,8 +63,47 @@
             padding: 10px;
             word-wrap: break-word; 
         }
-
-
+        .each_rec {
+            display: flex;
+            width: 200px;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+        .image {
+        width: 75px;
+        height: 75px;
+        margin-right: 20px;
+        margin-left: 10px;
+    }
+    .image img {
+        border-radius: 50%;
+        width: 100%;
+        height: 100%;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    .box-btn {
+        width: 90%;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        margin-right: 20px;
+    }
+    .button-back {
+        padding: 10px;
+        width: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 0.3rem;
+        background-color: #8BE3C6;
+        box-shadow: transparent 0 0 0 3px,rgba(18, 18, 18, .1) 0 6px 20px;
+    }
+    a {
+        text-decoration: none;
+        color: #192521;
+    }
     </style>
 </head>
 <body>
@@ -71,14 +111,23 @@
     <div class="container">
         <div class="box_rec" >
             <div class="box-top">
-                <div class="text_head">
-                    {{recomend.user.user}}
+                <div class="each_rec">
+                    <div class="image">
+                        <img src="{{recomend.user.picture}}" alt="None">
+                    </div>
+                    <div class="body_rec">
+                        <div class="box_username">
+                            <div class="user_name">{{recomend.user.user}}</div>
+                        </div>
+
                 </div>
             </div>
             <div class="text-box">
                 <div class="textarea">{{recomend.text}}</div>
             </div>
-
+            <div class="box-btn">
+                <a class="button-back" href="/show_recommend_us/">กลับ</a>
+            </div>
          
             
         </div>
