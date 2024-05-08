@@ -197,8 +197,8 @@ def get_quarter_data(quarter,year):
 
 def call_user(user):
     if user.is_superuser:
-        print(user.id)
-        member = Member.objects.get(pk=user.id)
+
+        member = Member.objects.get(user=user)
         return member
     else:
         return None
