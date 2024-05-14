@@ -68,9 +68,10 @@ def call_all():
         transaction = Transaction.objects.filter(transaction_type__in=['income','expenses'])
         price_tran = [t.total_price for t in transaction]
         type_tran = [t.transaction_type for t in transaction]
-        date_tran = [str(t.created).split(' ')[0] for t in transaction]
+        date_tran = [str(t.date).split(' ')[0] for t in transaction]
         price_df = pd.DataFrame({'date':date_tran,'price':price_tran,'type':type_tran})
         price_df['year'] = pd.to_datetime(price_df['date']).dt.year
+        print( price_df['year'],'test year')
         price_test = price_df.groupby(['year','type'])['price'].sum().reset_index()
 
         figure2 = px.line(price_test,x='year', y='price',color='type',markers=True)
@@ -235,7 +236,7 @@ def call_month(date_filter,list_day):
                     title='กราฟแสดงจำนวนเพศของผู้ใช้งานภายในระบบ (เดือน)')
 
         transaction = Transaction.objects.filter(date__contains=date_filter,transaction_type__in=['income','expenses'])
-        # print(transaction,'transaction 222')
+        print(transaction,'transaction 222')
         if transaction:
             date_tran = [str(t.date).split(' ')[0] for t in transaction]
             # print(date_tran)
