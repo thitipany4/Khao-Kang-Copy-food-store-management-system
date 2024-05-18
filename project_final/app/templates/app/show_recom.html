@@ -84,6 +84,8 @@
     .box_username {
         height: 30px;
         margin-bottom: 5px;
+        display: flex;
+        justify-content: space-between;
     }
     .box_text {
         height: 45px;
@@ -119,6 +121,7 @@
                     <div class="body_rec">
                         <div class="box_username">
                             <div class="user_name">{{rec.user.user}}</div>
+                            <div class="create">{{rec.created}}</div>
                         </div>
                         <div class="box_text">
                             <div class="text_rec">{{rec.text}}</div>

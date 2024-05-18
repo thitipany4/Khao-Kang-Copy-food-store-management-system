@@ -8,7 +8,7 @@ import base64
 class LineLogin:
     CLIENT_ID = '2002071461'
     CLIENT_SECRET = 'ccdce5af4dca9056f145c473d7193d11'
-    REDIRECT_URL = 'https://035e-27-145-120-155.ngrok-free.app/login/callback/'
+    REDIRECT_URL = 'https://684a-49-228-41-242.ngrok-free.app/login/callback/'
 
     AUTH_URL = 'https://access.line.me/oauth2/v2.1/authorize'
     PROFILE_URL = 'https://api.line.me/v2/profile'
