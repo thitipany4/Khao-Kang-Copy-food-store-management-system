@@ -20,18 +20,7 @@ class LineLogin:
         session_state = hashlib.sha256(str(time.time()).encode() + str(random.getrandbits(512)).encode()).hexdigest()
         link = f"{self.AUTH_URL}?response_type=code&client_id={self.CLIENT_ID}&redirect_uri={self.REDIRECT_URL}&scope=profile%20openid%20email&state={session_state}"
         return link
-    '''
-    def refresh(self, token):
-        header = {'Content-Type': 'application/x-www-form-urlencoded'}
-        data = {
-            "grant_type": "refresh_token",
-            "refresh_token": token,
-            "client_id": self.CLIENT_ID,
-            "client_secret": self.CLIENT_SECRET
-        }
-        response = self.send_curl(self.TOKEN_URL, header, 'POST', data)
-        return json.loads(response)
-    '''
+
     def token(self, code, state):
         header = {'Content-Type': 'application/x-www-form-urlencoded'}
         data = {

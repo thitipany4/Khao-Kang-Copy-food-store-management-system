@@ -17,7 +17,7 @@ from .clear_session import *
 from .line_login import LineLogin
 from .calculator import calculator
 from .forms import FormNote
-from .utils import EventCalendar
+from .utils import IAECalendar
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 #------------------------------------------------------------------
@@ -49,6 +49,7 @@ def home(req):
         'is_weekend':is_weekend,
     }
     return render(req,'app/home.html',context)
+
 def about_us(req):
     return render(req,'app/aboutus.html')
 
@@ -330,10 +331,10 @@ def managefood(req, date=None):
             'options':list_options,}
         return render(req,'app/managefood.html',context)
 
-def login(req):
-      if req.user.is_authenticated:
-          print('success login..........................................................')
-      return render(req,'app/login.html')
+# def login(req):
+#       if req.user.is_authenticated:
+#           print('success login..........................................................')
+#       return render(req,'app/login.html')
 
 def line_login(request):
     line = LineLogin()
@@ -352,7 +353,6 @@ def line_callback(request):
         if token.get('error'):
             # return redirect('managefood')
             pass
-
         if token.get('id_token'):
             profile = line.profile_from_id_token(token)
             request.session['profile'] = profile
@@ -361,7 +361,6 @@ def line_callback(request):
             user = User.objects.filter(username=user_id).first()
             print(user)
             print('user_id',user_id)
-
             if user:
                     auth_login(request, user)
                     return redirect('home') 
@@ -373,9 +372,7 @@ def line_callback(request):
                     user=line_user,
                     email=profile['email'],
                     line_id = profile['user_id'],
-                    picture=profile['picture'],
-
-                )
+                    picture=profile['picture'],)
                 print('register success')
                 auth_login(request, line_user_profile.user)
                 print('user:',line_user_profile.user)
@@ -406,7 +403,7 @@ def calendar(req,date=None,mark=None):
     if not is_superuser(req.user):
         messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
         return redirect('home') 
-    my_calendar = EventCalendar()
+    my_calendar = IAECalendar()
     if req.method == 'GET':
         if date and mark =='next_month':
             d = datetime.strptime(date, '%Y-%m-%d').date()
@@ -831,7 +828,7 @@ def create_transaction(obj1,obj2):
             print('transaction',transaction)
 
 @login_required           
-def order_confirmation(request, ref_code=None):
+def user_confirm_order(request, ref_code=None):
     if ref_code is None:
         order_id = request.session.pop('order', None)
         return redirect('home')
@@ -884,11 +881,9 @@ def order_confirmation(request, ref_code=None):
             'order_item1':order_item1,
             'order_item2':order_item2,}
         return render(request, 'app/order_confirmation.html', context)
-    else:
-        return redirect('view_cart')
 
 @login_required           
-def confirm_order(request,code=None,status=None,filter=None):
+def admin_confirm_order(request,code=None,status=None,filter=None):
     if not is_superuser(request.user):
         messages.error(request, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
         return redirect('home') 

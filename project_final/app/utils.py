@@ -8,9 +8,9 @@ from django.urls import reverse
 
 
 
-class EventCalendar(HTMLCalendar):
+class IAECalendar(HTMLCalendar):
     def __init__(self, events=None):
-        super(EventCalendar, self).__init__()
+        super(IAECalendar, self).__init__()
         self.events = events
 
     def formatday(self, day, weekday,month):
