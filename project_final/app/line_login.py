@@ -9,7 +9,6 @@ class LineLogin:
     CLIENT_ID = '2002071461'
     CLIENT_SECRET = 'ccdce5af4dca9056f145c473d7193d11'
     REDIRECT_URL = 'https://684a-49-228-41-242.ngrok-free.app/login/callback/'
-
     AUTH_URL = 'https://access.line.me/oauth2/v2.1/authorize'
     PROFILE_URL = 'https://api.line.me/v2/profile'
     TOKEN_URL = 'https://api.line.me/oauth2/v2.1/token'
@@ -20,8 +19,8 @@ class LineLogin:
         session_state = hashlib.sha256(str(time.time()).encode() + str(random.getrandbits(512)).encode()).hexdigest()
         link = f"{self.AUTH_URL}?response_type=code&client_id={self.CLIENT_ID}&redirect_uri={self.REDIRECT_URL}&scope=profile%20openid%20email&state={session_state}"
         return link
-
     def token(self, code, state):
+
         header = {'Content-Type': 'application/x-www-form-urlencoded'}
         data = {
             "grant_type": "authorization_code",
@@ -32,10 +31,8 @@ class LineLogin:
         }
         response = self.send_curl(self.TOKEN_URL, header, 'POST', data)
         return json.loads(response)
-
+    
     def profile_from_id_token(self, token):
-        print(token)
-        print(',,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,')
         payload = token['id_token'].split('.')
         datas = {
             'access_token':  token['access_token'],
@@ -43,21 +40,16 @@ class LineLogin:
             'user_id':'',
             'name': '',
             'picture': '',
-            'email': ''
-        }
-
+            'email': ''  }
         if len(payload) == 3:
-            # Add padding to make the length a multiple of 4
             padded_payload = payload[1] + '=' * ((4 - len(payload[1]) % 4) % 4)
             data = json.loads(base64.urlsafe_b64decode(padded_payload).decode('utf-8'))
-            print('data', data)
             datas['user_id'] = data.get('sub', '')
             datas['name'] = data.get('name', '')
             datas['picture'] = data.get('picture', '')
             datas['email'] = data.get('email', '')
-        print(datas)
         return datas
-
+    
     def send_curl(self, url, header, type, data=None):
         if header is not None:
             headers = header
@@ -68,5 +60,4 @@ class LineLogin:
             response = requests.post(url, headers=headers, data=data)
         else:
             response = requests.get(url, headers=headers)
-
         return response.text

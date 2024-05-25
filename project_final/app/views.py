@@ -346,13 +346,10 @@ def line_callback(request):
     if 'code' in request.GET and 'state' in request.GET:
         code = request.GET['code']
         state = request.GET['state']
-
         line = LineLogin()
         token = line.token(code, state)
-
         if token.get('error'):
-            # return redirect('managefood')
-            pass
+            return redirect('home')
         if token.get('id_token'):
             profile = line.profile_from_id_token(token)
             request.session['profile'] = profile
@@ -366,8 +363,9 @@ def line_callback(request):
                     return redirect('home') 
             else:
                 print('you in else')
+                 #เป็นการตรวจสอบสถานะการล็อกอินของผู้ใช้ เพื่อให้รหัสของคุณทำงานอย่างถูกต้องโดยขึ้นอยู่กับว่าผู้ใช้มีการล็อกอินอยู่หรือไม่ และจัดการกับกรณีที่จำเป็นต้องสร้างผู้ใช้ใหม่เท่านั้น
                 line_user = request.user if request.user.is_authenticated else User.objects.create_user(username=user_id)
-                line_user_profile, created = Member.objects.get_or_create(
+                line_user_profile, created = Member.objects.get_or_create( 
                     #id =profile['user_id'],
                     user=line_user,
                     email=profile['email'],
@@ -938,6 +936,8 @@ def admin_confirm_order(request,code=None,status=None,filter=None):
             print(len(orders))
             list_item=[]
             list_status=''
+            member_list = []
+            member = Member.objects.get(user=order.user)
             if order.confirm == 'wait_to_confirm':
                 wait_confirm +=1
                 list_status='รอการยืนยัน'
@@ -960,13 +960,14 @@ def admin_confirm_order(request,code=None,status=None,filter=None):
             for item in order_items_type2:
                 list_item.append(item)
 
-            all_item.append((order,time,list_item,list_status))
+            all_item.append((order,time,list_item,list_status,member))
             print(list_item)
-        print('receive',receive,'wait_confirm',wait_confirm,'wait_receive',wait_receive,'cancel_num',cancel_num)
+        print('receive',receive,'wait_confirm',wait_confirm,'wait_receive',wait_receive,'cancel_num',cancel_num,'me')
     else:
         if status:
             print(code)
             print(status)   
+            member_list=[]
             reason = request.POST.get('select_reason')
             print(reason)
             order = Order.objects.get(ref_code=code)
@@ -996,6 +997,7 @@ def admin_confirm_order(request,code=None,status=None,filter=None):
         'wait_confirm_filter':wait_confirm_text,
         'wait_receive_filter':wait_receive_text,
         'cancel_filter':cancel_num_text,
+        'member':member_list,
     }
     return render(request, 'app/confirm_order.html', context)
 

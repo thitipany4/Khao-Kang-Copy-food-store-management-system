@@ -156,7 +156,7 @@
             display: flex;
             /* border: 1px solid red; */
             height: 30px;
-            width: 450px;
+            width: 400px;
             /* align-items: center; */
             justify-content: space-between;
         }
@@ -390,6 +390,7 @@
                 <thead>
                     <tr>
                         <th class="head_column">user</th>
+                        <th class="head_column">เบอร์โทร</th>
                         <th class="head_column">รายละเอียด</th>
                         <th class="head_column">เวลานัดรับ</th>
                         <th class="head_column">ราคา</th>
@@ -400,9 +401,10 @@
     
                 </thead>
                 <tbody>
-                    {% for order,time,item,status in all_item %}
+                    {% for order,time,item,status,member in all_item %}
                     <tr class="box_body">
                         <td class="user_body">{{order.user}}</td>
+                        <td class="user_body">{{member.phone_number}}</td>
                         <td class="detail_body">
                             {%for i in item %}
                             <div class="text-detail">
