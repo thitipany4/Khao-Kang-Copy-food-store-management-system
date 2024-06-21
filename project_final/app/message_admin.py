@@ -7,11 +7,14 @@ def message_to_admin(order):
     message = TextSendMessage(text=f'คุณมีออเดอร์ เข้ามาใหม่ {order.ref_code}')
     line_bot_api.push_message(user_id, messages=[message])
 
-def message_cancel(order,user):
+def message_cancel(order,user,admin=None):
     line_bot_api = LineBotApi('za3XvRtLy/0ddM6yPhbR7J76djPWSPSkSZa5i0TsN2GFYkgU5azYpdWqxOBo9vR39y7XLS+nKy4WfHxj+DoEoW3N0cR6Qmm85V09GTE3oyjMlf6Mw+oSXWWdFymdpF3/ZpZkIqWJ9AZoyLTTAKjWFwdB04t89/1O/w1cDnyilFU=')
     member = Member.objects.get(user=user)
     print(member.line_id)
-    message = TextSendMessage(text=f'ออเดอร์ {order.ref_code} ถูกยกเลิก โดยผู้ใช้งาน {member.user}')
+    if admin:
+        message = TextSendMessage(text=f'ออเดอร์ {order.ref_code} ถูกยกเลิก โดยผู้ใช้งาน {admin.user}')
+    else:
+        message = TextSendMessage(text=f'ออเดอร์ {order.ref_code} ถูกยกเลิก โดยผู้ใช้งาน {member.user}')
     line_bot_api.push_message(member.line_id, messages=[message])
 
 def message_confirmed(order,user):

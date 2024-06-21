@@ -874,6 +874,7 @@ def user_confirm_order(request, ref_code=None):
         order.time_receive=time
         order.save()
         message_to_admin(order)
+
         context ={  
             'order':order,
             'order_item1':order_item1,
@@ -886,6 +887,7 @@ def admin_confirm_order(request,code=None,status=None,filter=None):
         messages.error(request, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
         return redirect('home') 
     # order = Order.objects.get(pk=order_id)
+    member_list=''
     if request.method == 'GET':
         current_date = getdate()
         thai_date = getdate(None,current_date)
@@ -917,7 +919,7 @@ def admin_confirm_order(request,code=None,status=None,filter=None):
         wait_receive =0
         cancel_num=0
         all_item =[]
-        print(status)
+        print(status,'status')
         if status:
             print(code)
             print(status)   
@@ -926,8 +928,8 @@ def admin_confirm_order(request,code=None,status=None,filter=None):
                 order.confirm = status 
                 order.save()
                 if status =='confirmed':
-                    user = request.user
-                    print(order.time_receive)
+                    user = order.user
+                    print(user,'usernanafsdfs')
                     message_confirmed(order,user)
                 print(order.confirm,'save done')
                 return redirect('confirm_order')
@@ -938,6 +940,7 @@ def admin_confirm_order(request,code=None,status=None,filter=None):
             list_status=''
             member_list = []
             member = Member.objects.get(user=order.user)
+            print(order.confirm ,'confirmmmm')
             if order.confirm == 'wait_to_confirm':
                 wait_confirm +=1
                 list_status='รอการยืนยัน'
@@ -975,9 +978,10 @@ def admin_confirm_order(request,code=None,status=None,filter=None):
                 order.confirm = status 
                 order.cancel_reason = reason
                 order.save()
-                user = request.user
-                print(user)
-                message_cancel(order,user)
+                user = order.user
+                admin= Member.objects.get(pk=1)
+                print(admin)
+                message_cancel(order,user,admin)
                 print(order.confirm,'save done')
                 return redirect('confirm_order')
     context={
@@ -1013,7 +1017,7 @@ def complete_order(req,ref_code):
     transaction = create_transaction(order_item1,order_item2)
     order.completed = 'completed'
     order.save()
-    user = req.user
+    user = order.user
     message_complete(order,user)
     print(order)
     return redirect('confirm_order')
@@ -1144,7 +1148,6 @@ def my_order(req):
     current_date = datetime.strptime(current_date, '%Y-%m-%d').date()
     date_filter = f'{current_date.year}-{current_date.month:02d}-{current_date.day:02d}'
     orders = Order.objects.filter(user=user,created_at__contains=date_filter,completed='incompleted',checkout=True).order_by('-created_at')
-    total_price = 0 
     if orders :
         time_test = TimeReceive.objects.all()
         reason_test = CancelReason.objects.filter(use_with='user')
@@ -1154,11 +1157,9 @@ def my_order(req):
             order_items_type1 = OrderItemtype1.objects.filter(order=order)
             for item in order_items_type1:
                 order_items.append(item)
-                total_price += item.total_price
             order_items_type2 = OrderItemtype2.objects.filter(order=order)
             for item in order_items_type2:
                 order_items.append(item)
-                total_price += item.total_price
             thai_tz = pytz.timezone('Asia/Bangkok')
             thai_time = timezone.localtime(order.created_at, timezone=thai_tz)
             date_raw = order.created_at.date()
@@ -1169,8 +1170,7 @@ def my_order(req):
                     'order':orders,
                     'items':items,
                     'time':time_test,
-                    'reason':reason_test,
-                    'total_price':total_price,}
+                    'reason':reason_test,}
     else:
         context ={
                     'order':orders,}
@@ -1183,7 +1183,7 @@ def cancel_my_order(req,ref_code):
     order.confirm = 'cancel'
     order.cancel_reason = reason
     order.save()
-    user = req.user
+    user = order.user
     message_cancel(order,user)
     return redirect('my_order')
 
