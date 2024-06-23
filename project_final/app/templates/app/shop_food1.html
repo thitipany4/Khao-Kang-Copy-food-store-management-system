@@ -277,7 +277,7 @@
 
 <script>
     const typeValue = "type1";
-    const originURL = "https://035e-27-145-120-155.ngrok-free.app"; 
+    // const originURL = "https://035e-27-145-120-155.ngrok-free.app"; 
     function submitForms() {
         const forms = document.querySelectorAll('.add-to-cart-form');
         const formData = new FormData();
@@ -298,9 +298,9 @@
             fetch('/add-to-cart/' + typeValue + '/', {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'Origin': originURL
-                }
+                // headers: {
+                //     'Origin': originURL
+                // }
             })
             .then(response => {
                 if (response.ok) {
@@ -329,9 +329,9 @@
         fetch('/add-to-cart/' + typeValue + '/' + modifyValue + '/', {
             method: 'POST',
             body: formData,
-            headers: {
-                'Origin': originURL
-            }
+            // headers: {
+            //     'Origin': originURL
+            // }
         })
         .then(response => {
             if (response.ok) {

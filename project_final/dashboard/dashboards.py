@@ -56,10 +56,12 @@ def call_all():
         orders = Order.objects.all()
         for o in orders:
             member = Member.objects.get(user=o.user)
+            print(o)
             if member:
                 list_user_use.append(member)
         for member in list_user_use:
                 count_genre_user.append(member.gender)
+                print(member)
         print(count_genre_user)
         # all_age = [m.age for m in range_age_user_use]
         figure1 = px.pie(names=count_genre_user)

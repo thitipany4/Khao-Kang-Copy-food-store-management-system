@@ -346,6 +346,9 @@
         .dropdown:hover .dropbtn {
                 background-color: #2980b9;
             }
+        .date {
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -413,6 +416,7 @@
                         <th class="head_column">ราคา</th>
                         <th class="head_column">code</th>
                         <th class="head_column">status</th>
+                        <th class="head_column">วันที่</th>
                     </tr>
     
                 </thead>
@@ -450,6 +454,7 @@
                         {%elif status == 'รอดำเนินการ' %}
                         <td class="confirm_body_wait-p">{{status}}</td>
                         {%endif%}
+                        <td class="date">{{order.created_at}}</td>
                     </tr>
                   
                     {% endfor %}

@@ -167,12 +167,19 @@ def profile(req,username):
         form = MemberForm(req.POST,req.FILES,instance=member)
         if form.is_valid():
             phone_number = form.cleaned_data['phone_number']
+            gender = form.cleaned_data['gender']
+            print(phone_number)
             if len(phone_number) != 10 or not phone_number.isdigit():
                 messages.error(req, 'รูปแบบเบอร์โทรศัพท์ไม่ถูกต้อง')
+                print(messages.error)
                 return redirect('profile',username=username)
             form.instance.age = req.POST.get('age')
+            form.instance.gender = gender
             form.save()
             messages.success(req, 'บันทึกข้อมูลสำเร็จ')
+            return redirect('profile',username=username)
+        else:
+            messages.error(req, 'รูปแบบเบอร์โทรศัพท์ไม่ถูกต้องssss')
             return redirect('profile',username=username)
     context ={
         'member':member,

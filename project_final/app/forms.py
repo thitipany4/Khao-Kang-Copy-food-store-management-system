@@ -19,7 +19,8 @@ class MemberForm(forms.ModelForm):
             'first_name',
             'last_name',
             'phone_number',
-            'age'
+            'age',
+            'gender'
         ]
 class DateForm(forms.ModelForm):
     class Meta:

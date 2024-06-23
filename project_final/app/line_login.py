@@ -8,7 +8,7 @@ import base64
 class LineLogin:
     CLIENT_ID = '2002071461'
     CLIENT_SECRET = 'ccdce5af4dca9056f145c473d7193d11'
-    REDIRECT_URL = 'https://devoted-boar-classic.ngrok-free.app/login/callback/' ####เปลี่ยน
+    REDIRECT_URL = 'http://127.0.0.1:8000/login/callback/' ####เปลี่ยน
     AUTH_URL = 'https://access.line.me/oauth2/v2.1/authorize'
     PROFILE_URL = 'https://api.line.me/v2/profile'
     TOKEN_URL = 'https://api.line.me/oauth2/v2.1/token'

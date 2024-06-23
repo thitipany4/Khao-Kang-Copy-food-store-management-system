@@ -81,7 +81,7 @@
         border: 1px solid #ECF3F9;
         background-color: #FBFDFF;
         display: flex;
-        height: 60%;
+        height: 75%;
         width: 70%;
         justify-content: center;
         margin-top: 10px;
@@ -109,9 +109,6 @@
         flex-direction: column;
         align-items: center;
 
-    }
-    .age-options  {
-        margin-bottom: 20px;
     }
     .message-alerts {
             display: flex;
@@ -186,7 +183,7 @@
         display: flex;
         /* border: 1px solid tomato; */
         width: 250px;
-        height: 400px;
+        height: 350px;
         justify-content: space-between;
         align-items: center;
 
@@ -259,7 +256,7 @@
                     {% csrf_token %}
                     <div class="form-detail">
                         <div class="first_name">
-                            <label for="first-name">First Name</label>
+                            <label for="first-name">ชื่อจริง</label>
                             {% if not form.instance.first_name %}
                                 <input class="input-btn" type="text" name="first_name" step="any" required id="first-name" value="">
                             {% else %}
@@ -267,7 +264,7 @@
                             {% endif %}
                         </div>
                         <div class="last_name">
-                            <label for="last-name">Last Name</label>
+                            <label for="last-name">นามสกุล</label>
                             {% if not form.instance.last_name %}
                                 <input class="input-btn" type="text" name="last_name" step="any" required id="last-name" value="">
                             {% else %}
@@ -275,15 +272,25 @@
                             {% endif %}
                         </div>
                         <div class="phone_number">
-                            <label for="phone-number">Phone Number</label>
+                            <label for="phone-number">เบอร์โทรศัพท์</label>
                             {% if not form.instance.phone_number %}
                                 <input class="input-btn" type="text" name="phone_number" step="any" required id="phone-number" value="">
                             {% else %}
                                 <input class="input-btn" type="text" name="phone_number" step="any" required id="phone-number" value="{{ form.instance.phone_number }}">
                             {% endif %}
                         </div>
+                        <div class="phone_number">
+                            <label for="phone-number">เพศ</label>
+                            <select name="gender" id="gender">
+                                {% for choice in form.fields.gender.choices %}
+                                    <option value="{{ choice.0 }}" {% if choice.0 == member.gender %}selected{% endif %}>
+                                        {{ choice.1 }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         <div class="age-options">
-                            <label for="age">Age</label>
+                            <label for="age">อายุ</label>
                             <select name="age" id="age">
                                 {% for choice in form.fields.age.choices %}
                                     <option value="{{ choice.0 }}" {% if choice.0 == member.age %}selected{% endif %}>
