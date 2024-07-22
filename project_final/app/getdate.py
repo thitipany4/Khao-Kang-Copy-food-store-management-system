@@ -3,6 +3,7 @@ from datetime import datetime
 
 def getdate(x=None,th=None):
     if x:
+        #เปลี่ยนเวลาที่ได้รับมาเป็น text
         current_date = x
         print(current_date,'xxxxxxxxxx')
         return f'{current_date.year}-{current_date.month}-{current_date.day}'

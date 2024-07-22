@@ -1,4 +1,5 @@
 from django.shortcuts import render,redirect
+from django.views import View
 from django_plotly_dash.views import add_to_session
 from app.models import *
 from app.getdate import getdate
@@ -10,8 +11,8 @@ import calendar
 from .quarter_get_data import *
 from datetime import datetime
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, user_passes_test
-
+from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 def get_all_data():
     income = 0
     expenses = 0
@@ -205,27 +206,39 @@ def call_user(user):
 def is_superuser(user):
     return user.is_authenticated and user.is_superuser
 
+# def see_all_data(req):
+#     if not is_superuser(req.user):
+#         messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+#         return redirect('home') 
+#     show_text = 'ข้อมูลทั้งหมด'
+#     app = call_all()
+#     add_to_session(req,app)
+#     income,expenses,success,cancel, = get_all_data()
+#     admin = call_user(req.user)
+#     context = {
+#         'app':app,
+#         'income':income,
+#         'expenses':expenses,
+#         'success':success,
+#         'cancel':cancel,
+#         'show_text':show_text,
+#         'admin':admin
+#     }
+#     return render(req,'dashboard/home.html',context)
 
-@login_required
-def see_all_data(req):
-    if not is_superuser(req.user):
-        messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
-        return redirect('home') 
-    show_text = 'ข้อมูลทั้งหมด'
-    app = call_all()
-    add_to_session(req,app)
-    income,expenses,success,cancel, = get_all_data()
-    admin = call_user(req.user)
-    context = {
-        'app':app,
-        'income':income,
-        'expenses':expenses,
-        'success':success,
-        'cancel':cancel,
-        'show_text':show_text,
-        'admin':admin
-    }
-    return render(req,'dashboard/home.html',context)
+@method_decorator(login_required, name='dispatch')
+class DashboardView(View):
+    def get(self, req, *args, **kwargs):
+        if not is_superuser(req.user):
+            messages.error(req, "ท่านไม่มีสิทธิเข้าถึงหน้านี้")
+            return redirect('home') 
+        show_text = 'ข้อมูลทั้งหมด'
+        app = call_all()
+        income, expenses, success, cancel = get_all_data()
+        admin = call_user(req.user)
+        context = {'app': app,'income': income,'expenses': expenses,
+            'success': success,'cancel': cancel,'show_text': show_text,'admin': admin}
+        return render(req, 'dashboard/home.html', context)
 
 @login_required
 def see_month_data(req):
@@ -246,7 +259,7 @@ def see_month_data(req):
         list_day = [day for day in range(1, all_days + 1)]
         # month = str(month).zfill(2) 
         app = call_month(select_date,list_day)
-        add_to_session(req,app)
+        # add_to_session(req,app)
         raw_current = f'{split[0]}-{split[1]}'
         current = datetime.strptime(raw_current, "%Y-%m")
     else:
@@ -260,7 +273,7 @@ def see_month_data(req):
         send_date = str(current).split('-')[0:2]
         send_date = f'{send_date[0]}-{send_date[1]}'
         app = call_month(send_date,list_day)
-        add_to_session(req,app)
+        # add_to_session(req,app)
         date = getdate(None,str(current))
         date = date.split(' ')[1:]
         show_text = f'{date[0]} {date[1]}'
@@ -297,7 +310,7 @@ def see_quarter_data(req):
         show_text =f'ไตรมาสที่ {quarter} ปี {year}'
         list_quater = get_list_quarter(quarter)
         app = call_quarter(len_quater,list_quater)
-        add_to_session(req,app)
+        # add_to_session(req,app)
     else:
         current = datetime.now().date()
         year = current.year
@@ -307,7 +320,7 @@ def see_quarter_data(req):
         show_text =f'ไตรมาสที่ {quarter} ปี {year}'
         list_quarter = get_list_quarter(quarter)
         app = call_quarter(len_quarter,list_quarter)
-        add_to_session(req,app)
+        # add_to_session(req,app)
 
     income,expenses,income_compare,expenses_compare,success,cancel,success_compare,cancel_compare = get_quarter_data(quarter,year)
     admin = call_user(req.user)

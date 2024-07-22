@@ -309,8 +309,7 @@
                 }
             });
         } else {
-            alert('กรุณาเลือกเมนูอาหารที่ท่านต้องการ');
-        }
+            alert('กรุณาเลือกเมนูอาหารที่ท่านต้องการ');}
     }
 
     const modifyValue = "{{modify}}";
@@ -336,8 +335,7 @@
         .then(response => {
             if (response.ok) {
                 const homeURL = "{% url 'view_cart' %}";
-                window.location.href = homeURL;
-            }
+                window.location.href = homeURL;}
         });
     }
 
@@ -345,7 +343,6 @@
         var quantityInput = document.getElementById("id_quantity_" + productId);
         quantityInput.value = parseInt(quantityInput.value) + 1;
     }
-
     function decrementQuantity(productId) {
         var quantityInput = document.getElementById("id_quantity_" + productId);
         var currentQuantity = parseInt(quantityInput.value);

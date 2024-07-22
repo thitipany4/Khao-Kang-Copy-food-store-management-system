@@ -64,7 +64,7 @@ def call_all():
                 print(member)
         print(count_genre_user)
         # all_age = [m.age for m in range_age_user_use]
-        figure1 = px.pie(names=count_genre_user)
+        figure1 = px.pie(names=count_genre_user,hole=0.3)
         figure1.update_layout(title='กราฟแสดงจำนวนเพศของผู้ใช้งานทั้งหมดภายในระบบ')
 
         transaction = Transaction.objects.filter(transaction_type__in=['income','expenses'])
@@ -100,16 +100,16 @@ def call_all():
         figure3.update_layout(
             title='กราฟแสดงจำนวนเมนูอาหารที่ถูกสั่งจองทั้งหมดภายในระบบ'
         )
-        foods = Food.objects.all()
+        # foods = Food.objects.all()
         review = Reviewfood.objects.filter(food__name=value)
         rating_dic = {'1':0,'2':0,'3':0,'4':0,'5':0}
         for r in review:
             rating = str(r.rating) 
             if rating in rating_dic:
                 rating_dic[rating] += 1
-        
+        color_sequence = ['#f44336', '#ff9800', '#2196f3', '#2157F3', '#04aa6d']
         figure4 = px.bar(x=list(rating_dic.keys()), y=list(rating_dic.values()),color=list(rating_dic.keys()), 
-                         labels={'y': 'จำนวนการรีวิวเมนูอาหาร', 'x': f'คะแนนรีวิว'},text=list(rating_dic.values()))
+                         labels={'y': 'จำนวนการรีวิวเมนูอาหาร', 'x': f'คะแนนรีวิว'},text=list(rating_dic.values()),color_discrete_sequence=color_sequence )
         figure4.update_layout(
             title=f'กราฟแสดงจำนวนรีวิวเมนูทั้งหมดภายในระบบ'
         )
@@ -140,11 +140,11 @@ def call_all():
 
 
         df_order_sale = pd.DataFrame({'age': age_list, 'status': status_list})
-        date = [str(s.created_at).split(' ')[0] for s in sale]
-        total_price = [s.total_price for s in sale]
-        df_complete = pd.DataFrame({'date':date,'price':total_price})
-        sort_df_complete = df_complete.groupby('date')['price'].sum().reset_index()
-        sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
+        # date = [str(s.created_at).split(' ')[0] for s in sale]
+        # total_price = [s.total_price for s in sale]
+        # df_complete = pd.DataFrame({'date':date,'price':total_price})
+        # sort_df_complete = df_complete.groupby('date')['price'].sum().reset_index()
+        # sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
         # food = [f.name for f in foods]
         df_count = df_order_sale.groupby(['age', 'status']).size().reset_index(name='count')
 
@@ -205,36 +205,48 @@ def call_month(date_filter,list_day):
         
         print('list_day',list_day)
         print(date_filter,'date')
-        created_at_list = []
-        gender_list = []
+        # created_at_list = []
+        # gender_list = []
+        list_user_use = []
+        count_genre_user =[]
         orders_fig1 = Order.objects.filter(completed='completed',created_at__contains=date_filter)
-        if orders_fig1:
-            for order in orders_fig1:
-                member = Member.objects.get(user=order.user)
-                created_at_list.append(order.created_at.date())
-                gender_list.append(member.gender)
-            data = {
-            'created_at': created_at_list,
-            'gender': gender_list}
-            df_gender = pd.DataFrame(data)
-            df_gender['day'] = pd.to_datetime(df_gender['created_at']).dt.day
-            df_grouped = df_gender.groupby(['day', 'gender']).size().reset_index(name='count')
-            figure1 = px.line(df_grouped, x='day', y='count', color='gender',markers=True)
+        for o in orders_fig1:
+            member = Member.objects.get(user=o.user)
+            print(o)
+            if member:
+                list_user_use.append(member)
+        for member in list_user_use:
+                count_genre_user.append(member.gender)
+                print(count_genre_user)
+        if count_genre_user:
+
+        # if orders_fig1:
+        #     for order in orders_fig1:
+        #         member = Member.objects.get(user=order.user)
+            #     created_at_list.append(order.created_at.date())
+            #     gender_list.append(member.gender)
+            # data = {
+            # 'created_at': created_at_list,
+            # 'gender': gender_list}
+            # df_gender = pd.DataFrame(data)
+            # df_gender['day'] = pd.to_datetime(df_gender['created_at']).dt.day
+            # df_grouped = df_gender.groupby(['day', 'gender']).size().reset_index(name='count')
+            figure1 = px.pie(names=count_genre_user,hole=0.3)
             figure1.update_layout(
-                    xaxis_title="วันที่",  
-                    yaxis_title="จำนวนผู้ใช้งานในแต่ละวัน"  ,
-                    xaxis=dict(
-                    tickmode='linear', 
-                    tickvals=list_day),
+                    # xaxis_title="วันที่",  
+                    # yaxis_title="จำนวนผู้ใช้งานในแต่ละวัน"  ,
+                    # xaxis=dict(
+                    # tickmode='linear', 
+                    # tickvals=list_day),
                     title='กราฟแสดงจำนวนเพศของผู้ใช้งานภายในระบบ (เดือน)')
         else:
-            figure1 = px.line()
+            figure1 = px.pie()
             figure1.update_layout(
-                    xaxis_title="วันที่",  
-                    yaxis_title="จำนวนผู้ใช้งานในแต่ละวัน"  ,
-                    xaxis=dict(
-                    tickmode='linear', 
-                    tickvals=list_day),
+                    # xaxis_title="วันที่",  
+                    # yaxis_title="จำนวนผู้ใช้งานในแต่ละวัน"  ,
+                    # xaxis=dict(
+                    # tickmode='linear', 
+                    # tickvals=list_day),
                     title='กราฟแสดงจำนวนเพศของผู้ใช้งานภายในระบบ (เดือน)')
 
         transaction = Transaction.objects.filter(date__contains=date_filter,transaction_type__in=['income','expenses'])
@@ -348,11 +360,11 @@ def call_month(date_filter,list_day):
 
 
             df_order_sale = pd.DataFrame({'age': age_list, 'status': status_list})
-            date = [str(s.created_at).split(' ')[0] for s in completed]
-            total_price = [s.total_price for s in completed]
-            df_complete = pd.DataFrame({'date':date,'price':total_price})
-            sort_df_complete = df_complete.groupby('date')['price'].sum().reset_index()
-            sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
+            # date = [str(s.created_at).split(' ')[0] for s in completed]
+            # total_price = [s.total_price for s in completed]
+            # df_complete = pd.DataFrame({'date':date,'price':total_price})
+            # sort_df_complete = df_complete.groupby('date')['price'].sum().reset_index()
+            # sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
             df_count = df_order_sale.groupby(['age', 'status']).size().reset_index(name='count')
             figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group',text='count') # 
             figure5.update_layout(
@@ -420,27 +432,40 @@ def call_quarter(range_date,len_quater):
                 'มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน',
                 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'
             ]
-        created_at_list = []
-        gender_list = []
+        # created_at_list = []
+        # gender_list = []
+        list_user_use = []
+        count_genre_user =[]
         orders_fig1 = Order.objects.filter(completed='completed',created_at__range=(range_date))
-        if orders_fig1:
-            for order in orders_fig1:
-                member = Member.objects.get(user=order.user)
-                created_at_list.append(order.created_at.date())
-                gender_list.append(member.gender)
-            data = {
-            'created_at': created_at_list,
-            'gender': gender_list}
-            df_gender = pd.DataFrame(data)
-            df_gender['month'] = pd.to_datetime(df_gender['created_at']).dt.month
-            df_grouped = df_gender.groupby(['month', 'gender']).size().reset_index(name='count')
-            df_grouped['month_name_thai'] = df_grouped['month'].apply(lambda x: thai_month_names[x-1])
-            figure1 = px.line(df_grouped, x='month_name_thai', y='count', color='gender',markers=True)
+        list_user_use = []
+        count_genre_user =[]
+        for o in orders_fig1:
+            member = Member.objects.get(user=o.user)
+            print(o)
+            if member:
+                list_user_use.append(member)
+        for member in list_user_use:
+                count_genre_user.append(member.gender)
+                print(count_genre_user)
+        if count_genre_user:
+        # if orders_fig1:
+        #     for order in orders_fig1:
+        #         member = Member.objects.get(user=order.user)
+        #         created_at_list.append(order.created_at.date())
+        #         gender_list.append(member.gender)
+        #     data = {
+        #     'created_at': created_at_list,
+        #     'gender': gender_list}
+        #     df_gender = pd.DataFrame(data)
+        #     df_gender['month'] = pd.to_datetime(df_gender['created_at']).dt.month
+        #     df_grouped = df_gender.groupby(['month', 'gender']).size().reset_index(name='count')
+        #     df_grouped['month_name_thai'] = df_grouped['month'].apply(lambda x: thai_month_names[x-1])
+            figure1 = px.pie(names=count_genre_user,hole=0.3)
             figure1.update_layout(
-                    xaxis_title="วันที่",  
-                    yaxis_title="จำนวนผู้ใช้งานในแต่ละเดือน"  ,
-                    xaxis=dict(
-                    tickmode='linear'),
+                    # xaxis_title="วันที่",  
+                    # yaxis_title="จำนวนผู้ใช้งานในแต่ละเดือน"  ,
+                    # xaxis=dict(
+                    # tickmode='linear'),
                     title='กราฟแสดงจำนวนเพศของผู้ใช้งานภายในระบบ (ไตรมาส)')
         else:
             figure1 = px.pie() # ไม่ต้องแก้
@@ -558,11 +583,11 @@ def call_quarter(range_date,len_quater):
 
 
             df_order_sale = pd.DataFrame({'age': age_list, 'status': status_list})
-            date = [str(s.created_at).split(' ')[0] for s in completed]
-            total_price = [s.total_price for s in completed]
-            df_complete = pd.DataFrame({'date':date,'price':total_price})
-            sort_df_complete = df_complete.groupby('date')['price'].sum().reset_index()
-            sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
+            # date = [str(s.created_at).split(' ')[0] for s in completed]
+            # total_price = [s.total_price for s in completed]
+            # df_complete = pd.DataFrame({'date':date,'price':total_price})
+            # sort_df_complete = df_complete.groupby('date')['price'].sum().reset_index()
+            # sort_df_complete['year'] = pd.to_datetime(df_complete['date']).dt.year
             df_count = df_order_sale.groupby(['age', 'status']).size().reset_index(name='count')
             figure5 = px.bar(df_count, x='age', y='count', color='status', barmode='group',text='count') # 
             figure5.update_layout(

@@ -10,7 +10,7 @@ class Command(BaseCommand):
     help = 'load data from excel'
 
     def handle(self, *args, **options):
-        excel_file = 'รายรับ.xlsx' 
+        excel_file = 'รายรับ2.xlsx' 
 
         # Read Excel file
         try:
@@ -23,7 +23,7 @@ class Command(BaseCommand):
         for index, row in df.iterrows():
             # Parse date string to datetime object
 
-            date_obj = pd.to_datetime(row['date'], format='%Y/%m/%d').date()
+            date_obj = pd.to_datetime(row['date'], format='%d/%m/%Y').date()
 
 
             tran = Transaction.objects.create(

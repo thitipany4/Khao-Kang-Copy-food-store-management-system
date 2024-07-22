@@ -434,32 +434,7 @@
                                         {% endfor %}
                                     </select>
                                 {% endif %}
-                                <!-- {%if f.options == 'onsale'%}
-                                    <label  for="option_{{f.id}}"></label>
-                                    <select class="select_button" name="options" id="option_{{f.id}}">
-                                        <option value="onsale">วางขาย</option>
-                                        <option value="notchoose">ไม่ได้เลือก</option>
-                                        <option value="soldout">ขายหมดเเล้ว</option>
-                                    </select>
-                                {%endif%}
-                                {%if f.options == 'soldout'%}
-                                <label for="option_{{f.id}}"></label>
-                                <select class="select_button" name="options" id="option_{{f.id}}">
-                                    <option value="soldout">ขายหมดเเล้ว</option>
-                                    <option value="notchoose">ไม่ได้เลือก</option>
-                                    <option value="onsale">วางขาย</option>
-                                </select>
-                                {%endif%}
-                                {%if f.options == 'notchoose'%}
-                                <label for="option_{{f.id}}"></label>
-                                <select class="select_button" name="options" id="option_{{f.id}}">
-                                    <option value="notchoose">ไม่ได้เลือก</option>
-                                    <option value="onsale">วางขาย</option>
-                                    <option value="soldout">ขายหมดเเล้ว</option>
-                                </select>
-                                {%endif%} -->
                             </div>
-
                             <div class="foodname">{{f.name}}</div> 
                             <div class="detail_food">
                             <div>{{f.price}} {{f.unit}}</div>
@@ -471,8 +446,6 @@
                             {%endif%}
 
                             </div>
-
-                            
                         </div>
 
             {%endfor%}

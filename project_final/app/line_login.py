@@ -62,7 +62,7 @@ class LineLogin:
             headers = {}
 
         if type.upper() == 'POST':
-            response = requests.post(url, headers=headers, data=data) #ใช้ในการเปลี่ยนแปลงข้อมูลหรือใช้ในการเข้าสู่ระบบด้วยการส่งฟอร์มข้อมูล
+            response = requests.post(url, headers=headers, data=data) #ใช้ในการเข้าสู่ระบบด้วยการส่งฟอร์มข้อมูล
         else:
             response = requests.get(url, headers=headers) #ใช้ในการร้องขอข้อมูลของผู้ใช้งานจากไลน์
         return response.text

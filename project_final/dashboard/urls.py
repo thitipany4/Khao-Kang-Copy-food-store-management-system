@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from .views import *
 
 urlpatterns = [
-    path('',see_all_data,name='see_all_data'),
+    path('',DashboardView.as_view(),name='see_all_data'),
     path('SeeMonth/',see_month_data,name='see_month_data'),
     path('SeeMonth/filter/',see_month_data,name='see_month_data_filter'),
     path('SeeQuarter/',see_quarter_data,name='see_quarter_data'),

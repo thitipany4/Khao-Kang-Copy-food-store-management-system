@@ -416,37 +416,28 @@
                                     alert('ท่านสามารถเลือกเมนูอาหารเป็นกับได้สูงสุดแค่ 2 เมนู');
                                     exceededLimit = true;
                                 } else {
-                                    addToCartCount++;
-                                }
-                            }
+                                    addToCartCount++;} }
                             formData.append(input.name, 'checked');
                         } else {
-                            formData.append(input.name, 'not checked');
-                        }
+                            formData.append(input.name, 'not checked');}
                     } else if (input.type === 'number') {
                         formData.append('quantity', input.value);
                     } else {
-                        formData.append(input.name, input.value);
-                    }
+                        formData.append(input.name, input.value);}
                 });
             });
             if (exceededLimit) {
-                return;
-            }
+                return;}
             if (addToCartCount === 0) {
                 alert('กรุณาเลือกเมนูอาหารเป็บกับข้าว');
-                return; 
-            }
+                return; }
             fetch('/add-to-cart/' + typeValue + '/' ,{
                 method: 'POST',
-                body: formData,
-            })
+                body: formData,})
             .then(response => {
                 if (response.ok) {
                     const homeURL = "{% url 'view_cart' %}";
-                    window.location.href = homeURL;
-                }
-            });
+                    window.location.href = homeURL;}});
         }
         const modifyValue = "{{modify}}";
         function submitForms_modify() {
@@ -465,13 +456,11 @@
                                     alert('ท่านสามารถเลือกเมนูอาหารเป็นกับได้สูงสุดแค่ 2 เมนู');
                                     exceededLimit = true; 
                                 } else {
-                                    addToCartCount++;
-                                }
+                                    addToCartCount++;}
                             }
                             formData.append(input.name, 'checked');
                         } else {
-                            formData.append(input.name, 'not checked');
-                        }
+                            formData.append(input.name, 'not checked');}
                     } else if (input.type === 'number') {
                         formData.append('quantity', input.value);
                     } else {
@@ -481,33 +470,27 @@
             });
 
             if (exceededLimit) {
-                return; 
-            }
+                return; }
 
             if (addToCartCount === 0) {
                 alert('กรุณาเลือกเมนูอาหารเป็บกับข้าว');
-                return;
-            }
+                return;}
             fetch('/add-to-cart/' + typeValue + '/' + modifyValue + '/', {
                 method: 'POST',
-                body: formData,
-            })
+                body: formData,})
             .then(response => {
                 if (response.ok) {
                     const homeURL = "{% url 'view_cart' %}";
-                    window.location.href = homeURL;
-                }
+                    window.location.href = homeURL;}
             });
         }
         function incrementQuantity(productId) {
             var quantityInput = document.getElementById("id_quantity_" + productId);
-            quantityInput.value = parseInt(quantityInput.value) + 1;
-        }
+            quantityInput.value = parseInt(quantityInput.value) + 1;}
         function decrementQuantity(productId) {
             var quantityInput = document.getElementById("id_quantity_" + productId);
             var currentQuantity = parseInt(quantityInput.value);
-            quantityInput.value = currentQuantity > 0 ? currentQuantity - 1 : 0;
-        }
+            quantityInput.value = currentQuantity > 0 ? currentQuantity - 1 : 0;}
     </script>
 
 
